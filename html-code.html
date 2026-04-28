@@ -20,8 +20,6 @@
 
   --light-bg: #f4f8fb;
 
-  --card: #ffffff;
-
   --border: #d7e2ec;
 
   --text: #17324d;
@@ -40,8 +38,6 @@ body {
 
 }
 
-/* HEADER */
-
 header {
 
   background: linear-gradient(135deg, var(--spc-blue), var(--spc-blue-dark));
@@ -54,8 +50,6 @@ header {
 
 }
 
-/* LAYOUT */
-
 main {
 
   max-width: 1000px;
@@ -65,8 +59,6 @@ main {
   padding: 0 20px;
 
 }
-
-/* BUTTONS */
 
 .button-group {
 
@@ -104,8 +96,6 @@ button:hover {
 
 }
 
-/* CODE BOX */
-
 .code-box {
 
   background: #1e1e1e;
@@ -128,8 +118,6 @@ button:hover {
 
 }
 
-/* PREVIEW BOX */
-
 .preview-box {
 
   background: white;
@@ -141,8 +129,6 @@ button:hover {
   border-radius: 12px;
 
 }
-
-/* COPY BUTTON */
 
 .copy-btn {
 
@@ -165,12 +151,6 @@ button:hover {
   font-size: 0.8rem;
 
   font-weight: bold;
-
-}
-
-.copy-btn:hover {
-
-  background: #d99200;
 
 }
 
@@ -200,33 +180,35 @@ button:hover {
 
 <main>
 
-  <div class="button-group">
+<div class="button-group">
 
-    <button onclick="showCode('header')">Page Headers</button>
+  <button onclick="showCode('header')">Page Headers</button>
 
-    <button onclick="showCode('student')">Student Example</button>
+  <button onclick="showCode('student')">Student Example</button>
 
-    <button onclick="showCode('line')">Horizontal Line</button>
+  <button onclick="showCode('line')">Horizontal Line</button>
 
-  </div>
+  <button onclick="showCode('jeopardy')">Jeopardy</button>
 
-  <div class="label">Code</div>
+</div>
 
-  <div class="code-box" id="codeDisplay">
+<div class="label">Code</div>
 
-    Click a button to view code...
+<div class="code-box" id="codeDisplay">
 
-    <button class="copy-btn" onclick="copyCode()">Copy</button>
+  Click a button to view code...
 
-  </div>
+  <button class="copy-btn" onclick="copyCode()">Copy</button>
 
-  <div class="label">Preview (Canvas View)</div>
+</div>
 
-  <div class="preview-box" id="previewDisplay">
+<div class="label">Preview (Canvas View)</div>
 
-    Preview will appear here...
+<div class="preview-box" id="previewDisplay">
 
-  </div>
+  Preview will appear here...
+
+</div>
 
 </main>
 
@@ -234,17 +216,75 @@ button:hover {
 
 const codeSnippets = {
 
-  header: `<h2 style="color: #ffffff; background: #00406e; text-align: left; padding-left: 10px;"><strong>Discussion Prompt</strong></h2>`,
+header: `<h2 style="color: #ffffff; background: #00406e; text-align: left; padding-left: 10px;"><strong>Discussion Prompt</strong></h2>`,
 
-  student: `<div style="background: #e8f0f7; border-left: 6px solid #003366; padding: 20px; border-radius: 12px;">
+student: `<div style="background: #e8f0f7; border-left: 6px solid #003366; padding: 20px; border-radius: 12px;">
 
-    <h4 style="color: #003366; margin-top: 0;">Student Examples:</h4>
+  <h4 style="color: #003366;">Student Examples:</h4>
 
-    <p><strong>Example 1 &ndash; With Author:</strong><br />Parsons, V. (2017, April 12). <em>Algae: The good, the bad and the possibilities</em>. Bay Soundings. Retrieved from http://baysoundings.com<br />This article discusses how algae is vital to the biosphere but Karenia Brevis, found in Red Tide, releases toxins that kill sea life like manatees and dolphins. Parsons is working on creating bio-fields to harvest algae for bio-fuels.</p>
+  <p><strong>Example:</strong> Sample content here.</p>
 
 </div>`,
 
-  line: `<hr style="border: 1px solid #00406e;" />`
+line: `<hr style="border: 1px solid #00406e;" />`,
+
+jeopardy: `<div style="display: flex; gap: 10px; background-color: black; padding: 10px; font-family: sans-serif;">
+
+  <div style="flex: 1;">
+
+    <h2 style="background-color: #060ce9; color: #fff; text-align: center; padding: 15px;"><strong>History</strong></h2>
+
+    <div style="background-color: #060ce9; margin-bottom: 10px;">
+
+      <details style="color: #ffcc00;">
+
+        <summary style="font-size: 28px; text-align: center;"><strong>$100</strong></summary>
+
+        <div style="color: white; padding: 10px; text-align: center;">
+
+          <p><strong>The first US President.</strong></p>
+
+          <details style="background: #fff; color: #000;">
+
+            <summary><strong>Show Answer</strong></summary>
+
+            <strong>George Washington</strong>
+
+          </details>
+
+        </div>
+
+      </details>
+
+    </div>
+
+    <div style="background-color: #060ce9;">
+
+      <details style="color: #ffcc00;">
+
+        <summary style="font-size: 28px; text-align: center;"><strong>$200</strong></summary>
+
+        <div style="color: white; padding: 10px; text-align: center;">
+
+          <p><strong>Year the Magna Carta was signed.</strong></p>
+
+          <details style="background: #fff; color: #000;">
+
+            <summary><strong>Show Answer</strong></summary>
+
+            <strong>1215</strong>
+
+          </details>
+
+        </div>
+
+      </details>
+
+    </div>
+
+  </div>
+
+</div>`
 
 };
 
@@ -252,11 +292,7 @@ function showCode(type) {
 
   const code = codeSnippets[type];
 
-  // Show raw code
-
   document.getElementById("codeDisplay").innerText = code;
-
-  // Show rendered preview
 
   document.getElementById("previewDisplay").innerHTML = code;
 
