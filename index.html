@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>IDEAS Resource Library | SPC</title>
+
+  <style>
+
+    :root {
+
+      --spc-blue: #00406e;
+
+      --spc-blue-dark: #002d4d;
+
+      --spc-gold: #f2a900;
+
+      --text: #17324d;
+
+      --muted: #5f6f7f;
+
+      --card: #ffffff;
+
+      --background: #f4f8fb;
+
+      --border: #d7e2ec;
+
+      --shadow: 0 10px 28px rgba(0, 64, 110, 0.12);
+
+    }
+
+    * {
+
+      box-sizing: border-box;
+
+    }
+
+    body {
+
+      margin: 0;
+
+      font-family: Arial, Helvetica, sans-serif;
+
+      background: var(--background);
+
+      color: var(--text);
+
+      line-height: 1.6;
+
+    }
+
+    header {
+
+      background: linear-gradient(135deg, var(--spc-blue), var(--spc-blue-dark));
+
+      color: white;
+
+      padding: 48px 24px;
+
+      text-align: center;
+
+    }
+
+    header p.label {
+
+      margin: 0 0 10px;
+
+      color: var(--spc-gold);
+
+      font-weight: bold;
+
+      letter-spacing: 0.08em;
+
+      text-transform: uppercase;
+
+      font-size: 0.85rem;
+
+    }
+
+    header h1 {
+
+      margin: 0;
+
+      font-size: 2.4rem;
+
+    }
+
+    header p.description {
+
+      max-width: 760px;
+
+      margin: 18px auto 0;
+
+      font-size: 1.1rem;
+
+    }
+
+    main {
+
+      max-width: 1100px;
+
+      margin: 40px auto;
+
+      padding: 0 24px;
+
+    }
+
+    .card-grid {
+
+      display: grid;
+
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+
+      gap: 24px;
+
+    }
+
+    .card {
+
+      background: var(--card);
+
+      border: 1px solid var(--border);
+
+      border-radius: 18px;
+
+      padding: 28px;
+
+      box-shadow: var(--shadow);
+
+      display: flex;
+
+      flex-direction: column;
+
+      justify-content: space-between;
+
+    }
+
+    .card-tag {
+
+      color: var(--spc-blue);
+
+      font-weight: bold;
+
+      font-size: 0.85rem;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.06em;
+
+      margin-bottom: 8px;
+
+    }
+
+    .card h2 {
+
+      margin: 0 0 12px;
+
+      color: var(--spc-blue);
+
+      font-size: 1.5rem;
+
+    }
+
+    .card p {
+
+      margin-top: 0;
+
+      color: var(--muted);
+
+    }
+
+    .card ul {
+
+      padding-left: 20px;
+
+      margin-bottom: 24px;
+
+    }
+
+    .card a {
+
+      display: inline-block;
+
+      text-decoration: none;
+
+      background: var(--spc-blue);
+
+      color: white;
+
+      padding: 12px 18px;
+
+      border-radius: 999px;
+
+      font-weight: bold;
+
+      text-align: center;
+
+      transition: background 0.2s ease, transform 0.2s ease;
+
+    }
+
+    .card a:hover,
+
+    .card a:focus {
+
+      background: var(--spc-blue-dark);
+
+      transform: translateY(-2px);
+
+    }
+
+    footer {
+
+      text-align: center;
+
+      padding: 24px;
+
+      color: var(--muted);
+
+      font-size: 0.95rem;
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <header>
+
+    <p class="label">SPC IDEAS Resource Library</p>
+
+    <h1>Explore Instructional Design Resources</h1>
+
+    <p class="description">
+
+      Choose a category below to access reusable resources, examples, and tools for building stronger online learning experiences.
+
+    </p>
+
+  </header>
+
+  <main>
+
+    <section class="card-grid" aria-label="Resource categories">
+
+      <article class="card">
+
+        <div>
+
+          <p class="card-tag">Category One</p>
+
+          <h2>AI Prompts</h2>
+
+          <p>
+
+            Explore prompt examples designed to support course design, assignment creation, feedback, accessibility, and instructional planning.
+
+          </p>
+
+          <ul>
+
+            <li>Reusable prompt templates</li>
+
+            <li>Instructional design examples</li>
+
+            <li>AI-supported course development ideas</li>
+
+          </ul>
+
+        </div>
+
+        <a href="ai-prompts.html">Open Category</a>
+
+      </article>
+
+      <article class="card">
+
+        <div>
+
+          <p class="card-tag">Category Two</p>
+
+          <h2>HTML Code</h2>
+
+          <p>
+
+            Access HTML examples that can be adapted for Canvas pages, GitHub learning objects, tabs, quick checks, and styled content blocks.
+
+          </p>
+
+          <ul>
+
+            <li>Canvas-ready HTML</li>
+
+            <li>Interactive page examples</li>
+
+            <li>Reusable layout snippets</li>
+
+          </ul>
+
+        </div>
+
+        <a href="html-code.html">Open Category</a>
+
+      </article>
+
+      <article class="card">
+
+        <div>
+
+          <p class="card-tag">Category Three</p>
+
+          <h2>Other</h2>
+
+          <p>
+
+            Find additional resources, tools, examples, and miscellaneous support materials that do not fit into the other categories.
+
+          </p>
+
+          <ul>
+
+            <li>Resource links</li>
+
+            <li>Planning tools</li>
+
+            <li>Additional examples</li>
+
+          </ul>
+
+        </div>
+
+        <a href="other.html">Open Category</a>
+
+      </article>
+
+    </section>
+
+  </main>
+
+  <footer>
+
+    This landing page is designed for GitHub Pages and Canvas-friendly resource sharing.
+
+  </footer>
+
+</body>
+
+</html>
