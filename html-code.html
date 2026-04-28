@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>HTML Code Library | SPC</title>
+
+<style>
+
+:root {
+
+  --spc-blue: #00406e;
+
+  --spc-blue-dark: #002d4d;
+
+  --light-bg: #f4f8fb;
+
+  --card: #ffffff;
+
+  --border: #d7e2ec;
+
+  --text: #17324d;
+
+}
+
+body {
+
+  margin: 0;
+
+  font-family: Arial, sans-serif;
+
+  background: var(--light-bg);
+
+  color: var(--text);
+
+}
+
+/* HEADER */
+
+header {
+
+  background: linear-gradient(135deg, var(--spc-blue), var(--spc-blue-dark));
+
+  color: white;
+
+  padding: 40px 20px;
+
+  text-align: center;
+
+}
+
+header h1 {
+
+  margin: 0;
+
+}
+
+/* LAYOUT */
+
+main {
+
+  max-width: 900px;
+
+  margin: 40px auto;
+
+  padding: 0 20px;
+
+}
+
+/* BUTTONS */
+
+.button-group {
+
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 12px;
+
+  margin-bottom: 20px;
+
+}
+
+button {
+
+  background: var(--spc-blue);
+
+  color: white;
+
+  border: none;
+
+  padding: 10px 16px;
+
+  border-radius: 999px;
+
+  cursor: pointer;
+
+  font-weight: bold;
+
+}
+
+button:hover {
+
+  background: var(--spc-blue-dark);
+
+}
+
+/* CODE DISPLAY */
+
+.code-box {
+
+  background: #1e1e1e;
+
+  color: #eaeaea;
+
+  padding: 20px;
+
+  border-radius: 12px;
+
+  white-space: pre-wrap;
+
+  font-family: monospace;
+
+  font-size: 0.9rem;
+
+  position: relative;
+
+}
+
+/* COPY BUTTON */
+
+.copy-btn {
+
+  position: absolute;
+
+  top: 10px;
+
+  right: 10px;
+
+  background: #f2a900;
+
+  border: none;
+
+  padding: 6px 12px;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  font-size: 0.8rem;
+
+  font-weight: bold;
+
+}
+
+.copy-btn:hover {
+
+  background: #d99200;
+
+}
+
+.label {
+
+  margin-bottom: 10px;
+
+  font-weight: bold;
+
+  color: var(--spc-blue);
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+  <h1>HTML Code Library</h1>
+
+  <p>Select a component to view and copy ready-to-use code</p>
+
+</header>
+
+<main>
+
+  <div class="button-group">
+
+    <button onclick="showCode('header')">Page Headers</button>
+
+    <button onclick="showCode('student')">Student Example</button>
+
+    <button onclick="showCode('line')">Horizontal Line</button>
+
+  </div>
+
+  <div class="label" id="codeTitle">Select a code type above</div>
+
+  <div class="code-box" id="codeDisplay">
+
+    Click a button to view code...
+
+    <button class="copy-btn" onclick="copyCode()">Copy</button>
+
+  </div>
+
+</main>
+
+<script>
+
+const codeSnippets = {
+
+  header: `<h2 style="color: #ffffff; background: #00406e; text-align: left; padding-left: 10px;"><strong>Discussion Prompt</strong></h2>`,
+
+  student: `<div style="background: #e8f0f7; border-left: 6px solid #003366; padding: 20px; border-radius: 12px;">
+
+    <h4 style="color: #003366; margin-top: 0;">Student Examples:</h4>
+
+    <p><strong>Example 1 &ndash; With Author:</strong><br />Parsons, V. (2017, April 12). <em>Algae: The good, the bad and the possibilities</em>. Bay Soundings. Retrieved from http://baysoundings.com<br />This article discusses how algae is vital to the biosphere but Karenia Brevis, found in Red Tide, releases toxins that kill sea life like manatees and dolphins. Parsons is working on creating bio-fields to harvest algae for bio-fuels.</p>
+
+    <p><strong>Example 2 &ndash; Without Author:</strong><br /><em>Butterflies Need Our Help.</em> (2021, October 1). Bay Soundings. Retrieved from http://baysoundings.com<br />This article explains that some butterfly species are extinct and threatened by invasive ant species. It recommends planting milkweed to help reduce butterfly population destruction.</p>
+
+</div>`,
+
+  line: `<hr style="border: 1px solid #00406e;" />`
+
+};
+
+function showCode(type) {
+
+  document.getElementById("codeDisplay").innerText = codeSnippets[type];
+
+  
+
+  const titles = {
+
+    header: "Page Header Code",
+
+    student: "Student Example Code",
+
+    line: "Horizontal Line Code"
+
+  };
+
+  document.getElementById("codeTitle").innerText = titles[type];
+
+}
+
+function copyCode() {
+
+  const text = document.getElementById("codeDisplay").innerText;
+
+  navigator.clipboard.writeText(text);
+
+  alert("Code copied!");
+
+}
+
+</script>
+
+</body>
+
+</html>
