@@ -54,17 +54,11 @@ header {
 
 }
 
-header h1 {
-
-  margin: 0;
-
-}
-
 /* LAYOUT */
 
 main {
 
-  max-width: 900px;
+  max-width: 1000px;
 
   margin: 40px auto;
 
@@ -110,7 +104,7 @@ button:hover {
 
 }
 
-/* CODE DISPLAY */
+/* CODE BOX */
 
 .code-box {
 
@@ -129,6 +123,22 @@ button:hover {
   font-size: 0.9rem;
 
   position: relative;
+
+  margin-bottom: 20px;
+
+}
+
+/* PREVIEW BOX */
+
+.preview-box {
+
+  background: white;
+
+  border: 1px solid var(--border);
+
+  padding: 20px;
+
+  border-radius: 12px;
 
 }
 
@@ -166,9 +176,9 @@ button:hover {
 
 .label {
 
-  margin-bottom: 10px;
-
   font-weight: bold;
+
+  margin: 10px 0;
 
   color: var(--spc-blue);
 
@@ -184,7 +194,7 @@ button:hover {
 
   <h1>HTML Code Library</h1>
 
-  <p>Select a component to view and copy ready-to-use code</p>
+  <p>Select a component to view code and preview</p>
 
 </header>
 
@@ -200,13 +210,21 @@ button:hover {
 
   </div>
 
-  <div class="label" id="codeTitle">Select a code type above</div>
+  <div class="label">Code</div>
 
   <div class="code-box" id="codeDisplay">
 
     Click a button to view code...
 
     <button class="copy-btn" onclick="copyCode()">Copy</button>
+
+  </div>
+
+  <div class="label">Preview (Canvas View)</div>
+
+  <div class="preview-box" id="previewDisplay">
+
+    Preview will appear here...
 
   </div>
 
@@ -234,21 +252,15 @@ const codeSnippets = {
 
 function showCode(type) {
 
-  document.getElementById("codeDisplay").innerText = codeSnippets[type];
+  const code = codeSnippets[type];
 
-  
+  // Show raw code
 
-  const titles = {
+  document.getElementById("codeDisplay").innerText = code;
 
-    header: "Page Header Code",
+  // Show rendered preview
 
-    student: "Student Example Code",
-
-    line: "Horizontal Line Code"
-
-  };
-
-  document.getElementById("codeTitle").innerText = titles[type];
+  document.getElementById("previewDisplay").innerHTML = code;
 
 }
 
