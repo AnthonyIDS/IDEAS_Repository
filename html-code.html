@@ -1,337 +1,532 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
-<meta charset="UTF-8" />
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-<title>HTML Code Library | SPC</title>
-
-<style>
-
-:root {
-
-  --spc-blue: #00406e;
-
-  --spc-blue-dark: #002d4d;
-
-  --light-bg: #f4f8fb;
-
-  --border: #d7e2ec;
-
-  --text: #17324d;
-
-}
-
-body {
-
-  margin: 0;
-
-  font-family: Arial, sans-serif;
-
-  background: var(--light-bg);
-
-  color: var(--text);
-
-}
-
-header {
-
-  background: linear-gradient(135deg, var(--spc-blue), var(--spc-blue-dark));
-
-  color: white;
-
-  padding: 40px 20px;
-
-  text-align: center;
-
-}
-
-main {
-
-  max-width: 1000px;
-
-  margin: 40px auto;
-
-  padding: 0 20px;
-
-}
-
-.button-group {
-
-  display: flex;
-
-  flex-wrap: wrap;
-
-  gap: 12px;
-
-  margin-bottom: 20px;
-
-}
-
-button {
-
-  background: var(--spc-blue);
-
-  color: white;
-
-  border: none;
-
-  padding: 10px 16px;
-
-  border-radius: 999px;
-
-  cursor: pointer;
-
-  font-weight: bold;
-
-}
-
-button:hover {
-
-  background: var(--spc-blue-dark);
-
-}
-
-.code-box {
-
-  background: #1e1e1e;
-
-  color: #eaeaea;
-
-  padding: 20px;
-
-  border-radius: 12px;
-
-  white-space: pre-wrap;
-
-  font-family: monospace;
-
-  font-size: 0.9rem;
-
-  position: relative;
-
-  margin-bottom: 20px;
-
-}
-
-.preview-box {
-
-  background: white;
-
-  border: 1px solid var(--border);
-
-  padding: 20px;
-
-  border-radius: 12px;
-
-}
-
-.copy-btn {
-
-  position: absolute;
-
-  top: 10px;
-
-  right: 10px;
-
-  background: #f2a900;
-
-  border: none;
-
-  padding: 6px 12px;
-
-  border-radius: 8px;
-
-  cursor: pointer;
-
-  font-size: 0.8rem;
-
-  font-weight: bold;
-
-}
-
-.label {
-
-  font-weight: bold;
-
-  margin: 10px 0;
-
-  color: var(--spc-blue);
-
-}
-
-</style>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Canvas HTML Design Snippets</title>
+  <style>
+    :root {
+      --spc-blue: #00406e;
+      --spc-blue-dark: #003355;
+      --spc-blue-light: #e6eef5;
+      --spc-gold: #f2a900;
+      --text: #17324d;
+      --border: #d7e2ec;
+      --background: #f7fafc;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, #f7fafc 0%, #eef4f8 100%);
+      line-height: 1.6;
+    }
+
+    .page-wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 18px 60px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, var(--spc-blue) 0%, #00649b 100%);
+      color: white;
+      padding: 34px;
+      border-radius: 18px;
+      margin-bottom: 26px;
+      box-shadow: 0 12px 30px rgba(0, 64, 110, 0.2);
+      border-left: 10px solid var(--spc-gold);
+    }
+
+    .hero p {
+      margin: 8px 0 0;
+      font-size: 18px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(30px, 5vw, 46px);
+      line-height: 1.15;
+    }
+
+    .intro-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 22px;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.05);
+    }
+
+    .snippet-section {
+      margin: 18px 0;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: white;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .section-button {
+      width: 100%;
+      border: none;
+      background: var(--spc-blue);
+      color: white;
+      text-align: left;
+      padding: 18px 22px;
+      font-size: 22px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .section-button:hover,
+    .section-button:focus {
+      background: var(--spc-blue-dark);
+      outline: 3px solid rgba(242, 169, 0, 0.45);
+      outline-offset: -3px;
+    }
+
+    .section-button .label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-button .icon {
+      color: var(--spc-gold);
+      font-size: 24px;
+    }
+
+    .section-button .arrow {
+      font-size: 20px;
+      transition: transform 0.25s ease;
+    }
+
+    .section-button[aria-expanded="true"] .arrow {
+      transform: rotate(180deg);
+    }
+
+    .section-content {
+      display: none;
+      padding: 22px;
+      background: #ffffff;
+    }
+
+    .section-content.open {
+      display: block;
+    }
+
+    .preview-label,
+    .code-label {
+      color: var(--spc-blue);
+      font-weight: bold;
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+
+    .preview-box {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fbfdff;
+      padding: 16px;
+      margin-bottom: 18px;
+    }
+
+    pre {
+      margin: 0;
+      background: #1f2933;
+      color: #e5edf5;
+      border-radius: 12px;
+      padding: 18px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      border-left: 6px solid var(--spc-gold);
+    }
+
+    code {
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      font-size: 14px;
+    }
+
+    .copy-note {
+      margin: 10px 0 0;
+      font-size: 14px;
+      color: #46586a;
+    }
+
+    .footer-rule {
+      border: 4px solid var(--spc-blue);
+      color: #000000;
+      background-color: #ffffff;
+      margin-top: 34px;
+    }
+
+    @media (max-width: 700px) {
+      .hero {
+        padding: 24px;
+      }
+
+      .section-button {
+        font-size: 18px;
+        padding: 16px;
+      }
+
+      .section-content {
+        padding: 16px;
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <main class="page-wrapper">
+    <section class="hero">
+      <h1>Canvas HTML Design Snippets</h1>
+      <p>A GitHub-hosted reference page for commonly used Canvas design elements, callout boxes, headers, dropdowns, clickable steps, and quick checks.</p>
+    </section>
 
-<header>
+    <section class="intro-card">
+      <p><strong>How to use this page:</strong> Select any blue section button below to view a live preview and copy-ready Canvas HTML code. Each section is designed to be easy to scan when embedded or viewed from Canvas.</p>
+    </section>
 
-  <h1>HTML Code Library</h1>
-
-  <p>Select a component to view code and preview</p>
-
-</header>
-
-<main>
-
-<div class="button-group">
-
-  <button onclick="showCode('header')">Page Headers</button>
-
-  <button onclick="showCode('student')">Student Example</button>
-
-  <button onclick="showCode('line')">Horizontal Line</button>
-
-  <button onclick="showCode('jeopardy')">Jeopardy</button>
-
-  <button onclick="showCode('quickcheck')">Quick Check</button>
-
-</div>
-
-<div class="label">Code</div>
-
-<div class="code-box" id="codeDisplay">
-
-  Click a button to view code...
-
-  <button class="copy-btn" onclick="copyCode()">Copy</button>
-
-</div>
-
-<div class="label">Preview (Canvas View)</div>
-
-<div class="preview-box" id="previewDisplay">
-
-  Preview will appear here...
-
-</div>
-
-</main>
-
-<script>
-
-const codeSnippets = {
-
-header: `<h2 style="color: #ffffff; background: #00406e; text-align: left; padding-left: 10px;"><strong>Discussion Prompt</strong></h2>`,
-
-student: `<div style="background: #e8f0f7; border-left: 6px solid #003366; padding: 20px; border-radius: 12px;">
-
-  <h4 style="color: #003366;">Student Examples:</h4>
-
-  <p><strong>Example:</strong> Sample content here.</p>
-
-</div>`,
-
-line: `<hr style="border: 1px solid #00406e;" />`,
-
-jeopardy: `<div style="display: flex; gap: 10px; background-color: black; padding: 10px; font-family: sans-serif;">
-
-  <div style="flex: 1;">
-
-    <h2 style="background-color: #060ce9; color: #fff; text-align: center; padding: 15px;"><strong>History</strong></h2>
-
-    <div style="background-color: #060ce9; margin-bottom: 10px;">
-
-      <details style="color: #ffcc00;">
-
-        <summary style="font-size: 28px; text-align: center;"><strong>$100</strong></summary>
-
-        <div style="color: white; padding: 10px; text-align: center;">
-
-          <p><strong>The first US President.</strong></p>
-
-          <details style="background: #fff; color: #000;">
-
-            <summary><strong>Show Answer</strong></summary>
-
-            <strong>George Washington</strong>
-
-          </details>
-
+    <!-- AI INFORMATION CALLOUT -->
+    <section class="snippet-section">
+      <button class="section-button" type="button" aria-expanded="true" aria-controls="ai-callout" onclick="toggleSection(this, 'ai-callout')">
+        <span class="label"><span class="icon">💡</span> AI Information Call Out Box</span>
+        <span class="arrow">⌄</span>
+      </button>
+      <div id="ai-callout" class="section-content open">
+        <p class="preview-label">Preview</p>
+        <div class="preview-box">
+          <div style="padding: 24px; text-align: left; background: linear-gradient(135deg, #1f2933 0%, #2f3e4d 100%); border-left: 8px solid #f2a900; border-radius: 14px; margin: 20px 0; font-family: Arial, sans-serif; color: #e5edf5; line-height: 1.7;">
+            <h3 style="margin-top: 0; color: #f2a900; font-size: 24px;">💡 AI Insights</h3>
+            <p style="font-size: 16px; margin-bottom: 18px; color: #d6dee6;">AI can act as a creative partner for designing courses that are accessible, inclusive, and engaging. When aligned with the three <strong>UDL principles</strong>, AI supports flexibility from the start.</p>
+            <ul style="padding-left: 22px; margin: 12px 0;">
+              <li style="margin-bottom: 16px;"><strong style="color: #f2a900;">Representation:</strong> Offer content in multiple accessible formats.<br /><em style="color: #c7d0d9;">Example:</em> Generate summaries, transcripts, or captions using tools like <a class="inline_disabled" style="color: #7fc4ff;" href="https://copilot.microsoft.com/" target="_blank" rel="noopener">Copilot</a> or <a class="inline_disabled" style="color: #7fc4ff;" href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a>.</li>
+            </ul>
+          </div>
         </div>
+        <p class="code-label">Code</p>
+        <pre><code>&lt;div style="padding: 24px; text-align: left; background: linear-gradient(135deg, #1f2933 0%, #2f3e4d 100%); border-left: 8px solid #f2a900; border-radius: 14px; margin: 20px 0; font-family: Arial, sans-serif; color: #e5edf5; line-height: 1.7;"&gt;
+    &lt;h3 style="margin-top: 0; color: #f2a900; font-size: 24px;"&gt;💡 AI Insights&lt;/h3&gt;
+    &lt;p style="font-size: 16px; margin-bottom: 18px; color: #d6dee6;"&gt;AI can act as a creative partner for designing courses that are accessible, inclusive, and engaging. When aligned with the three &lt;strong&gt;UDL principles&lt;/strong&gt;, AI supports flexibility from the start.&lt;/p&gt;
+    &lt;ul style="padding-left: 22px; margin: 12px 0;"&gt;
+        &lt;li style="margin-bottom: 16px;"&gt;&lt;strong style="color: #f2a900;"&gt;Representation:&lt;/strong&gt; Offer content in multiple accessible formats.&lt;br /&gt;&lt;em style="color: #c7d0d9;"&gt;Example:&lt;/em&gt; Generate summaries, transcripts, or captions using tools like &lt;a class="inline_disabled" style="color: #7fc4ff;" href="https://copilot.microsoft.com/" target="_blank" rel="noopener"&gt;Copilot&lt;/a&gt; or &lt;a class="inline_disabled" style="color: #7fc4ff;" href="https://chatgpt.com/" target="_blank" rel="noopener"&gt;ChatGPT&lt;/a&gt;.&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/div&gt;</code></pre>
+      </div>
+    </section>
 
-      </details>
+    <!-- STUDENT EXAMPLE CALLOUT -->
+    <section class="snippet-section">
+      <button class="section-button" type="button" aria-expanded="false" aria-controls="student-example" onclick="toggleSection(this, 'student-example')">
+        <span class="label"><span class="icon">👩‍🎓</span> Student Example Call Out Box</span>
+        <span class="arrow">⌄</span>
+      </button>
+      <div id="student-example" class="section-content">
+        <p class="preview-label">Preview</p>
+        <div class="preview-box">
+          <div style="background: #e8f0f7; border-left: 6px solid #003366; padding: 20px; border-radius: 12px;">
+            <h4 style="color: #003366;">Student Example:</h4>
+            <p><strong>Example:</strong> Sample content here.</p>
+          </div>
+        </div>
+        <p class="code-label">Code</p>
+        <pre><code>&lt;div style="background: #e8f0f7; border-left: 6px solid #003366; padding: 20px; border-radius: 12px;"&gt;
+&lt;h4 style="color: #003366;"&gt;Student Example:&lt;/h4&gt;
+&lt;p&gt;&lt;strong&gt;Example:&lt;/strong&gt; Sample content here.&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+      </div>
+    </section>
 
-    </div>
+    <!-- IMPORTANT INFORMATION CALLOUT -->
+    <section class="snippet-section">
+      <button class="section-button" type="button" aria-expanded="false" aria-controls="important-info" onclick="toggleSection(this, 'important-info')">
+        <span class="label"><span class="icon">⚠️</span> Important Information Call Out Box</span>
+        <span class="arrow">⌄</span>
+      </button>
+      <div id="important-info" class="section-content">
+        <p class="preview-label">Preview</p>
+        <div class="preview-box">
+          <div style="padding: 24px; text-align: left; background: linear-gradient(135deg, #003b63 0%, #004d7f 100%); border-left: 8px solid #f2a900; border-radius: 14px; margin: 20px 0; font-family: Arial, sans-serif; color: #ffffff; line-height: 1.7;">
+            <h3 style="margin-top: 0; color: #f2a900; font-size: 24px;">⚠️ Important Information</h3>
+            <p style="font-size: 16px; margin-bottom: 18px; color: #f4f7fa;">Please review the following information carefully to ensure you understand course expectations, requirements, and available support resources.</p>
+            <ul style="padding-left: 22px; margin: 12px 0;">
+              <li style="margin-bottom: 16px;"><strong style="color: #f2a900;">Course Expectations:</strong> Stay actively engaged by reviewing course materials, participating in discussions, and completing assignments on time.</li>
+              <li style="margin-bottom: 16px;"><strong style="color: #f2a900;">Communication:</strong> Regularly check Canvas announcements and your SPC email for important updates and instructor communication.</li>
+              <li style="margin-bottom: 16px;"><strong style="color: #f2a900;">Accessibility &amp; Support:</strong> SPC provides academic and accessibility support resources to help you succeed throughout the course.</li>
+              <li><strong style="color: #f2a900;">Need Help?</strong> Reach out to your instructor or utilize SPC student support services whenever you have questions or need assistance.</li>
+            </ul>
+          </div>
+        </div>
+        <p class="code-label">Code</p>
+        <pre><code>&lt;div style="padding: 24px; text-align: left; background: linear-gradient(135deg, #003b63 0%, #004d7f 100%); border-left: 8px solid #f2a900; border-radius: 14px; margin: 20px 0; font-family: Arial, sans-serif; color: #ffffff; line-height: 1.7;"&gt;
+    &lt;h3 style="margin-top: 0; color: #f2a900; font-size: 24px;"&gt;⚠️ Important Information&lt;/h3&gt;
+    &lt;p style="font-size: 16px; margin-bottom: 18px; color: #f4f7fa;"&gt;Please review the following information carefully to ensure you understand course expectations, requirements, and available support resources.&lt;/p&gt;
+    &lt;ul style="padding-left: 22px; margin: 12px 0;"&gt;
+        &lt;li style="margin-bottom: 16px;"&gt;&lt;strong style="color: #f2a900;"&gt;Course Expectations:&lt;/strong&gt; Stay actively engaged by reviewing course materials, participating in discussions, and completing assignments on time.&lt;/li&gt;
+        &lt;li style="margin-bottom: 16px;"&gt;&lt;strong style="color: #f2a900;"&gt;Communication:&lt;/strong&gt; Regularly check Canvas announcements and your SPC email for important updates and instructor communication.&lt;/li&gt;
+        &lt;li style="margin-bottom: 16px;"&gt;&lt;strong style="color: #f2a900;"&gt;Accessibility &amp;amp; Support:&lt;/strong&gt; SPC provides academic and accessibility support resources to help you succeed throughout the course.&lt;/li&gt;
+        &lt;li&gt;&lt;strong style="color: #f2a900;"&gt;Need Help?&lt;/strong&gt; Reach out to your instructor or utilize SPC student support services whenever you have questions or need assistance.&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/div&gt;</code></pre>
+      </div>
+    </section>
 
-  </div>
+    <!-- PAGE HEADERS -->
+    <section class="snippet-section">
+      <button class="section-button" type="button" aria-expanded="false" aria-controls="page-headers" onclick="toggleSection(this, 'page-headers')">
+        <span class="label"><span class="icon">🔷</span> Page Headers</span>
+        <span class="arrow">⌄</span>
+      </button>
+      <div id="page-headers" class="section-content">
+        <p class="preview-label">Preview</p>
+        <div class="preview-box">
+          <h2 style="color: #ffffff; background: #00406e; text-align: left; padding-left: 10px;"><strong>Overview</strong></h2>
+        </div>
+        <p class="code-label">Code</p>
+        <pre><code>&lt;h2 style="color: #ffffff; background: #00406e; text-align: left; padding-left: 10px;"&gt;&lt;strong&gt;Overview&lt;/strong&gt;&lt;/h2&gt;</code></pre>
+      </div>
+    </section>
 
-</div>`,
+    <!-- HORIZONTAL LINES -->
+    <section class="snippet-section">
+      <button class="section-button" type="button" aria-expanded="false" aria-controls="horizontal-lines" onclick="toggleSection(this, 'horizontal-lines')">
+        <span class="label"><span class="icon">➖</span> Horizontal Lines</span>
+        <span class="arrow">⌄</span>
+      </button>
+      <div id="horizontal-lines" class="section-content">
+        <p class="preview-label">Separating Content Preview</p>
+        <div class="preview-box">
+          <hr style="border: 1px solid #00406e;" />
+        </div>
+        <p class="code-label">Separating Content Code</p>
+        <pre><code>&lt;hr style="border: 1px solid #00406e;" /&gt;</code></pre>
+        <p class="preview-label" style="margin-top: 24px;">Ending a Page Preview</p>
+        <div class="preview-box">
+          <hr style="border: 4px solid #00406e; color: #000000; background-color: #ffffff;" />
+        </div>
+        <p class="code-label">Ending a Page Code</p>
+        <pre><code>&lt;hr style="border: 4px solid #00406e; color: #000000; background-color: #ffffff;" /&gt;</code></pre>
+      </div>
+    </section>
 
-quickcheck: `<div style="font-family: Arial, sans-serif; color: #17324d; line-height: 1.6; border: 1px solid #d7e2ec; border-radius: 14px; padding: 22px; background: #f7fafc;">
+    <!-- ACCORDION DROPDOWNS -->
+    <section class="snippet-section">
+      <button class="section-button" type="button" aria-expanded="false" aria-controls="accordion-dropdowns" onclick="toggleSection(this, 'accordion-dropdowns')">
+        <span class="label"><span class="icon">▾</span> Accordion Dropdowns</span>
+        <span class="arrow">⌄</span>
+      </button>
+      <div id="accordion-dropdowns" class="section-content">
+        <p class="preview-label">Preview</p>
+        <div class="preview-box">
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <details style="background-color: white; border-radius: 8px; overflow: hidden; border: 1px solid #DDDDDD;">
+              <summary style="font-size: 1.3em; color: #003366; background-color: #e6eef5; padding: 15px; cursor: pointer; border-bottom: 1px solid #DDDDDD;">Dropdown Option 1</summary>
+              <div style="padding: 15px; line-height: 1.5; color: #333333;">
+                <p><strong>Enter text here.</strong></p>
+              </div>
+            </details>
+            <details style="background-color: white; border-radius: 8px; overflow: hidden; border: 1px solid #DDDDDD;">
+              <summary style="font-size: 1.3em; color: #003366; background-color: #e6eef5; padding: 15px; cursor: pointer; border-bottom: 1px solid #DDDDDD;">Dropdown Option 2</summary>
+              <div style="padding: 15px; line-height: 1.5; color: #333333;">
+                <p><strong>Enter text here.</strong></p>
+              </div>
+            </details>
+            <details style="background-color: white; border-radius: 8px; overflow: hidden; border: 1px solid #DDDDDD;">
+              <summary style="font-size: 1.3em; color: #003366; background-color: #e6eef5; padding: 15px; cursor: pointer; border-bottom: 1px solid #DDDDDD;">Dropdown Option 3</summary>
+              <div style="padding: 15px; line-height: 1.5; color: #333333;">
+                <p><strong>Enter text here.</strong></p>
+              </div>
+            </details>
+          </div>
+        </div>
+        <p class="code-label">Code</p>
+        <pre><code>&lt;div style="display: flex; flex-direction: column; gap: 10px;"&gt;
+    &lt;details style="background-color: white; border-radius: 8px; overflow: hidden; border: 1px solid #DDDDDD;"&gt;
+        &lt;summary style="font-size: 1.3em; color: #003366; background-color: #e6eef5; padding: 15px; cursor: pointer; border-bottom: 1px solid #DDDDDD;"&gt;Dropdown Option 1&lt;/summary&gt;
+        &lt;div style="padding: 15px; line-height: 1.5; color: #333333;"&gt;
+            &lt;p&gt;&lt;strong&gt;Enter text here.&lt;/strong&gt;&lt;/p&gt;
+        &lt;/div&gt;
+    &lt;/details&gt;
+    &lt;details style="background-color: white; border-radius: 8px; overflow: hidden; border: 1px solid #DDDDDD;"&gt;
+        &lt;summary style="font-size: 1.3em; color: #003366; background-color: #e6eef5; padding: 15px; cursor: pointer; border-bottom: 1px solid #DDDDDD;"&gt;Dropdown Option 2&lt;/summary&gt;
+        &lt;div style="padding: 15px; line-height: 1.5; color: #333333;"&gt;
+            &lt;p&gt;&lt;strong&gt;Enter text here.&lt;/strong&gt;&lt;/p&gt;
+        &lt;/div&gt;
+    &lt;/details&gt;
+    &lt;details style="background-color: white; border-radius: 8px; overflow: hidden; border: 1px solid #DDDDDD;"&gt;
+        &lt;summary style="font-size: 1.3em; color: #003366; background-color: #e6eef5; padding: 15px; cursor: pointer; border-bottom: 1px solid #DDDDDD;"&gt;Dropdown Option 3&lt;/summary&gt;
+        &lt;div style="padding: 15px; line-height: 1.5; color: #333333;"&gt;
+            &lt;p&gt;&lt;strong&gt;Enter text here.&lt;/strong&gt;&lt;/p&gt;
+        &lt;/div&gt;
+    &lt;/details&gt;
+&lt;/div&gt;</code></pre>
+      </div>
+    </section>
 
-  <h2 style="color: #00406e; margin-top: 0;">Quick Check</h2>
+    <!-- CLICKABLE STEPS -->
+    <section class="snippet-section">
+      <button class="section-button" type="button" aria-expanded="false" aria-controls="clickable-steps" onclick="toggleSection(this, 'clickable-steps')">
+        <span class="label"><span class="icon">🧭</span> Clickable Steps</span>
+        <span class="arrow">⌄</span>
+      </button>
+      <div id="clickable-steps" class="section-content">
+        <p class="preview-label">Preview</p>
+        <div class="preview-box">
+          <div class="enhanceable_content tabs">
+            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap;">
+              <li style="margin: 2px;"><a style="display: inline-block; padding: 8px 12px; background: #e6f2ff; color: #00406e; border-radius: 6px; text-decoration: none; font-size: 14pt;" href="#tab-1"> 1. Step One </a></li>
+              <li style="margin: 2px;"><a style="display: inline-block; padding: 8px 12px; background: #cce6ff; color: #00406e; border-radius: 6px; text-decoration: none; font-size: 14pt;" href="#tab-2"> 2. Step Two </a></li>
+              <li style="margin: 2px;"><a style="display: inline-block; padding: 8px 12px; background: #b3d9ff; color: #00406e; border-radius: 6px; text-decoration: none; font-size: 14pt;" href="#tab-3"> 3. Step Three </a></li>
+              <li style="margin: 2px;"><a style="display: inline-block; padding: 8px 12px; background: #99ccff; color: #003355; border-radius: 6px; text-decoration: none; font-size: 14pt;" href="#tab-4"> 4. Step Four </a></li>
+              <li style="margin: 2px;"><a style="display: inline-block; padding: 8px 12px; background: #017dbc; color: #ffffff; border-radius: 6px; text-decoration: none; font-size: 14pt;" href="#tab-5"> 5. Step Five </a></li>
+              <li style="margin: 2px;"><a style="display: inline-block; padding: 8px 12px; background: #136da4; color: #ffffff; border-radius: 6px; text-decoration: none; font-size: 14pt;" href="#tab-6"> 6. Step Six </a></li>
+            </ul>
+            <div id="tab-1" style="text-decoration: none;">
+              <h3>Step One</h3>
+              <p>Enter step one's content here.</p>
+            </div>
+            <div id="tab-2" style="text-decoration: none;">
+              <h2>Step Two</h2>
+              <p>Enter step two's content here.</p>
+            </div>
+            <div id="tab-3" style="text-decoration: none;">
+              <h2>Step Three</h2>
+              <p>Enter step three's content here.</p>
+            </div>
+            <div id="tab-4" style="text-decoration: none;">
+              <h2>Step Four</h2>
+              <p>Enter step four's content here.</p>
+            </div>
+            <div id="tab-5" style="text-decoration: none;">
+              <h2>Step Five</h2>
+              <p>Enter step five's content here.</p>
+            </div>
+            <div id="tab-6" style="text-decoration: none;">
+              <h2>Step Six</h2>
+              <p>Enter step six's content here.</p>
+            </div>
+          </div>
+        </div>
+        <p class="code-label">Code</p>
+        <pre><code>&lt;div class="enhanceable_content tabs"&gt;
+    &lt;ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap;"&gt;
+        &lt;li style="margin: 2px;"&gt;&lt;a style="display: inline-block; padding: 8px 12px; background: #e6f2ff; color: #00406e; border-radius: 6px; text-decoration: none; font-size: 14pt;" href="#tab-1"&gt; 1. Step One &lt;/a&gt;&lt;/li&gt;
+        &lt;li style="margin: 2px;"&gt;&lt;a style="display: inline-block; padding: 8px 12px; background: #cce6ff; color: #00406e; border-radius: 6px; text-decoration: none; font-size: 14pt;" href="#tab-2"&gt; 2. Step Two &lt;/a&gt;&lt;/li&gt;
+        &lt;li style="margin: 2px;"&gt;&lt;a style="display: inline-block; padding: 8px 12px; background: #b3d9ff; color: #00406e; border-radius: 6px; text-decoration: none; font-size: 14pt;" href="#tab-3"&gt; 3. Step Three &lt;/a&gt;&lt;/li&gt;
+        &lt;li style="margin: 2px;"&gt;&lt;a style="display: inline-block; padding: 8px 12px; background: #99ccff; color: #003355; border-radius: 6px; text-decoration: none; font-size: 14pt;" href="#tab-4"&gt; 4. Step Four &lt;/a&gt;&lt;/li&gt;
+        &lt;li style="margin: 2px;"&gt;&lt;a style="display: inline-block; padding: 8px 12px; background: #017dbc; color: #ffffff; border-radius: 6px; text-decoration: none; font-size: 14pt;" href="#tab-5"&gt; 5. Step Five &lt;/a&gt;&lt;/li&gt;
+        &lt;li style="margin: 2px;"&gt;&lt;a style="display: inline-block; padding: 8px 12px; background: #136da4; color: #ffffff; border-radius: 6px; text-decoration: none; font-size: 14pt;" href="#tab-6"&gt; 6. Step Six &lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;div id="tab-1" style="text-decoration: none;"&gt;
+        &lt;h3&gt;Step One&lt;/h3&gt;
+        &lt;p&gt;Enter step one's content here.&lt;/p&gt;
+        &lt;p&gt;&amp;nbsp;&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div id="tab-2" style="text-decoration: none;"&gt;
+        &lt;h2&gt;Step Two&lt;/h2&gt;
+        &lt;p&gt;Enter step two's content here.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div id="tab-3" style="text-decoration: none;"&gt;
+        &lt;h2&gt;Step Three&lt;/h2&gt;
+        &lt;p&gt;Enter step three's content here.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div id="tab-4" style="text-decoration: none;"&gt;
+        &lt;h2&gt;Step Four&lt;/h2&gt;
+        &lt;p&gt;Enter step four's content here.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div id="tab-5" style="text-decoration: none;"&gt;
+        &lt;h2&gt;Step Five&lt;/h2&gt;
+        &lt;p&gt;Enter step five's content here.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div id="tab-6" style="text-decoration: none;"&gt;
+        &lt;h2&gt;Step Six&amp;nbsp;&lt;/h2&gt;
+        &lt;p&gt;Enter step six's content here.&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+      </div>
+    </section>
 
-  <p><strong>How do Large Language Models primarily learn?</strong></p>
+    <!-- QUICK CHECK QUIZ -->
+    <section class="snippet-section">
+      <button class="section-button" type="button" aria-expanded="false" aria-controls="quick-check" onclick="toggleSection(this, 'quick-check')">
+        <span class="label"><span class="icon">✅</span> Quick Check Quiz</span>
+        <span class="arrow">⌄</span>
+      </button>
+      <div id="quick-check" class="section-content">
+        <p class="preview-label">Preview</p>
+        <div class="preview-box">
+          <div style="font-family: Arial, sans-serif; color: #17324d; line-height: 1.6; border: 1px solid #d7e2ec; border-radius: 14px; padding: 22px; background: #f7fafc;">
+            <h2 style="color: #00406e; margin-top: 0;">Quick Check</h2>
+            <p><strong>How do Large Language Models primarily learn?</strong></p>
+            <details style="margin-bottom: 12px;">
+              <summary style="list-style: none; cursor: pointer; padding: 12px 16px; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;">A. By memorizing a database of facts</summary>
+              <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;">
+                <strong>Not quite.</strong> LLMs do not simply memorize facts.
+              </div>
+            </details>
+            <details style="margin-bottom: 12px;">
+              <summary style="list-style: none; cursor: pointer; padding: 12px 16px; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;">B. By predicting the next word in text</summary>
+              <div style="margin-top: 8px; padding: 14px; background: #e8f6ee; border-left: 5px solid #116149; border-radius: 8px;">
+                <strong>Correct!</strong> They learn by predicting the next word.
+              </div>
+            </details>
+            <details>
+              <summary style="list-style: none; cursor: pointer; padding: 12px 16px; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;">C. By watching videos like humans do</summary>
+              <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;">
+                <strong>Not quite.</strong> LLMs are primarily trained on text.
+              </div>
+            </details>
+          </div>
+        </div>
+        <p class="code-label">Code</p>
+        <pre><code>&lt;div style="font-family: Arial, sans-serif; color: #17324d; line-height: 1.6; border: 1px solid #d7e2ec; border-radius: 14px; padding: 22px; background: #f7fafc;"&gt;
+&lt;h2 style="color: #00406e; margin-top: 0;"&gt;Quick Check&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;How do Large Language Models primarily learn?&lt;/strong&gt;&lt;/p&gt;
+&lt;details style="margin-bottom: 12px;"&gt;
+&lt;summary style="list-style: none; cursor: pointer; padding: 12px 16px; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;"&gt;A. By memorizing a database of facts&lt;/summary&gt;
+&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"&gt;
+&lt;strong&gt;Not quite.&lt;/strong&gt; LLMs do not simply memorize facts.
+&lt;/div&gt;
+&lt;/details&gt;
+&lt;details style="margin-bottom: 12px;"&gt;
+&lt;summary style="list-style: none; cursor: pointer; padding: 12px 16px; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;"&gt;B. By predicting the next word in text&lt;/summary&gt;
+&lt;div style="margin-top: 8px; padding: 14px; background: #e8f6ee; border-left: 5px solid #116149; border-radius: 8px;"&gt;
+&lt;strong&gt;Correct!&lt;/strong&gt; They learn by predicting the next word.
+&lt;/div&gt;
+&lt;/details&gt;
+&lt;details&gt;
+&lt;summary style="list-style: none; cursor: pointer; padding: 12px 16px; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;"&gt;C. By watching videos like humans do&lt;/summary&gt;
+&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"&gt;
+&lt;strong&gt;Not quite.&lt;/strong&gt; LLMs are primarily trained on text.
+&lt;/div&gt;
+&lt;/details&gt;
+&lt;/div&gt;</code></pre>
+      </div>
+    </section>
 
-  <details style="margin-bottom: 12px;">
+    <hr class="footer-rule" />
+  </main>
 
-    <summary style="list-style: none; cursor: pointer; padding: 12px 16px; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;">A. By memorizing a database of facts</summary>
+  <script>
+    function toggleSection(button, contentId) {
+      const content = document.getElementById(contentId);
+      const isOpen = content.classList.contains('open');
 
-    <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;">
-
-      <strong>Not quite.</strong> LLMs do not simply memorize facts.
-
-    </div>
-
-  </details>
-
-  <details style="margin-bottom: 12px;">
-
-    <summary style="list-style: none; cursor: pointer; padding: 12px 16px; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;">B. By predicting the next word in text</summary>
-
-    <div style="margin-top: 8px; padding: 14px; background: #e8f6ee; border-left: 5px solid #116149; border-radius: 8px;">
-
-      <strong>Correct!</strong> They learn by predicting the next word.
-
-    </div>
-
-  </details>
-
-  <details>
-
-    <summary style="list-style: none; cursor: pointer; padding: 12px 16px; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;">C. By watching videos like humans do</summary>
-
-    <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;">
-
-      <strong>Not quite.</strong> LLMs are primarily trained on text.
-
-    </div>
-
-  </details>
-
-</div>`
-
-};
-
-function showCode(type) {
-
-  const code = codeSnippets[type];
-
-  document.getElementById("codeDisplay").innerText = code;
-
-  document.getElementById("previewDisplay").innerHTML = code;
-
-}
-
-function copyCode() {
-
-  const text = document.getElementById("codeDisplay").innerText;
-
-  navigator.clipboard.writeText(text);
-
-  alert("Code copied!");
-
-}
-
-</script>
-
+      content.classList.toggle('open', !isOpen);
+      button.setAttribute('aria-expanded', String(!isOpen));
+    }
+  </script>
 </body>
-
 </html>
