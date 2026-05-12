@@ -72,31 +72,30 @@
     }
 
     .nav-button {
-      border: none;
-      background: var(--spc-blue);
-      color: white;
-      text-align: left;
-      padding: 18px;
-      border-radius: 14px;
-      font-size: 19px;
-      font-weight: bold;
+      border: 1px solid #c9d7e3;
+      background: #ffffff;
+      color: var(--spc-blue);
+      text-align: center;
+      padding: 14px 18px;
+      border-radius: 10px;
+      font-size: 17px;
+      font-weight: 600;
       cursor: pointer;
-      box-shadow: 0 8px 16px rgba(0, 64, 110, 0.14);
-      border-left: 8px solid var(--spc-gold);
-      min-height: 76px;
+      min-height: 58px;
+      transition: all 0.2s ease;
     }
 
     .nav-button:hover,
     .nav-button:focus {
-      background: var(--spc-blue-dark);
-      outline: 3px solid rgba(242, 169, 0, 0.5);
-      outline-offset: 2px;
+      background: #eef5fb;
+      border-color: var(--spc-blue);
+      outline: none;
     }
 
     .nav-button.active {
-      background: linear-gradient(135deg, #1f2933 0%, #2f3e4d 100%);
+      background: var(--spc-blue);
       color: #ffffff;
-      border-left-color: var(--spc-gold);
+      border-color: var(--spc-blue);
     }
 
     .snippet-page {
