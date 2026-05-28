@@ -180,6 +180,7 @@
     }
   </style>
 </head>
+
 <body>
   <main class="page-wrapper">
     <section class="hero">
@@ -192,17 +193,63 @@
     </section>
 
     <section class="button-grid" aria-label="Canvas design snippet navigation">
-      <button class="nav-button active" type="button" onclick="showPage('ai-callout', this)">💡 AI Information Call Out Box</button>
-      <button class="nav-button" type="button" onclick="showPage('student-example', this)">👩‍🎓 Student Example Call Out Box</button>
-      <button class="nav-button" type="button" onclick="showPage('important-info', this)">⚠️ Important Information Call Out Box</button>
-      <button class="nav-button" type="button" onclick="showPage('page-headers', this)">🔷 Page Headers</button>
+      <button class="nav-button active" type="button" onclick="showPage('page-headers', this)">🔷 Page Headers</button>
       <button class="nav-button" type="button" onclick="showPage('horizontal-lines', this)">➖ Horizontal Lines</button>
+      <button class="nav-button" type="button" onclick="showPage('student-example', this)">👩‍🎓 Student Example Call Out Box</button>
+      <button class="nav-button" type="button" onclick="showPage('ai-callout', this)">💡 AI Information Call Out Box</button>
+      <button class="nav-button" type="button" onclick="showPage('important-info', this)">⚠️ Important Information Call Out Box</button>
       <button class="nav-button" type="button" onclick="showPage('accordion-dropdowns', this)">▾ Accordion Dropdowns</button>
       <button class="nav-button" type="button" onclick="showPage('clickable-steps', this)">🧭 Clickable Steps</button>
       <button class="nav-button" type="button" onclick="showPage('quick-check', this)">✅ Quick Check Quiz</button>
     </section>
 
-    <section id="ai-callout" class="snippet-page active">
+    <section id="page-headers" class="snippet-page active">
+      <h2 class="snippet-title">🔷 Page Headers</h2>
+      <p class="preview-label">Preview</p>
+      <div class="preview-box">
+        <h2 style="color: #ffffff; background: #00406e; text-align: left; padding: 12px 14px; border-radius: 6px;"><strong>Overview</strong></h2>
+        <h2 style="color: #ffffff; background: #00406e; text-align: left; padding-left: 10px;"><strong>Assignment Overview</strong></h2>
+      </div>
+      <p class="code-label">Code</p>
+      <pre><code>&lt;h2 style="color: #ffffff; background: #00406e; text-align: left; padding: 12px 14px; border-radius: 6px;"&gt;&lt;strong&gt;Overview&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;h2 style="color: #ffffff; background: #00406e; text-align: left; padding-left: 10px;"&gt;&lt;strong&gt;Assignment Overview&lt;/strong&gt;&lt;/h2&gt;</code></pre>
+    </section>
+
+    <section id="horizontal-lines" class="snippet-page">
+      <h2 class="snippet-title">➖ Horizontal Lines</h2>
+      <p class="preview-label">Separating Content Preview</p>
+      <div class="preview-box">
+        <hr style="border: 1px solid #00406e;" />
+      </div>
+      <p class="code-label">Separating Content Code</p>
+      <pre><code>&lt;hr style="border: 1px solid #00406e;" /&gt;</code></pre>
+
+      <p class="preview-label" style="margin-top: 24px;">Ending a Page Preview</p>
+      <div class="preview-box">
+        <hr style="border: 4px solid #00406e; color: #000000; background-color: #ffffff;" />
+      </div>
+      <p class="code-label">Ending a Page Code</p>
+      <pre><code>&lt;hr style="border: 4px solid #00406e; color: #000000; background-color: #ffffff;" /&gt;</code></pre>
+    </section>
+
+    <section id="student-example" class="snippet-page">
+      <h2 class="snippet-title">👩‍🎓 Student Example Call Out Box</h2>
+      <p class="preview-label">Preview</p>
+      <div class="preview-box">
+        <div style="background: #e8f0f7; border-left: 6px solid #003366; padding: 20px; border-radius: 12px;">
+          <h4 style="color: #003366;">Student Example:</h4>
+          <p><strong>Example:</strong> Sample content here.</p>
+        </div>
+      </div>
+      <p class="code-label">Code</p>
+      <pre><code>&lt;div style="background: #e8f0f7; border-left: 6px solid #003366; padding: 20px; border-radius: 12px;"&gt;
+&lt;h4 style="color: #003366;"&gt;Student Example:&lt;/h4&gt;
+&lt;p&gt;&lt;strong&gt;Example:&lt;/strong&gt; Sample content here.&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+    </section>
+
+    <section id="ai-callout" class="snippet-page">
       <h2 class="snippet-title">💡 AI Information Call Out Box</h2>
       <p class="preview-label">Preview</p>
       <div class="preview-box">
@@ -221,22 +268,6 @@
     &lt;ul style="padding-left: 22px; margin: 12px 0;"&gt;
         &lt;li style="margin-bottom: 16px;"&gt;&lt;strong style="color: #f2a900;"&gt;Representation:&lt;/strong&gt; Offer content in multiple accessible formats.&lt;br /&gt;&lt;em style="color: #c7d0d9;"&gt;Example:&lt;/em&gt; Generate summaries, transcripts, or captions using tools like &lt;a class="inline_disabled" style="color: #7fc4ff;" href="https://copilot.microsoft.com/" target="_blank" rel="noopener"&gt;Copilot&lt;/a&gt; or &lt;a class="inline_disabled" style="color: #7fc4ff;" href="https://chatgpt.com/" target="_blank" rel="noopener"&gt;ChatGPT&lt;/a&gt;.&lt;/li&gt;
     &lt;/ul&gt;
-&lt;/div&gt;</code></pre>
-    </section>
-
-    <section id="student-example" class="snippet-page">
-      <h2 class="snippet-title">👩‍🎓 Student Example Call Out Box</h2>
-      <p class="preview-label">Preview</p>
-      <div class="preview-box">
-        <div style="background: #e8f0f7; border-left: 6px solid #003366; padding: 20px; border-radius: 12px;">
-          <h4 style="color: #003366;">Student Example:</h4>
-          <p><strong>Example:</strong> Sample content here.</p>
-        </div>
-      </div>
-      <p class="code-label">Code</p>
-      <pre><code>&lt;div style="background: #e8f0f7; border-left: 6px solid #003366; padding: 20px; border-radius: 12px;"&gt;
-&lt;h4 style="color: #003366;"&gt;Student Example:&lt;/h4&gt;
-&lt;p&gt;&lt;strong&gt;Example:&lt;/strong&gt; Sample content here.&lt;/p&gt;
 &lt;/div&gt;</code></pre>
     </section>
 
@@ -266,47 +297,21 @@
         &lt;li&gt;&lt;strong style="color: #f2a900;"&gt;Need Help?&lt;/strong&gt; Reach out to your instructor or utilize SPC student support services whenever you have questions or need assistance.&lt;/li&gt;
     &lt;/ul&gt;
 &lt;/div&gt;</code></pre>
+
       <p>&nbsp;</p>
-       <p class="preview-label">Preview 22</p>
+
+      <p class="preview-label">Preview 22</p>
       <div class="preview-box">
         <div style="background: #fff4e5; border-left: 6px solid #f2a900; padding: 20px; border-radius: 12px; margin-top: 20px;">
-    <h4 style="color: #8a5a00; margin-top: 0;">💡 Important Information</h4>
-    <p>This project is about more than completing an assignment. It is an opportunity to creatively communicate ideas using modern digital tools and real-world communication strategies.</p>
-</div>
+          <h4 style="color: #8a5a00; margin-top: 0;">💡 Important Information</h4>
+          <p>This project is about more than completing an assignment. It is an opportunity to creatively communicate ideas using modern digital tools and real-world communication strategies.</p>
+        </div>
       </div>
       <p class="code-label">Code</p>
       <pre><code>&lt;div style="background: #fff4e5; border-left: 6px solid #f2a900; padding: 20px; border-radius: 12px; margin-top: 20px;"&gt;
-    &lt;h3 style="color: #8a5a00; margin-top: 0;">💡 Important Information&lt;/h3&gt;
-    &lt;p &gt;Add important and relevant information here. Keep it brief.&lt;/p&gt;
+    &lt;h3 style="color: #8a5a00; margin-top: 0;"&gt;💡 Important Information&lt;/h3&gt;
+    &lt;p&gt;Add important and relevant information here. Keep it brief.&lt;/p&gt;
 &lt;/div&gt;</code></pre>
-    </section>
-
-    <section id="page-headers" class="snippet-page">
-      <h2 class="snippet-title">🔷 Page Headers</h2>
-      <p class="preview-label">Preview</p>
-      <div class="preview-box">
-        <h2 style="color: #ffffff; background: #00406e; text-align: left; padding: 12px 14px; border-radius: 6px;"><strong>Overview</strong></h2>
-
-      </div>
-      <p class="code-label">Code</p>
-      <pre><code>&lt;h2 style="color: #ffffff; background: #00406e; text-align: left; padding: 12px 14px; border-radius: 6px;"&gt;&lt;strong&gt;Overview&lt;/strong&gt;&lt;/h2&gt;</code></pre>
-    </section>
-
-    <section id="horizontal-lines" class="snippet-page">
-      <h2 class="snippet-title">➖ Horizontal Lines</h2>
-      <p class="preview-label">Separating Content Preview</p>
-      <div class="preview-box">
-        <hr style="border: 1px solid #00406e;" />
-      </div>
-      <p class="code-label">Separating Content Code</p>
-      <pre><code>&lt;hr style="border: 1px solid #00406e;" /&gt;</code></pre>
-
-      <p class="preview-label" style="margin-top: 24px;">Ending a Page Preview</p>
-      <div class="preview-box">
-        <hr style="border: 4px solid #00406e; color: #000000; background-color: #ffffff;" />
-      </div>
-      <p class="code-label">Ending a Page Code</p>
-      <pre><code>&lt;hr style="border: 4px solid #00406e; color: #000000; background-color: #ffffff;" /&gt;</code></pre>
     </section>
 
     <section id="accordion-dropdowns" class="snippet-page">
