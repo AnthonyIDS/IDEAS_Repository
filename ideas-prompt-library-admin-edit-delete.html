@@ -1,0 +1,1881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="IDEAS Prompt Library for IgniteAI — practical faculty prompts organized by teaching task." />
+  <title>IDEAS Prompt Library</title>
+
+  <style>
+    :root {
+      --spc-blue: #00406e;
+      --spc-blue-dark: #002f52;
+      --spc-blue-light: #eaf3f8;
+      --spc-gold: #f2a900;
+      --spc-gold-light: #fff5d9;
+      --ink: #17212b;
+      --muted: #607080;
+      --line: #dfe6ec;
+      --surface: #ffffff;
+      --page: #f4f7f9;
+      --shadow: 0 8px 24px rgba(0, 47, 82, 0.08);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --max-width: 1240px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--page);
+      color: var(--ink);
+      line-height: 1.55;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .topbar {
+      background: var(--spc-blue-dark);
+      color: #fff;
+      border-bottom: 4px solid var(--spc-gold);
+    }
+
+    .topbar-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand-mini {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 750;
+      letter-spacing: 0.01em;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: var(--spc-gold);
+      color: var(--spc-blue-dark);
+      font-weight: 900;
+    }
+
+    .topbar-label {
+      color: rgba(255,255,255,.72);
+      font-size: .84rem;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      font-weight: 750;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-left: auto;
+    }
+
+    .topbar-action {
+      min-height: 38px;
+      padding: 8px 13px;
+      border: 1px solid rgba(255,255,255,.26);
+      border-radius: 10px;
+      background: rgba(255,255,255,.08);
+      color: #fff;
+      font-weight: 800;
+      font-size: .85rem;
+      transition: .18s ease;
+    }
+
+    .topbar-action:hover {
+      background: rgba(255,255,255,.16);
+      border-color: rgba(255,255,255,.48);
+    }
+
+    .topbar-action.primary {
+      border-color: var(--spc-gold);
+      background: var(--spc-gold);
+      color: var(--spc-blue-dark);
+    }
+
+    .topbar-action.primary:hover {
+      filter: brightness(.96);
+    }
+
+    .admin-only {
+      display: none;
+    }
+
+    body.admin-authenticated .admin-only {
+      display: inline-flex;
+    }
+
+    .admin-login-status {
+      color: rgba(255,255,255,.78);
+      font-size: .78rem;
+      font-weight: 750;
+    }
+
+    .login-error {
+      display: none;
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 9px;
+      background: #fff0f0;
+      color: #8a1f1f;
+      font-size: .84rem;
+      font-weight: 700;
+    }
+
+    .login-error.show {
+      display: block;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .form-field.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-field label {
+      color: var(--spc-blue-dark);
+      font-size: .84rem;
+      font-weight: 850;
+    }
+
+    .form-field input,
+    .form-field select,
+    .form-field textarea {
+      width: 100%;
+      border: 1px solid #cad6df;
+      border-radius: 11px;
+      background: #fff;
+      color: var(--ink);
+      padding: 11px 12px;
+      outline: none;
+      font: inherit;
+    }
+
+    .form-field textarea {
+      min-height: 120px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    .form-field textarea.prompt-editor {
+      min-height: 330px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: .9rem;
+    }
+
+    .form-field input:focus,
+    .form-field select:focus,
+    .form-field textarea:focus {
+      border-color: var(--spc-blue);
+      box-shadow: 0 0 0 4px rgba(0,64,110,.09);
+    }
+
+    .field-help {
+      margin: 0;
+      color: var(--muted);
+      font-size: .78rem;
+    }
+
+    .form-notice {
+      margin-bottom: 18px;
+      padding: 12px 14px;
+      border-left: 4px solid var(--spc-gold);
+      border-radius: 10px;
+      background: var(--spc-gold-light);
+      color: #57420d;
+      font-size: .86rem;
+    }
+
+    .hero {
+      background:
+        radial-gradient(circle at 85% 20%, rgba(242,169,0,.18), transparent 28%),
+        linear-gradient(145deg, #ffffff 0%, #eef5f9 100%);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 56px 24px 42px;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--spc-blue);
+      font-size: .8rem;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+    }
+
+    h1 {
+      max-width: 820px;
+      margin: 0;
+      font-size: clamp(2.3rem, 6vw, 4.6rem);
+      line-height: .98;
+      letter-spacing: -.05em;
+      color: var(--spc-blue-dark);
+    }
+
+    .hero-copy {
+      max-width: 760px;
+      margin: 22px 0 26px;
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: #506271;
+    }
+
+    .act-panel {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      max-width: 850px;
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .act-item {
+      padding: 18px 20px;
+    }
+
+    .act-item + .act-item {
+      border-left: 1px solid var(--line);
+    }
+
+    .act-letter {
+      display: inline-grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      margin-right: 8px;
+      border-radius: 10px;
+      background: var(--spc-blue);
+      color: #fff;
+      font-weight: 900;
+    }
+
+    .act-title {
+      font-weight: 850;
+      color: var(--spc-blue-dark);
+    }
+
+    .act-item p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    main {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 34px 24px 70px;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .search-wrap {
+      position: relative;
+      flex: 1;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6d7e8d;
+      font-size: 1.15rem;
+      pointer-events: none;
+    }
+
+    #searchInput {
+      width: 100%;
+      padding: 16px 18px 16px 48px;
+      border: 1px solid #cad6df;
+      border-radius: 14px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+      box-shadow: 0 3px 10px rgba(0,0,0,.025);
+    }
+
+    #searchInput:focus {
+      border-color: var(--spc-blue);
+      box-shadow: 0 0 0 4px rgba(0,64,110,.09);
+    }
+
+    .clear-button {
+      min-height: 52px;
+      padding: 0 18px;
+      border: 1px solid #cad6df;
+      border-radius: 14px;
+      background: #fff;
+      color: var(--spc-blue);
+      font-weight: 750;
+    }
+
+    .clear-button:hover {
+      background: var(--spc-blue-light);
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin: 10px 0 18px;
+    }
+
+    .section-kicker {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--spc-blue);
+      font-size: .75rem;
+      font-weight: 850;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      color: var(--spc-blue-dark);
+      font-size: 1.75rem;
+      letter-spacing: -.02em;
+    }
+
+    .result-count {
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 36px;
+    }
+
+    .category-card {
+      min-height: 145px;
+      padding: 18px;
+      text-align: left;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--ink);
+      box-shadow: 0 4px 14px rgba(0,47,82,.035);
+      transition: .18s ease;
+    }
+
+    .category-card:hover,
+    .category-card.active {
+      transform: translateY(-2px);
+      border-color: rgba(0,64,110,.45);
+      box-shadow: var(--shadow);
+    }
+
+    .category-card.active {
+      background: var(--spc-blue);
+      color: #fff;
+    }
+
+    .category-card.active .category-count,
+    .category-card.active .category-description {
+      color: rgba(255,255,255,.78);
+    }
+
+    .category-icon {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      margin-bottom: 18px;
+      border-radius: 12px;
+      background: var(--spc-gold-light);
+      font-size: 1.25rem;
+    }
+
+    .category-card.active .category-icon {
+      background: rgba(255,255,255,.14);
+    }
+
+    .category-name {
+      display: block;
+      margin-bottom: 4px;
+      font-weight: 850;
+      font-size: 1.03rem;
+    }
+
+    .category-description {
+      color: var(--muted);
+      font-size: .82rem;
+    }
+
+    .category-count {
+      display: block;
+      margin-top: 10px;
+      color: var(--spc-blue);
+      font-size: .78rem;
+      font-weight: 800;
+    }
+
+    .prompt-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .prompt-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 290px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      box-shadow: 0 4px 14px rgba(0,47,82,.035);
+      transition: .18s ease;
+    }
+
+    .prompt-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .prompt-card-top {
+      padding: 20px 20px 12px;
+    }
+
+    .prompt-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 14px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 25px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: .7rem;
+      font-weight: 850;
+      letter-spacing: .02em;
+    }
+
+    .category-pill {
+      background: var(--spc-blue-light);
+      color: var(--spc-blue);
+    }
+
+    .act-pill {
+      background: var(--spc-gold-light);
+      color: #735100;
+    }
+
+    .prompt-card h3 {
+      margin: 0 0 9px;
+      color: var(--spc-blue-dark);
+      font-size: 1.25rem;
+      line-height: 1.2;
+    }
+
+    .prompt-summary {
+      margin: 0;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .prompt-card-bottom {
+      margin-top: auto;
+      padding: 15px 20px 20px;
+      border-top: 1px solid #edf1f4;
+      display: flex;
+      gap: 9px;
+    }
+
+    .button {
+      flex: 1;
+      min-height: 42px;
+      border: 0;
+      border-radius: 11px;
+      font-weight: 800;
+    }
+
+    .button-primary {
+      background: var(--spc-blue);
+      color: #fff;
+    }
+
+    .button-primary:hover {
+      background: var(--spc-blue-dark);
+    }
+
+    .button-secondary {
+      background: #eef3f6;
+      color: var(--spc-blue);
+    }
+
+    .button-secondary:hover {
+      background: #e1eaf0;
+    }
+
+    .button-danger {
+      background: #fff1f1;
+      color: #9d1c1c;
+      border: 1px solid #efcaca;
+    }
+
+    .button-danger:hover {
+      background: #ffe4e4;
+    }
+
+    .empty-state {
+      display: none;
+      padding: 48px 24px;
+      text-align: center;
+      border: 1px dashed #becbd5;
+      border-radius: var(--radius);
+      background: #fff;
+      color: var(--muted);
+    }
+
+    .empty-state h3 {
+      margin-top: 0;
+      color: var(--spc-blue-dark);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(5, 24, 38, .68);
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      width: min(820px, 100%);
+      max-height: min(820px, 90vh);
+      overflow: auto;
+      border-radius: 22px;
+      background: #fff;
+      box-shadow: 0 24px 80px rgba(0,0,0,.24);
+    }
+
+    .modal-header {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 22px 24px 16px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.96);
+      backdrop-filter: blur(10px);
+    }
+
+    .modal-header h2 {
+      margin: 5px 0 0;
+      color: var(--spc-blue-dark);
+      line-height: 1.15;
+    }
+
+    .close-button {
+      flex: 0 0 auto;
+      width: 40px;
+      height: 40px;
+      border: 0;
+      border-radius: 50%;
+      background: #edf2f5;
+      color: var(--ink);
+      font-size: 1.2rem;
+    }
+
+    .modal-content {
+      padding: 22px 24px 26px;
+    }
+
+    .prompt-box {
+      white-space: pre-wrap;
+      padding: 20px;
+      border: 1px solid #d5e0e7;
+      border-left: 5px solid var(--spc-gold);
+      border-radius: 14px;
+      background: #f8fafb;
+      color: #24313d;
+      font-size: .96rem;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .modal-actions .button {
+      flex: initial;
+      padding: 0 18px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 200;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: var(--spc-blue-dark);
+      color: #fff;
+      font-size: .9rem;
+      font-weight: 750;
+      box-shadow: var(--shadow);
+      transition: .2s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    footer {
+      padding: 26px 24px;
+      border-top: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+      text-align: center;
+      font-size: .86rem;
+    }
+
+    @media (max-width: 980px) {
+      .category-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .prompt-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
+      .topbar-inner,
+      .toolbar,
+      .section-heading,
+      .modal-actions {
+        align-items: stretch;
+      }
+
+      .topbar-inner,
+      .section-heading {
+        flex-direction: column;
+      }
+
+      .topbar-actions {
+        width: 100%;
+        margin-left: 0;
+      }
+
+      .topbar-action {
+        flex: 1;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-field.full {
+        grid-column: auto;
+      }
+
+      .hero-inner {
+        padding-top: 38px;
+      }
+
+      .act-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .act-item + .act-item {
+        border-left: 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .toolbar {
+        flex-direction: column;
+      }
+
+      .category-grid,
+      .prompt-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .category-card {
+        min-height: auto;
+      }
+
+      .modal-actions {
+        flex-direction: column;
+      }
+
+      .modal-actions .button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand-mini">
+        <div class="brand-mark">I</div>
+        <span>IDEAS Prompt Library</span>
+      </div>
+      <div class="topbar-actions" aria-label="Library actions">
+        <span id="adminStatus" class="admin-login-status">Public View</span>
+        <button id="openAdminLogin" class="topbar-action" type="button">Admin Login</button>
+        <button id="openAddCategory" class="topbar-action admin-only" type="button">+ Add Category</button>
+        <button id="openAddPrompt" class="topbar-action primary admin-only" type="button">+ Add Prompt</button>
+        <button id="adminLogout" class="topbar-action admin-only" type="button">Log Out</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">IgniteAI • Faculty Prompt Library</p>
+      <h1>Better prompts for better teaching.</h1>
+      <p class="hero-copy">
+        Find practical, ready-to-use prompts for common teaching tasks. Each prompt uses the
+        <strong>ACT framework</strong> to give IgniteAI a clear action, useful course context,
+        and a teaching tone that sounds like you.
+      </p>
+
+      <div class="act-panel" aria-label="ACT prompt framework">
+        <div class="act-item">
+          <div><span class="act-letter">A</span><span class="act-title">Action</span></div>
+          <p>Clearly state what you want IgniteAI to create, revise, analyze, or recommend.</p>
+        </div>
+        <div class="act-item">
+          <div><span class="act-letter">C</span><span class="act-title">Context</span></div>
+          <p>Provide relevant course, student, assignment, or instructional details.</p>
+        </div>
+        <div class="act-item">
+          <div><span class="act-letter">T</span><span class="act-title">Tone</span></div>
+          <p>Describe the teaching voice, style, length, format, and level of support you want.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <div class="toolbar">
+      <div class="search-wrap">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <input
+          id="searchInput"
+          type="search"
+          placeholder="Search by prompt, task, category, or keyword..."
+          aria-label="Search prompts"
+        />
+      </div>
+      <button id="clearFilters" class="clear-button" type="button">Clear</button>
+    </div>
+
+    <section aria-labelledby="categories-title">
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">Browse</span>
+          <h2 id="categories-title">Categories</h2>
+        </div>
+        <span class="result-count">Select a category to filter the library.</span>
+      </div>
+
+      <div id="categoryGrid" class="category-grid"></div>
+    </section>
+
+    <section aria-labelledby="prompts-title">
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">Library</span>
+          <h2 id="prompts-title">Faculty Prompts</h2>
+        </div>
+        <span id="resultCount" class="result-count"></span>
+      </div>
+
+      <div id="promptGrid" class="prompt-grid"></div>
+
+      <div id="emptyState" class="empty-state">
+        <h3>No prompts found</h3>
+        <p>Try a different search term or clear the selected category.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    IDEAS Prompt Library • Built for faculty using IgniteAI
+  </footer>
+
+  <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <span id="modalCategory" class="pill category-pill"></span>
+          <h2 id="modalTitle"></h2>
+        </div>
+        <button id="closeModal" class="close-button" aria-label="Close prompt">×</button>
+      </div>
+      <div class="modal-content">
+        <div id="modalPrompt" class="prompt-box"></div>
+        <div class="modal-actions">
+          <button id="modalCopy" class="button button-primary" type="button">Copy Prompt</button>
+          <button id="modalCloseBottom" class="button button-secondary" type="button">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div id="adminLoginBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="adminLoginTitle">
+    <div class="modal" style="max-width:520px;">
+      <div class="modal-header">
+        <div>
+          <span class="pill category-pill">ADMIN</span>
+          <h2 id="adminLoginTitle">Admin Login</h2>
+        </div>
+        <button id="closeAdminLogin" class="close-button" aria-label="Close admin login">×</button>
+      </div>
+      <div class="modal-content">
+        <div class="form-notice">
+          This login is a convenience layer only. Because this site is hosted on GitHub Pages, the password is stored in the page code and is not secure against someone inspecting the source.
+        </div>
+
+        <form id="adminLoginForm">
+          <div class="form-field full">
+            <label for="adminPassword">Admin password</label>
+            <input id="adminPassword" type="password" autocomplete="current-password" placeholder="Enter admin password" required />
+          </div>
+
+          <div id="loginError" class="login-error">Incorrect password. Please try again.</div>
+
+          <div class="modal-actions">
+            <button class="button button-primary" type="submit">Log In</button>
+            <button id="cancelAdminLogin" class="button button-secondary" type="button">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="categoryModalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="categoryModalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <span class="pill category-pill">CATEGORY</span>
+          <h2 id="categoryModalTitle">Add Category</h2>
+        </div>
+        <button id="closeCategoryModal" class="close-button" aria-label="Close add category form">×</button>
+      </div>
+      <div class="modal-content">
+        <div class="form-notice">
+          Categories you add here are saved in this browser. They will remain available on this device unless browser storage is cleared.
+        </div>
+        <form id="addCategoryForm">
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="categoryName">Category name</label>
+              <input id="categoryName" name="categoryName" type="text" placeholder="Example: Discussions & Engagement" required />
+            </div>
+            <div class="form-field">
+              <label for="categoryIcon">Icon or emoji</label>
+              <input id="categoryIcon" name="categoryIcon" type="text" maxlength="3" placeholder="Example: 💬" />
+              <p class="field-help">Optional. A simple emoji or symbol works best.</p>
+            </div>
+            <div class="form-field full">
+              <label for="categoryDescription">Description</label>
+              <textarea id="categoryDescription" name="categoryDescription" placeholder="Briefly describe the types of prompts faculty will find in this category." required></textarea>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="button button-primary" type="submit">Save Category</button>
+            <button id="cancelCategory" class="button button-secondary" type="button">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="editPromptModalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="editPromptModalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <div><span class="pill act-pill">EDIT</span><h2 id="editPromptModalTitle">Edit Prompt</h2></div>
+        <button id="closeEditPromptModal" class="close-button" aria-label="Close edit prompt form">×</button>
+      </div>
+      <div class="modal-content">
+        <form id="editPromptForm">
+          <div class="form-grid">
+            <div class="form-field"><label for="editPromptTitle">Prompt title</label><input id="editPromptTitle" type="text" required /></div>
+            <div class="form-field"><label for="editPromptCategory">Category</label><select id="editPromptCategory" required></select></div>
+            <div class="form-field"><label for="editPromptSubcategory">Subcategory</label><input id="editPromptSubcategory" type="text" required /></div>
+            <div class="form-field"><label for="editPromptTags">Tags</label><input id="editPromptTags" type="text" /><p class="field-help">Separate tags with commas.</p></div>
+            <div class="form-field full"><label for="editPromptSummary">Short description</label><textarea id="editPromptSummary" required></textarea></div>
+            <div class="form-field full"><label for="editPromptText">IgniteAI prompt</label><textarea id="editPromptText" class="prompt-editor" required></textarea></div>
+          </div>
+          <div class="modal-actions">
+            <button class="button button-primary" type="submit">Save Changes</button>
+            <button id="cancelEditPrompt" class="button button-secondary" type="button">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="promptFormModalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="promptFormModalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <span class="pill act-pill">ACT</span>
+          <h2 id="promptFormModalTitle">Add Prompt</h2>
+        </div>
+        <button id="closePromptFormModal" class="close-button" aria-label="Close add prompt form">×</button>
+      </div>
+      <div class="modal-content">
+        <div class="form-notice">
+          Prompts you add here are saved in this browser. Structure the prompt around <strong>Action, Context, and Tone</strong> so it models the ACT framework for faculty.
+        </div>
+        <form id="addPromptForm">
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="promptTitle">Prompt title</label>
+              <input id="promptTitle" name="promptTitle" type="text" placeholder="Example: Introduction Discussion" required />
+            </div>
+            <div class="form-field">
+              <label for="promptCategory">Category</label>
+              <select id="promptCategory" name="promptCategory" required></select>
+            </div>
+            <div class="form-field">
+              <label for="promptSubcategory">Subcategory</label>
+              <input id="promptSubcategory" name="promptSubcategory" type="text" placeholder="Example: Discussions" required />
+            </div>
+            <div class="form-field">
+              <label for="promptTags">Tags</label>
+              <input id="promptTags" name="promptTags" type="text" placeholder="discussion, engagement, introductions" />
+              <p class="field-help">Separate tags with commas.</p>
+            </div>
+            <div class="form-field full">
+              <label for="promptSummary">Short description</label>
+              <textarea id="promptSummary" name="promptSummary" placeholder="What does this prompt help faculty accomplish?" required></textarea>
+            </div>
+            <div class="form-field full">
+              <label for="promptText">IgniteAI prompt</label>
+              <textarea id="promptText" class="prompt-editor" name="promptText" required placeholder="ACTION
+Clearly state what you want IgniteAI to do.
+
+CONTEXT
+Provide the course, student, assignment, or instructional details IgniteAI should use.
+
+TONE
+Describe the teaching voice, format, length, and style you want."></textarea>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="button button-primary" type="submit">Save Prompt</button>
+            <button id="cancelPromptForm" class="button button-secondary" type="button">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite">Prompt copied!</div>
+
+  <script>
+    /*
+      ==========================================================
+      EDIT YOUR PROMPT LIBRARY HERE
+      ==========================================================
+      Add new prompt objects to the prompts array.
+
+      Required fields:
+      id, title, category, subcategory, summary, tags, prompt
+    */
+
+    const defaultPrompts = [
+      {
+        id: "welcome-announcement",
+        title: "Welcome Announcement",
+        category: "Communication",
+        subcategory: "Announcements",
+        summary: "Welcome students, introduce the course, and establish expectations before the semester begins.",
+        tags: ["welcome", "announcement", "start of semester", "student engagement"],
+        prompt: `Create a draft for a welcome announcement for this course that will be posted before the semester begins.
+
+ACTION
+Create a concise welcome announcement of approximately 250–350 words. Welcome students, build excitement for the course, establish clear expectations for success, encourage students to review the syllabus and course schedule, and invite them to contact me whenever they need help.
+
+CONTEXT
+Use the course information already available to you to reference the course topics, assignments, learning activities, and important resources. Highlight what students can expect to learn, briefly mention the hands-on or applied nature of the course when appropriate, and remind students to review the syllabus for important information such as course expectations, assignment deadlines, communication guidelines, and grading policies.
+
+Format the announcement with short paragraphs and bullet points where they improve readability.
+
+TONE
+Write in a friendly, supportive, and encouraging teaching voice that helps students feel welcomed and confident about the semester ahead. End with a positive, motivating message that encourages students to engage with the course from the very beginning.`
+      },
+      {
+        id: "weekly-announcement",
+        title: "Weekly Course Announcement",
+        category: "Communication",
+        subcategory: "Announcements",
+        summary: "Create a focused weekly message that previews learning, priorities, and upcoming work.",
+        tags: ["weekly", "announcement", "module", "deadlines"],
+        prompt: `Create a weekly course announcement for the upcoming module or week.
+
+ACTION
+Summarize what students should focus on this week, identify the most important learning activities and assignments, and call attention to upcoming deadlines or actions students should take.
+
+CONTEXT
+Use the current course module, schedule, assignments, learning objectives, and resources already available to you. Prioritize information students need in order to stay on track. When helpful, include a short "This Week" bullet list and a brief "Looking Ahead" reminder.
+
+TONE
+Use a warm, organized, encouraging teaching voice. Be concise and supportive rather than overwhelming. Make the announcement easy to scan and end with a brief message encouraging students to stay engaged and ask questions when needed.`
+      },
+      {
+        id: "assignment-reminder",
+        title: "Assignment Reminder",
+        category: "Communication",
+        subcategory: "Assignment Reminders",
+        summary: "Remind students about an upcoming assignment without simply repeating the instructions.",
+        tags: ["assignment", "reminder", "deadline", "support"],
+        prompt: `Draft a reminder for the upcoming assignment.
+
+ACTION
+Create a concise reminder that tells students what assignment is due, when it is due, the most important requirements they should double-check before submitting, and where they can find help.
+
+CONTEXT
+Use the assignment instructions, rubric, course schedule, and related course resources already available to you. Do not rewrite the full assignment directions. Instead, highlight the 3–5 details students are most likely to overlook or misunderstand.
+
+TONE
+Use a helpful, calm, and encouraging tone. Avoid sounding punitive or repetitive. Emphasize preparation, successful completion, and available support.`
+      },
+      {
+        id: "midterm-checkin",
+        title: "Midterm Check-In",
+        category: "Communication",
+        subcategory: "Midterm Check-ins",
+        summary: "Help students reflect on progress and re-engage for the second half of the course.",
+        tags: ["midterm", "progress", "reflection", "motivation"],
+        prompt: `Create a midterm check-in message for students.
+
+ACTION
+Acknowledge that students have reached the midpoint of the course, encourage them to reflect on their progress, and identify practical actions they can take to finish the course successfully.
+
+CONTEXT
+Use the course schedule, completed learning activities, upcoming assignments, and available student-support resources. Include 3–5 short reflection or action prompts students can use to assess whether they are on track.
+
+TONE
+Use an encouraging, realistic, and supportive teaching voice. Celebrate progress without assuming every student is doing well. Make the message welcoming to students who may need to re-engage or ask for help.`
+      },
+      {
+        id: "student-outreach",
+        title: "Individual Student Outreach",
+        category: "Student Outreach",
+        subcategory: "Check-ins",
+        summary: "Draft a personalized message to a student who may be falling behind or disengaging.",
+        tags: ["outreach", "student", "missing work", "engagement", "support"],
+        prompt: `Draft an individual outreach message to a student who may be falling behind or becoming disengaged.
+
+ACTION
+Write a brief message that identifies the concern, invites the student to reconnect with the course, and gives them a clear next step.
+
+CONTEXT
+Use the student information and course activity available to you, but only reference details that are appropriate and helpful to share with the student. Focus on observable course activity such as missing work, reduced participation, or an approaching deadline. When relevant, point the student toward course or college support resources.
+
+TONE
+Use a respectful, caring, nonjudgmental teaching voice. Avoid shame, assumptions, or threatening language. Communicate that I want the student to succeed and that reaching out for help is encouraged.`
+      },
+      {
+        id: "difficult-conversation",
+        title: "Difficult Student Conversation",
+        category: "Student Outreach",
+        subcategory: "Difficult Conversations",
+        summary: "Prepare a calm, professional response for a sensitive or challenging student interaction.",
+        tags: ["conflict", "student", "professional", "boundaries"],
+        prompt: `Help me prepare a response for a difficult student conversation.
+
+ACTION
+Draft a professional response that addresses the student's concern, clearly explains the relevant course expectation or decision, and identifies an appropriate path forward.
+
+CONTEXT
+Use the course policies, assignment information, communication history, and other relevant course context available to you. Distinguish between facts, course policy, and areas where flexibility may be possible. Do not invent policies or make commitments that are not supported by the course information.
+
+TONE
+Use a calm, respectful, empathetic, and firm teaching voice. Avoid defensive wording. Acknowledge the student's concern without automatically agreeing with their interpretation. Keep the response focused on resolution and next steps.`
+      },
+      {
+        id: "module-overview",
+        title: "Module Overview",
+        category: "Course Design",
+        subcategory: "Module Overviews",
+        summary: "Create a student-friendly overview that connects objectives, activities, and assessments.",
+        tags: ["module", "overview", "course design", "objectives", "alignment"],
+        prompt: `Create a student-facing overview for this module.
+
+ACTION
+Write a concise module overview that explains what students will learn, why the learning matters, what they will do, and what they should complete by the end of the module.
+
+CONTEXT
+Use the module learning objectives, readings, pages, discussions, assignments, quizzes, and other resources already available to you. Show clear connections between the learning objectives and the major activities or assessments. Organize the overview so students can quickly understand the purpose and flow of the module.
+
+TONE
+Use a clear, welcoming, student-centered teaching voice. Avoid unnecessary academic jargon. Write directly to students and emphasize relevance, purpose, and successful navigation of the module.`
+      },
+      {
+        id: "weekly-learning-guide",
+        title: "Weekly Learning Guide",
+        category: "Course Design",
+        subcategory: "Weekly Learning Guides",
+        summary: "Turn a week or module into a practical sequence of learning steps for students.",
+        tags: ["weekly guide", "module", "sequence", "student directions"],
+        prompt: `Create a weekly learning guide for this section of the course.
+
+ACTION
+Organize the week's learning into a logical sequence of steps that tells students what to review, explore, practice, discuss, and submit.
+
+CONTEXT
+Use the course content, learning objectives, assignments, discussions, quizzes, resources, and due dates already available to you. Sequence the activities in a way that supports learning rather than simply listing items. Include brief explanations of why major activities are included when that will help students understand their purpose.
+
+TONE
+Use concise, action-oriented, supportive language. Write directly to students and make the guide easy to scan.`
+      },
+      {
+        id: "alignment-check",
+        title: "Course Alignment Check",
+        category: "Course Design",
+        subcategory: "Alignment Checks",
+        summary: "Review whether objectives, learning activities, and assessments are meaningfully aligned.",
+        tags: ["alignment", "objectives", "assessment", "instructional design"],
+        prompt: `Review this course module for instructional alignment.
+
+ACTION
+Analyze whether the learning objectives, instructional materials, learning activities, and assessments align with one another. Identify strong alignments, gaps, redundancies, and opportunities for improvement.
+
+CONTEXT
+Use the module objectives, content, activities, assessments, rubrics, and instructions already available to you. For each objective, identify where students learn or practice the skill and where they demonstrate achievement. Flag any objective that is not adequately taught, practiced, or assessed.
+
+TONE
+Use a collaborative instructional-design voice. Be specific, practical, and constructive. Prioritize recommendations that would meaningfully improve student learning rather than suggesting changes only for the sake of consistency.`
+      },
+      {
+        id: "alternative-instructions",
+        title: "Alternative Assignment Instructions",
+        category: "Assessment & Feedback",
+        subcategory: "Alternative Instructions",
+        summary: "Rewrite assignment directions so they are clearer and easier for students to follow.",
+        tags: ["assignment", "instructions", "clarity", "accessibility"],
+        prompt: `Rewrite the instructions for this assignment to make them clearer and more student-friendly.
+
+ACTION
+Create a revised version of the assignment directions that clearly explains the purpose, required task, steps, submission expectations, and criteria for success.
+
+CONTEXT
+Use the current assignment instructions, rubric, learning objectives, and course context. Preserve the instructor's requirements and academic rigor. Break complex directions into logical steps, define ambiguous expectations, and call attention to requirements students are likely to miss.
+
+TONE
+Use clear, direct, supportive language. Write for students who may be encountering the task for the first time. Avoid unnecessary jargon, vague directions, and overly long paragraphs.`
+      },
+      {
+        id: "rubric-development",
+        title: "Rubric Development",
+        category: "Assessment & Feedback",
+        subcategory: "Rubrics",
+        summary: "Create an aligned, student-readable rubric for an assignment or performance task.",
+        tags: ["rubric", "assessment", "criteria", "feedback"],
+        prompt: `Create a rubric for this assignment.
+
+ACTION
+Develop an analytic rubric with clear assessment criteria, performance levels, and descriptions of what successful work looks like at each level.
+
+CONTEXT
+Use the assignment instructions, learning objectives, expected student product, and grading information already available to you. Make sure each criterion measures something students were actually asked to do and that the rubric reflects the relative importance of each requirement. Avoid criteria that are vague, overlapping, or unrelated to the learning objectives.
+
+TONE
+Use precise, student-readable language. Make the rubric useful both for grading and for helping students understand expectations before they begin the assignment.`
+      },
+      {
+        id: "feedback-draft",
+        title: "Constructive Assignment Feedback",
+        category: "Assessment & Feedback",
+        subcategory: "Feedback",
+        summary: "Draft feedback that recognizes strengths and gives students manageable next steps.",
+        tags: ["feedback", "grading", "student work", "revision"],
+        prompt: `Draft constructive feedback for this student's work.
+
+ACTION
+Identify the strongest aspects of the submission, explain the most important areas for improvement, and provide specific next steps the student can use on future work or a revision.
+
+CONTEXT
+Use the assignment instructions, rubric, learning objectives, and student submission available to you. Tie comments to the stated expectations rather than personal preference. Prioritize the most consequential feedback instead of commenting on every small issue.
+
+TONE
+Use a supportive, specific, growth-oriented teaching voice. Be candid without being discouraging. Help the student understand both what is working and what they should do next.`
+      }
+    ];
+
+    const defaultCategories = [
+      {
+        name: "Communication",
+        icon: "✉",
+        description: "Announcements, reminders, check-ins, and course messaging."
+      },
+      {
+        name: "Student Outreach",
+        icon: "◉",
+        description: "Individual communication, support, and difficult conversations."
+      },
+      {
+        name: "Course Design",
+        icon: "▦",
+        description: "Modules, learning guides, lesson planning, and alignment."
+      },
+      {
+        name: "Assessment & Feedback",
+        icon: "✓",
+        description: "Instructions, rubrics, assessment design, and feedback."
+      }
+    ];
+
+    const STORAGE_KEYS = {
+      categories: "ideasPromptLibrary.customCategories",
+      prompts: "ideasPromptLibrary.customPrompts",
+      edits: "ideasPromptLibrary.promptEdits",
+      deleted: "ideasPromptLibrary.deletedPromptIds"
+    };
+
+    function loadStoredArray(key) {
+      try {
+        const stored = JSON.parse(localStorage.getItem(key) || "[]");
+        return Array.isArray(stored) ? stored : [];
+      } catch (error) {
+        console.warn("Unable to read saved library data:", error);
+        return [];
+      }
+    }
+
+    const customCategories = loadStoredArray(STORAGE_KEYS.categories);
+    const customPrompts = loadStoredArray(STORAGE_KEYS.prompts);
+    const savedEdits = loadStoredArray(STORAGE_KEYS.edits);
+    const deletedPromptIds = new Set(loadStoredArray(STORAGE_KEYS.deleted));
+
+    let categories = [...defaultCategories, ...customCategories];
+
+    function applyPromptEdits(promptList) {
+      const editMap = new Map(savedEdits.map(item => [item.id, item]));
+      return promptList
+        .filter(prompt => !deletedPromptIds.has(prompt.id))
+        .map(prompt => editMap.has(prompt.id) ? { ...prompt, ...editMap.get(prompt.id) } : prompt);
+    }
+
+    let prompts = applyPromptEdits([...defaultPrompts, ...customPrompts]);
+
+    function saveCustomCategories() {
+      const builtInNames = new Set(defaultCategories.map(category => category.name));
+      const customOnly = categories.filter(category => !builtInNames.has(category.name));
+      localStorage.setItem(STORAGE_KEYS.categories, JSON.stringify(customOnly));
+    }
+
+    function saveCustomPrompts() {
+      const builtInIds = new Set(defaultPrompts.map(prompt => prompt.id));
+      const customOnly = prompts.filter(prompt => !builtInIds.has(prompt.id));
+      localStorage.setItem(STORAGE_KEYS.prompts, JSON.stringify(customOnly));
+    }
+
+    function savePromptEdits() {
+      const originalMap = new Map([...defaultPrompts, ...customPrompts].map(prompt => [prompt.id, prompt]));
+      const edits = prompts
+        .filter(prompt => originalMap.has(prompt.id))
+        .filter(prompt => JSON.stringify(prompt) !== JSON.stringify(originalMap.get(prompt.id)));
+      localStorage.setItem(STORAGE_KEYS.edits, JSON.stringify(edits));
+    }
+
+    function saveDeletedPrompts() {
+      localStorage.setItem(STORAGE_KEYS.deleted, JSON.stringify([...deletedPromptIds]));
+    }
+
+    function slugify(value) {
+      return value
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+    }
+
+    const promptGrid = document.getElementById("promptGrid");
+    const categoryGrid = document.getElementById("categoryGrid");
+    const searchInput = document.getElementById("searchInput");
+    const resultCount = document.getElementById("resultCount");
+    const emptyState = document.getElementById("emptyState");
+    const clearFilters = document.getElementById("clearFilters");
+
+    const modalBackdrop = document.getElementById("modalBackdrop");
+    const modalCategory = document.getElementById("modalCategory");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalPrompt = document.getElementById("modalPrompt");
+    const modalCopy = document.getElementById("modalCopy");
+    const closeModal = document.getElementById("closeModal");
+    const modalCloseBottom = document.getElementById("modalCloseBottom");
+    const toast = document.getElementById("toast");
+
+    const openAdminLogin = document.getElementById("openAdminLogin");
+    const adminLoginBackdrop = document.getElementById("adminLoginBackdrop");
+    const closeAdminLoginButton = document.getElementById("closeAdminLogin");
+    const cancelAdminLogin = document.getElementById("cancelAdminLogin");
+    const adminLoginForm = document.getElementById("adminLoginForm");
+    const adminPasswordInput = document.getElementById("adminPassword");
+    const loginError = document.getElementById("loginError");
+    const adminLogout = document.getElementById("adminLogout");
+    const adminStatus = document.getElementById("adminStatus");
+
+    const openAddCategory = document.getElementById("openAddCategory");
+    const categoryModalBackdrop = document.getElementById("categoryModalBackdrop");
+    const closeCategoryModalButton = document.getElementById("closeCategoryModal");
+    const cancelCategory = document.getElementById("cancelCategory");
+    const addCategoryForm = document.getElementById("addCategoryForm");
+
+    const editPromptModalBackdrop = document.getElementById("editPromptModalBackdrop");
+    const closeEditPromptModalButton = document.getElementById("closeEditPromptModal");
+    const cancelEditPrompt = document.getElementById("cancelEditPrompt");
+    const editPromptForm = document.getElementById("editPromptForm");
+    const editPromptCategorySelect = document.getElementById("editPromptCategory");
+
+    const openAddPrompt = document.getElementById("openAddPrompt");
+    const promptFormModalBackdrop = document.getElementById("promptFormModalBackdrop");
+    const closePromptFormModalButton = document.getElementById("closePromptFormModal");
+    const cancelPromptForm = document.getElementById("cancelPromptForm");
+    const addPromptForm = document.getElementById("addPromptForm");
+    const promptCategorySelect = document.getElementById("promptCategory");
+
+    let activeCategory = "All";
+    let activeModalPrompt = null;
+    let editingPromptId = null;
+
+    /*
+      ==========================================================
+      LIGHTWEIGHT ADMIN LOGIN
+      ==========================================================
+      IMPORTANT: This is NOT secure authentication.
+      Anyone who inspects the page source can discover this password.
+
+      Change the password below before publishing.
+    */
+    const ADMIN_PASSWORD = "ChangeMe123!";
+    const ADMIN_SESSION_KEY = "ideasPromptLibrary.adminAuthenticated";
+
+    function setAdminState(isAuthenticated) {
+      if (isAuthenticated) {
+        document.body.classList.add("admin-authenticated");
+        sessionStorage.setItem(ADMIN_SESSION_KEY, "true");
+        adminStatus.textContent = "Admin Mode";
+        openAdminLogin.style.display = "none";
+      } else {
+        document.body.classList.remove("admin-authenticated");
+        sessionStorage.removeItem(ADMIN_SESSION_KEY);
+        adminStatus.textContent = "Public View";
+        openAdminLogin.style.display = "";
+      }
+    }
+
+    function openAdminLoginModal() {
+      loginError.classList.remove("show");
+      adminPasswordInput.value = "";
+      adminLoginBackdrop.classList.add("open");
+      document.body.style.overflow = "hidden";
+      setTimeout(() => adminPasswordInput.focus(), 0);
+    }
+
+    function closeAdminLoginModal() {
+      adminLoginBackdrop.classList.remove("open");
+      document.body.style.overflow = "";
+      adminPasswordInput.value = "";
+      loginError.classList.remove("show");
+    }
+
+    function showMessage(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(showMessage.timer);
+      showMessage.timer = setTimeout(() => toast.classList.remove("show"), 2000);
+    }
+
+    function populateCategorySelect(selectedName = "") {
+      promptCategorySelect.innerHTML = categories
+        .map(category => `<option value="${escapeHtml(category.name)}">${escapeHtml(category.name)}</option>`)
+        .join("");
+
+      if (selectedName && categories.some(category => category.name === selectedName)) {
+        promptCategorySelect.value = selectedName;
+      }
+    }
+
+    function populateEditCategorySelect(selectedName = "") {
+      editPromptCategorySelect.innerHTML = categories
+        .map(category => `<option value="${escapeHtml(category.name)}">${escapeHtml(category.name)}</option>`)
+        .join("");
+      if (selectedName && categories.some(category => category.name === selectedName)) {
+        editPromptCategorySelect.value = selectedName;
+      }
+    }
+
+    function openEditPromptForm(id) {
+      if (!document.body.classList.contains("admin-authenticated")) return;
+      const prompt = prompts.find(item => item.id === id);
+      if (!prompt) return;
+      editingPromptId = id;
+      document.getElementById("editPromptTitle").value = prompt.title;
+      populateEditCategorySelect(prompt.category);
+      document.getElementById("editPromptSubcategory").value = prompt.subcategory;
+      document.getElementById("editPromptTags").value = (prompt.tags || []).join(", ");
+      document.getElementById("editPromptSummary").value = prompt.summary;
+      document.getElementById("editPromptText").value = prompt.prompt;
+      editPromptModalBackdrop.classList.add("open");
+      document.body.style.overflow = "hidden";
+      document.getElementById("editPromptTitle").focus();
+    }
+
+    function closeEditPromptForm() {
+      editPromptModalBackdrop.classList.remove("open");
+      document.body.style.overflow = "";
+      editingPromptId = null;
+      editPromptForm.reset();
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function openCategoryForm() {
+      if (!document.body.classList.contains("admin-authenticated")) {
+        openAdminLoginModal();
+        return;
+      }
+      categoryModalBackdrop.classList.add("open");
+      document.body.style.overflow = "hidden";
+      document.getElementById("categoryName").focus();
+    }
+
+    function closeCategoryForm() {
+      categoryModalBackdrop.classList.remove("open");
+      document.body.style.overflow = "";
+      addCategoryForm.reset();
+    }
+
+    function openPromptForm() {
+      if (!document.body.classList.contains("admin-authenticated")) {
+        openAdminLoginModal();
+        return;
+      }
+      populateCategorySelect(activeCategory !== "All" ? activeCategory : "");
+      promptFormModalBackdrop.classList.add("open");
+      document.body.style.overflow = "hidden";
+      document.getElementById("promptTitle").focus();
+    }
+
+    function closePromptForm() {
+      promptFormModalBackdrop.classList.remove("open");
+      document.body.style.overflow = "";
+      addPromptForm.reset();
+    }
+
+    function categoryCount(name) {
+      return prompts.filter(prompt => prompt.category === name).length;
+    }
+
+    function renderCategories() {
+      const allCard = `
+        <button class="category-card ${activeCategory === "All" ? "active" : ""}" data-category="All" type="button">
+          <span class="category-icon">⌂</span>
+          <span class="category-name">All Prompts</span>
+          <span class="category-description">Browse the complete IDEAS prompt library.</span>
+          <span class="category-count">${prompts.length} prompts</span>
+        </button>
+      `;
+
+      const cards = categories.map(category => `
+        <button class="category-card ${activeCategory === category.name ? "active" : ""}" data-category="${escapeHtml(category.name)}" type="button">
+          <span class="category-icon">${escapeHtml(category.icon)}</span>
+          <span class="category-name">${escapeHtml(category.name)}</span>
+          <span class="category-description">${escapeHtml(category.description)}</span>
+          <span class="category-count">${categoryCount(category.name)} prompts</span>
+        </button>
+      `).join("");
+
+      categoryGrid.innerHTML = allCard + cards;
+
+      categoryGrid.querySelectorAll(".category-card").forEach(card => {
+        card.addEventListener("click", () => {
+          activeCategory = card.dataset.category;
+          renderCategories();
+          renderPrompts();
+          document.getElementById("prompts-title").scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      });
+    }
+
+    function getFilteredPrompts() {
+      const term = searchInput.value.trim().toLowerCase();
+
+      return prompts.filter(prompt => {
+        const matchesCategory = activeCategory === "All" || prompt.category === activeCategory;
+
+        const searchableText = [
+          prompt.title,
+          prompt.category,
+          prompt.subcategory,
+          prompt.summary,
+          ...prompt.tags,
+          prompt.prompt
+        ].join(" ").toLowerCase();
+
+        const matchesSearch = !term || searchableText.includes(term);
+
+        return matchesCategory && matchesSearch;
+      });
+    }
+
+    function renderPrompts() {
+      const filtered = getFilteredPrompts();
+
+      resultCount.textContent = `${filtered.length} ${filtered.length === 1 ? "prompt" : "prompts"}`;
+      emptyState.style.display = filtered.length ? "none" : "block";
+
+      promptGrid.innerHTML = filtered.map(prompt => `
+        <article class="prompt-card">
+          <div class="prompt-card-top">
+            <div class="prompt-meta">
+              <span class="pill category-pill">${escapeHtml(prompt.category)}</span>
+              <span class="pill act-pill">ACT</span>
+            </div>
+            <h3>${escapeHtml(prompt.title)}</h3>
+            <p class="prompt-summary">${escapeHtml(prompt.summary)}</p>
+          </div>
+
+          <div class="prompt-card-bottom">
+            <button class="button button-secondary view-prompt" data-id="${escapeHtml(prompt.id)}" type="button">View</button>
+            <button class="button button-primary copy-prompt" data-id="${escapeHtml(prompt.id)}" type="button">Copy Prompt</button>
+            <button class="button button-secondary edit-prompt admin-only" data-id="${escapeHtml(prompt.id)}" type="button">Edit</button>
+            <button class="button button-danger delete-prompt admin-only" data-id="${escapeHtml(prompt.id)}" type="button">Delete</button>
+          </div>
+        </article>
+      `).join("");
+
+      promptGrid.querySelectorAll(".view-prompt").forEach(button => {
+        button.addEventListener("click", () => openPrompt(button.dataset.id));
+      });
+
+      promptGrid.querySelectorAll(".copy-prompt").forEach(button => {
+        button.addEventListener("click", () => copyPrompt(button.dataset.id));
+      });
+
+      promptGrid.querySelectorAll(".edit-prompt").forEach(button => {
+        button.addEventListener("click", () => openEditPromptForm(button.dataset.id));
+      });
+
+      promptGrid.querySelectorAll(".delete-prompt").forEach(button => {
+        button.addEventListener("click", () => deletePrompt(button.dataset.id));
+      });
+    }
+
+    function deletePrompt(id) {
+      if (!document.body.classList.contains("admin-authenticated")) return;
+      const prompt = prompts.find(item => item.id === id);
+      if (!prompt) return;
+      if (!window.confirm(`Delete "${prompt.title}"? This removes it from this browser's library.`)) return;
+      prompts = prompts.filter(item => item.id !== id);
+      deletedPromptIds.add(id);
+      saveDeletedPrompts();
+      savePromptEdits();
+      saveCustomPrompts();
+      renderCategories();
+      renderPrompts();
+      showMessage("Prompt deleted.");
+    }
+
+    function openPrompt(id) {
+      activeModalPrompt = prompts.find(prompt => prompt.id === id);
+      if (!activeModalPrompt) return;
+
+      modalCategory.textContent = `${activeModalPrompt.category} • ${activeModalPrompt.subcategory}`;
+      modalTitle.textContent = activeModalPrompt.title;
+      modalPrompt.textContent = activeModalPrompt.prompt;
+      modalBackdrop.classList.add("open");
+      document.body.style.overflow = "hidden";
+      closeModal.focus();
+    }
+
+    function closePromptModal() {
+      modalBackdrop.classList.remove("open");
+      document.body.style.overflow = "";
+      activeModalPrompt = null;
+    }
+
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (error) {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
+      }
+
+      showToast();
+    }
+
+    function copyPrompt(id) {
+      const prompt = prompts.find(item => item.id === id);
+      if (prompt) copyText(prompt.prompt);
+    }
+
+    function showToast() {
+      showMessage("Prompt copied!");
+    }
+
+    openAdminLogin.addEventListener("click", openAdminLoginModal);
+    closeAdminLoginButton.addEventListener("click", closeAdminLoginModal);
+    cancelAdminLogin.addEventListener("click", closeAdminLoginModal);
+
+    adminLoginBackdrop.addEventListener("click", event => {
+      if (event.target === adminLoginBackdrop) closeAdminLoginModal();
+    });
+
+    adminLoginForm.addEventListener("submit", event => {
+      event.preventDefault();
+
+      if (adminPasswordInput.value === ADMIN_PASSWORD) {
+        setAdminState(true);
+        closeAdminLoginModal();
+        showMessage("Admin mode enabled.");
+      } else {
+        loginError.classList.add("show");
+        adminPasswordInput.select();
+      }
+    });
+
+    adminLogout.addEventListener("click", () => {
+      setAdminState(false);
+      showMessage("Admin mode disabled.");
+    });
+
+    openAddCategory.addEventListener("click", openCategoryForm);
+    closeCategoryModalButton.addEventListener("click", closeCategoryForm);
+    cancelCategory.addEventListener("click", closeCategoryForm);
+
+    categoryModalBackdrop.addEventListener("click", event => {
+      if (event.target === categoryModalBackdrop) closeCategoryForm();
+    });
+
+    addCategoryForm.addEventListener("submit", event => {
+      event.preventDefault();
+
+      const name = document.getElementById("categoryName").value.trim();
+      const icon = document.getElementById("categoryIcon").value.trim() || "＋";
+      const description = document.getElementById("categoryDescription").value.trim();
+
+      if (categories.some(category => category.name.toLowerCase() === name.toLowerCase())) {
+        showMessage("That category already exists.");
+        return;
+      }
+
+      categories.push({ name, icon, description });
+      saveCustomCategories();
+      activeCategory = name;
+      renderCategories();
+      renderPrompts();
+      populateCategorySelect(name);
+      closeCategoryForm();
+      showMessage("Category added!");
+    });
+
+    closeEditPromptModalButton.addEventListener("click", closeEditPromptForm);
+    cancelEditPrompt.addEventListener("click", closeEditPromptForm);
+    editPromptModalBackdrop.addEventListener("click", event => {
+      if (event.target === editPromptModalBackdrop) closeEditPromptForm();
+    });
+    editPromptForm.addEventListener("submit", event => {
+      event.preventDefault();
+      if (!editingPromptId) return;
+      const i = prompts.findIndex(prompt => prompt.id === editingPromptId);
+      if (i === -1) return;
+      prompts[i] = {
+        ...prompts[i],
+        title: document.getElementById("editPromptTitle").value.trim(),
+        category: editPromptCategorySelect.value,
+        subcategory: document.getElementById("editPromptSubcategory").value.trim(),
+        summary: document.getElementById("editPromptSummary").value.trim(),
+        tags: document.getElementById("editPromptTags").value.split(",").map(t => t.trim()).filter(Boolean),
+        prompt: document.getElementById("editPromptText").value.trim()
+      };
+      savePromptEdits();
+      saveCustomPrompts();
+      renderCategories();
+      renderPrompts();
+      closeEditPromptForm();
+      showMessage("Prompt updated!");
+    });
+
+    openAddPrompt.addEventListener("click", openPromptForm);
+    closePromptFormModalButton.addEventListener("click", closePromptForm);
+    cancelPromptForm.addEventListener("click", closePromptForm);
+
+    promptFormModalBackdrop.addEventListener("click", event => {
+      if (event.target === promptFormModalBackdrop) closePromptForm();
+    });
+
+    addPromptForm.addEventListener("submit", event => {
+      event.preventDefault();
+
+      const title = document.getElementById("promptTitle").value.trim();
+      const category = promptCategorySelect.value;
+      const subcategory = document.getElementById("promptSubcategory").value.trim();
+      const summary = document.getElementById("promptSummary").value.trim();
+      const tags = document.getElementById("promptTags").value
+        .split(",")
+        .map(tag => tag.trim())
+        .filter(Boolean);
+      const promptText = document.getElementById("promptText").value.trim();
+
+      const baseId = slugify(title) || "custom-prompt";
+      let id = baseId;
+      let counter = 2;
+
+      while (prompts.some(prompt => prompt.id === id)) {
+        id = `${baseId}-${counter++}`;
+      }
+
+      prompts.push({
+        id,
+        title,
+        category,
+        subcategory,
+        summary,
+        tags,
+        prompt: promptText
+      });
+
+      saveCustomPrompts();
+      activeCategory = category;
+      renderCategories();
+      renderPrompts();
+      closePromptForm();
+      showMessage("Prompt added!");
+    });
+
+    searchInput.addEventListener("input", renderPrompts);
+
+    clearFilters.addEventListener("click", () => {
+      searchInput.value = "";
+      activeCategory = "All";
+      renderCategories();
+      renderPrompts();
+      searchInput.focus();
+    });
+
+    closeModal.addEventListener("click", closePromptModal);
+    modalCloseBottom.addEventListener("click", closePromptModal);
+
+    modalCopy.addEventListener("click", () => {
+      if (activeModalPrompt) copyText(activeModalPrompt.prompt);
+    });
+
+    modalBackdrop.addEventListener("click", event => {
+      if (event.target === modalBackdrop) closePromptModal();
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key !== "Escape") return;
+      if (modalBackdrop.classList.contains("open")) closePromptModal();
+      if (adminLoginBackdrop.classList.contains("open")) closeAdminLoginModal();
+      if (categoryModalBackdrop.classList.contains("open")) closeCategoryForm();
+      if (editPromptModalBackdrop.classList.contains("open")) closeEditPromptForm();
+      if (promptFormModalBackdrop.classList.contains("open")) closePromptForm();
+    });
+
+    setAdminState(sessionStorage.getItem(ADMIN_SESSION_KEY) === "true");
+    populateCategorySelect();
+    populateEditCategorySelect();
+    renderCategories();
+    renderPrompts();
+  </script>
+</body>
+</html>
