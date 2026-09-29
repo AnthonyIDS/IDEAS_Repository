@@ -11,7 +11,18 @@ AIAS permission is instructor-supplied and separate from risk. Do not assign, ch
 export async function analyze(input,{apiKey,model,fetchImpl=fetch,signal}){
  const material={courseTitle:input.courseTitle,objectives:input.objectives,assignment:input.assignment.text,rubric:input.assignment.rubric,delivery:deliveryText(input.assignment.delivery)};
  const res=await fetchImpl('https://api.openai.com/v1/responses',{method:'POST',headers:{Authorization:`Bearer ${apiKey}`,'Content-Type':'application/json'},signal,body:JSON.stringify({model,store:false,instructions:INSTRUCTIONS,input:[{role:'user',content:[{type:'input_text',text:JSON.stringify(material)}]}],max_output_tokens:14000,text:{format:{type:'json_schema',name:'faculty_assessment_review',strict:true,schema:SCHEMA}}})});
- if(!res.ok){if(res.status===429)throw new Error('The analysis service is busy or has reached its allowance. Please try later or contact your coordinator.');throw new Error('The AI service could not complete the review. Contact your coordinator if this continues.');}
+ if(!res.ok){
+  const details=await res.json().catch(()=>({}));
+  const code=details.error?.code;
+  // Return fixed explanations only; provider messages can contain sensitive input.
+  if(res.status===401)throw new Error('OpenAI rejected the API key. In Render, update OPENAI_API_KEY with a valid OpenAI project key, then redeploy. Your faculty access code was accepted.');
+  if(code==='insufficient_quota'||code==='billing_hard_limit_reached')throw new Error('The OpenAI API project has no available quota. Check API billing, credits, and project limits. A ChatGPT subscription does not supply API credits.');
+  if(res.status===404||code==='model_not_found')throw new Error('OpenAI could not find or allow the configured model. Check OPENAI_MODEL in Render; this pilot was configured for gpt-5-mini.');
+  if(res.status===403)throw new Error('OpenAI denied access for this API project. Check the key permissions and project model access.');
+  if(res.status===429)throw new Error('OpenAI temporarily limited requests. Wait a minute and try again.');
+  if(res.status===400)throw new Error('OpenAI rejected the review request format (HTTP 400). Contact the site maintainer to check model compatibility and the response schema.');
+  throw new Error('OpenAI is temporarily unavailable (HTTP '+res.status+'). Try again shortly.');
+ }
  const body=await res.json();if(body.status==='incomplete'||body.status==='failed')throw new Error('The review was incomplete. Reduce the number of objectives or shorten the assignment and try again.');
  const blocks=(body.output||[]).flatMap(o=>o.content||[]);if(blocks.some(b=>b.type==='refusal'))throw new Error('The AI service declined this request. Review the supplied material or complete the review manually.');
  const text=blocks.filter(b=>b.type==='output_text').map(b=>b.text).join('');let raw;try{raw=JSON.parse(text)}catch{throw new Error('The analysis returned an unreadable result. Your input has not been changed. Try again.');}
