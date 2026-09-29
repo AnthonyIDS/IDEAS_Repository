@@ -7,10 +7,10 @@ services:
     buildCommand: npm test
     startCommand: node server/index.mjs
     healthCheckPath: /api/health
-    autoDeployTrigger: off
+    autoDeployTrigger: "off"
     envVars:
       - key: NODE_VERSION
-        value: 22
+        value: "22"
       - key: HOST
         value: 0.0.0.0
       - key: OPENAI_API_KEY
@@ -22,8 +22,8 @@ services:
       - key: ALLOWED_ORIGINS
         value: https://anthonyids.github.io
       - key: MAX_DAILY_REVIEWS
-        value: 50
+        value: "50"
       - key: MAX_HOURLY_REVIEWS
-        value: 10
+        value: "10"
       - key: MAX_CONCURRENT_REVIEWS
-        value: 2
+        value: "2"
