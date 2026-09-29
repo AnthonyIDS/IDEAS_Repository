@@ -1,5 +1,5 @@
 {
-  "apiBaseUrl": "",
+  "apiBaseUrl": "https://faculty-assessment-review.onrender.com",
   "coordinatorContact": "Contact your course coordinator to connect automated reviews.",
   "privacyNote": "Files are read in your browser. When you select Generate review, the confirmed text is sent to the configured review service and OpenAI. Do not include student names, grades, or student submissions. This app does not save submitted text on its server. Your institution’s and the AI provider’s retention policies still apply."
 }
