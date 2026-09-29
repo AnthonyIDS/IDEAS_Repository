@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: faculty-assessment-review
+    runtime: node
+    plan: free
+    rootDir: faculty-review
+    buildCommand: npm test
+    startCommand: node server/index.mjs
+    healthCheckPath: /api/health
+    autoDeployTrigger: off
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: HOST
+        value: 0.0.0.0
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        sync: false
+      - key: REVIEW_ACCESS_CODE
+        generateValue: true
+      - key: ALLOWED_ORIGINS
+        value: https://anthonyids.github.io
+      - key: MAX_DAILY_REVIEWS
+        value: 50
+      - key: MAX_HOURLY_REVIEWS
+        value: 10
+      - key: MAX_CONCURRENT_REVIEWS
+        value: 2
