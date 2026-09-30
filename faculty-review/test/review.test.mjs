@@ -44,3 +44,18 @@ test('framework provenance distinguishes legacy results and survives validation'
 });
 
 test('ENC1102 example retains all supplied outcomes and objectives',async()=>{const c=validateCourse(JSON.parse(await readFile(new URL('../public/example.json',import.meta.url),'utf8')));assert.equal(c.objectives.length,26);assert.equal(c.courseTitle,'ENC 1102 - Composition II');assert.equal(c.objectives.at(-1).text,'6f. deciding whether the initial query should be revised.');assert.equal(c.assignments[0].aiasLevel,null);assert.equal(c.objectivesConfirmed,false);assert.match(c.assignments[0].text,/generalized assignment draft/);});
+
+
+test('SPC policies round-trip and never convert legacy AIAS permission',()=>{
+ for(const policy of ['red','yellow','green']){
+  const c=structuredClone(course);c.assignments[0].spcPolicy=policy;
+  const restored=validateCourse(JSON.parse(JSON.stringify(validateCourse(c))));
+  assert.equal(restored.assignments[0].spcPolicy,policy);
+  const html=reportHTML(restored,{[input.assignment.id]:validateAnalysis(raw(),input)});
+  assert.ok(html.includes('permission-'+policy));assert.ok(html.includes("Instructor's permitted AI use per SPC Policy"));
+ }
+ const legacy=structuredClone(course);legacy.assignments[0].aiasLevel=5;
+ const restored=validateCourse(legacy);assert.equal(restored.assignments[0].spcPolicy,null);assert.equal(restored.assignments[0].aiasLevel,5);
+ assert.match(reportHTML(restored,{[input.assignment.id]:validateAnalysis(raw(),input)}),/Earlier AIAS selection needs review/);
+ assert.throws(()=>validateInput({...input,assignment:{...input.assignment,spcPolicy:'purple'}}),/SPC policy/);
+});

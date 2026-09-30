@@ -6,7 +6,10 @@ export const LIMITS={objectives:30,assignments:20,text:40000,rubric:20000,object
 export const ALIGNMENT=['Not yet reviewed','Not aligned','Slightly aligned','Moderately aligned','Mostly aligned','Fully aligned'];
 export const RISK=['Not yet reviewed','Very Low','Low','Moderate','High','Very High'];
 export const RESILIENCE=['Not yet reviewed','Very Resilient','Resilient','Somewhat Resilient','Vulnerable','Highly Vulnerable'];
-export const AIAS=['Not set','No AI','AI-assisted idea generation and structuring','AI-assisted editing','AI task completion, human evaluation','Full AI'];
+export const SPC_POLICY={red:{label:'Red Light',description:'AI tools are not allowed for use on this assignment.'},yellow:{label:'Yellow Light',description:'Please get explicit permission to use AI tools on this assignment.'},green:{label:'Green Light',description:'You are encouraged to use AI tools on this assignment, but let’s discuss!'}};
+export const POLICY_CSS='.permission-red{background:#ffe0df;color:#801c19}.permission-yellow{background:#fff0ad;color:#614700}.permission-green{background:#d9f3df;color:#14592a}.permission-badge{border:1px solid currentColor;font-weight:650}.permission-badge::before{content:"●";margin-right:.5em}';
+export function permissionHTML(a){const p=Object.hasOwn(SPC_POLICY,a.spcPolicy)?SPC_POLICY[a.spcPolicy]:null;return p?`<span class="badge permission-badge permission-${a.spcPolicy}">${p.label}</span> <span>${p.description}</span>`:`<span class="badge">Not yet reviewed — instructor policy needed</span>${a.aiasLevel?' <span>Earlier AIAS selection needs review under SPC policy.</span>':''}`;}
+
 export const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fail=m=>{throw new Error(m)};
 function str(v,name,max,min=0){if(typeof v!=='string'||v.length<min||v.length>max)fail(`${name} must contain ${min}–${max} characters.`);return v;}
@@ -24,8 +27,9 @@ export function validateInput(x){
  if(!d||!['unknown','take-home','supervised','live','mixed'].includes(d.setting))fail('Choose a delivery setting.');
  if(!['unknown','yes','no'].includes(d.ownData)||!['unknown','yes','no'].includes(d.processEvidence)||!['unknown','yes','no'].includes(d.oralExplanation))fail('Choose a response for each delivery question.');
  str(d.notes,'Delivery notes',2500);
- if(a.aiasLevel!==null&&(!Number.isInteger(a.aiasLevel)||a.aiasLevel<1||a.aiasLevel>5))fail('Choose an AI permission level or leave it unset.');
- return {courseTitle:x.courseTitle,objectivesConfirmed:true,objectives,assignment:{id:a.id,title:a.title,module:a.module,text:a.text,rubric:a.rubric,delivery:{setting:d.setting,ownData:d.ownData,processEvidence:d.processEvidence,oralExplanation:d.oralExplanation,notes:d.notes},aiasLevel:a.aiasLevel}};
+ if(a.aiasLevel!=null&&(!Number.isInteger(a.aiasLevel)||a.aiasLevel<1||a.aiasLevel>5))fail('Choose an AI permission level or leave it unset.');
+ const spcPolicy=a.spcPolicy??null;if(spcPolicy!==null&&!Object.hasOwn(SPC_POLICY,spcPolicy))fail('Choose Red, Yellow, Green, or leave the SPC policy unset.');
+ return {courseTitle:x.courseTitle,objectivesConfirmed:true,objectives,assignment:{id:a.id,title:a.title,module:a.module,text:a.text,rubric:a.rubric,delivery:{setting:d.setting,ownData:d.ownData,processEvidence:d.processEvidence,oralExplanation:d.oralExplanation,notes:d.notes},aiasLevel:a.aiasLevel??null,spcPolicy}};
 }
 export function deliveryText(d){return `Delivery setting: ${d.setting}\nStudent's own observations or data required: ${d.ownData}\nDrafts or process records required: ${d.processEvidence}\nLive oral explanation required: ${d.oralExplanation}\nAdditional delivery information: ${d.notes}`;}
 const normalized=s=>s.normalize('NFKC').replace(/\s+/g,' ').trim();
