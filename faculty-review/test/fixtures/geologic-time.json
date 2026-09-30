@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "courseTitle": "ESC1000C — Geologic Time example",
+  "objectivesConfirmed": false,
+  "objectives": [
+    {
+      "id": "O1",
+      "text": "3.1 evaluating the theoretical causes of major evolutionary and extinction events."
+    },
+    {
+      "id": "O2",
+      "text": "3.3 memorizing the geologic time scale and placing events in their proper place on this scale."
+    }
+  ],
+  "assignments": [
+    {
+      "id": "Aexample",
+      "title": "Geologic Time Scale Concept Sketch",
+      "module": "Module 1",
+      "text": "Create one clearly labeled geologic time scale concept sketch. Make the direction of time and major divisions clear. Include dates or age markers. Place all ten events in the appropriate interval: first appearance of free oxygen in the atmosphere; earliest fossils; oldest animal fossils; the Great Dying at the end of the Permian; Archaeopteryx; first flowering plants; Tyrannosaurus rex; K–T extinction; beginning of the last Ice Age; and Homo sapiens. Write dates using clearly identified units. Explain possible causes of the end-Permian and K–T (K–Pg) extinctions below the diagram in complete sentences. If sources use different definitions, choose a reliable date, label the event clearly, and be consistent with your source. Submit a legible image or document showing the entire sketch and both explanations.\n\nThis example is a condensed version of the supplied Module 1 instructions. Replace it with the complete assignment and rubric when evaluating your course.",
+      "rubric": "",
+      "aiasLevel": null,
+      "delivery": {
+        "setting": "unknown",
+        "ownData": "unknown",
+        "processEvidence": "unknown",
+        "oralExplanation": "unknown",
+        "notes": ""
+      }
+    }
+  ]
+}

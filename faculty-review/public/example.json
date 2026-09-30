@@ -1,31 +1,127 @@
 {
   "version": 1,
-  "courseTitle": "ESC1000C — Geologic Time example",
+  "courseTitle": "ENC 1102 - Composition II",
   "objectivesConfirmed": false,
   "objectives": [
     {
       "id": "O1",
-      "text": "3.1 evaluating the theoretical causes of major evolutionary and extinction events."
+      "text": "1. The student will effectively plan and write compositions which reinforce the skills established in Composition I by:"
+    },
+    {
+      "id": "O1a",
+      "text": "1a. writing essays that support and develop a central thesis."
+    },
+    {
+      "id": "O1b",
+      "text": "1b. using appropriate rhetorical and language skills in all compositions."
     },
     {
       "id": "O2",
-      "text": "3.3 memorizing the geologic time scale and placing events in their proper place on this scale."
+      "text": "2. The student will comprehend and interpret literary selections by:"
+    },
+    {
+      "id": "O2a",
+      "text": "2a. understanding and identifying relevant literary elements, such as plot, structure, narration, point of view, setting, character, theme and symbolism."
+    },
+    {
+      "id": "O2b",
+      "text": "2b. using textual evidence to interpret and evaluate a given literary selection."
+    },
+    {
+      "id": "O3",
+      "text": "3. The student will use the library effectively by:"
+    },
+    {
+      "id": "O3a",
+      "text": "3a. locating sources through the the college’s online library and other electronic sources."
+    },
+    {
+      "id": "O3b",
+      "text": "3b. retrieving sources, either print or electronic."
+    },
+    {
+      "id": "O4",
+      "text": "4. The student will incorporate information from sources appropriately by:"
+    },
+    {
+      "id": "O4a",
+      "text": "4a. managing and recording information from specified sources."
+    },
+    {
+      "id": "O4b",
+      "text": "4b. summarizing, paraphrasing, quoting and combining source information effectively."
+    },
+    {
+      "id": "O4c",
+      "text": "4c. writing papers which integrate the student's own words and ideas with those of primary and/or secondary sources."
+    },
+    {
+      "id": "O4d",
+      "text": "4d. using parenthetical references within the paper to credit information from primary and secondary sources."
+    },
+    {
+      "id": "O4e",
+      "text": "4e. preparing a works cited list of the sources used in the research paper."
+    },
+    {
+      "id": "O5",
+      "text": "5. The student will retrieve information from sources effectively and efficiently by:"
+    },
+    {
+      "id": "O5a",
+      "text": "5a. selecting the most appropriate investigative methods."
+    },
+    {
+      "id": "O5b",
+      "text": "5b. constructing and refining search strategies."
+    },
+    {
+      "id": "O5c",
+      "text": "5c. accessing information using a variety of strategies."
+    },
+    {
+      "id": "O6",
+      "text": "6. The student will evaluate sources including electronic sources by:"
+    },
+    {
+      "id": "O6a",
+      "text": "6a. summarizing the main idea extracted from the information."
+    },
+    {
+      "id": "O6b",
+      "text": "6b. articulating and applying basic criteria for evaluating both the information and its sources."
+    },
+    {
+      "id": "O6c",
+      "text": "6c. synthesizing main ideas to construct new concepts."
+    },
+    {
+      "id": "O6d",
+      "text": "6d. comparing new knowledge with prior knowledge to determine the value added, contradictions, or other unique characteristics of the information."
+    },
+    {
+      "id": "O6e",
+      "text": "6e. validating understanding and interpretation of the information through discourse with other individuals, subject-area experts, and/ or practitioners."
+    },
+    {
+      "id": "O6f",
+      "text": "6f. deciding whether the initial query should be revised."
     }
   ],
   "assignments": [
     {
-      "id": "Aexample",
-      "title": "Geologic Time Scale Concept Sketch",
-      "module": "Module 1",
-      "text": "Create one clearly labeled geologic time scale concept sketch. Make the direction of time and major divisions clear. Include dates or age markers. Place all ten events in the appropriate interval: first appearance of free oxygen in the atmosphere; earliest fossils; oldest animal fossils; the Great Dying at the end of the Permian; Archaeopteryx; first flowering plants; Tyrannosaurus rex; K–T extinction; beginning of the last Ice Age; and Homo sapiens. Write dates using clearly identified units. Explain possible causes of the end-Permian and K–T (K–Pg) extinctions below the diagram in complete sentences. If sources use different definitions, choose a reliable date, label the event clearly, and be consistent with your source. Submit a legible image or document showing the entire sketch and both explanations.\n\nThis example is a condensed version of the supplied Module 1 instructions. Replace it with the complete assignment and rubric when evaluating your course.",
-      "rubric": "",
+      "id": "Aenc1102",
+      "title": "Researched Literary Argument and Research Portfolio",
+      "module": "Generalized ENC 1102 assignment example",
+      "text": "Researched Literary Argument and Research Portfolio\n\nFaculty-created example for ENC 1102 - Composition II. This is a generalized assignment draft, not an assignment prescribed by the approved course outline. The instructor selects the readings, deadlines, and final evaluation rubric before use. No AI-use policy has been supplied; the instructor must clarify permitted use before students begin.\n\nPurpose\nDevelop a defensible interpretation of literature through close reading, library research, source evaluation, discussion, and revision.\n\nTask\nChoose one literary work from the course readings and develop a focused question about how at least two literary elements shape its meaning. For example, examine how point of view and symbolism shape a reader's understanding of a conflict. Write a 1,500-1,800-word researched argument, excluding Works Cited, that answers your question with an arguable thesis. Explain how your interpretation develops from specific passages rather than simply summarizing the plot. Address a plausible competing interpretation and explain how the evidence supports your position.\n\nUse the literary work as your primary source and at least four credible secondary sources, including at least two scholarly sources retrieved through the college's online library. Integrate your analysis with accurately attributed summaries, paraphrases, and short quotations. Compare sources with one another rather than discussing them only in isolation. Use MLA-style parenthetical citations and a Works Cited list.\n\nProcess and required evidence\n1. Proposal: Submit a research question, working thesis, chosen literary elements, and a brief explanation of why close reading and library research are suitable investigative methods for your question.\n2. Search log: Record at least three searches, including the database or search tool, search terms, filters, relevant results, and retrieval links or citation details. Use at least two search approaches, such as keyword searching and following references. Explain one change to your search strategy and whether your original question needs revision.\n3. Source record: For each secondary source, provide a full citation, a brief summary, an evaluation of authority, evidence, relevance, and limitations, and notes on how it contributes to your interpretation. Keep quotation marks and page numbers with copied passages. Explain where sources agree or conflict and how the research adds to or challenges your initial understanding.\n4. Draft and feedback: Submit a complete draft and exchange feedback with a classmate through a documented discussion. Discuss whether the evidence supports each interpretation, record a question or challenge from your partner, and explain how you checked or revised your understanding in response. The instructor may arrange a tutor or instructor conference if peer exchange is unavailable.\n5. Final submission: Revise the essay using the evidence and feedback. Include a 300-400-word process reflection describing changes to your thesis, question, search strategy, source use, and interpretation. Identify a concrete revision with a before-and-after example and explain its purpose.\n\nSubmit one portfolio containing the proposal, search log, source record, draft, feedback record, final essay with Works Cited, and process reflection. The instructor will provide the submission location and milestone dates.\n\nSuccess criteria\nYour work should present a sustained thesis; analyze relevant literary elements through accurate textual evidence; demonstrate purposeful library research and source evaluation; synthesize sources with your own reasoning; credit borrowed material consistently; and show substantive revision informed by discussion. Use clear organization and appropriate academic language. This example's criteria supplement, but do not replace, the SPC Descriptions of Grade Levels of Writing named in the approved outline. The instructor must supply those descriptions and the final rubric.\n\nCourse connection\nThe essay addresses composition, literary interpretation, and source integration. The search log and source record make research methods and evaluation visible. Discussion and reflection document interpretation checking and decisions about revising the inquiry. These are intended connections for review, not predetermined alignment scores. Written process records alone do not verify authorship or make this assignment AI-proof.\n",
+      "rubric": "Draft qualitative review criteria; no point values or grading weights assigned. Faculty should reconcile these criteria with the SPC Descriptions of Grade Levels of Writing before adopting the assignment.\n- Thesis and development: a focused, arguable interpretation sustained by organized reasoning.\n- Literary interpretation: accurate analysis of at least two literary elements and specific passages; consideration of an alternative reading.\n- Research methods: library retrieval, documented searches, varied search approaches, and a reasoned search or question revision.\n- Source evaluation and synthesis: supported judgments about source credibility and usefulness; comparison of perspectives and integration with the writer's own ideas.\n- Documentation: accurate summaries, paraphrases and quotations; MLA-style parenthetical citations and Works Cited.\n- Revision and communication: clear rhetorical choices and language; documented peer discussion, substantive revisions, and reflection on changed understanding.\n",
       "aiasLevel": null,
       "delivery": {
-        "setting": "unknown",
-        "ownData": "unknown",
-        "processEvidence": "unknown",
-        "oralExplanation": "unknown",
-        "notes": ""
+        "setting": "take-home",
+        "ownData": "no",
+        "processEvidence": "yes",
+        "oralExplanation": "no",
+        "notes": "Proposed take-home example with a documented peer discussion and staged written submissions. No live oral defense or supervision is required. Dates, readings, and instructor AI policy must be supplied before course use."
       }
     }
   ]

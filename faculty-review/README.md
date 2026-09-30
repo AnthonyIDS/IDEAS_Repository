@@ -10,7 +10,7 @@ A working faculty workspace plus a server for AI-assisted review. Faculty supply
 4. Set `OPENAI_MODEL` to `gpt-5-mini` for an initial pilot, provided it is available to your API project. Evaluate its suggestions against faculty judgments before broader use; this is a starting configuration, not a calibrated scoring model.
 5. Deploy. Render generates a `REVIEW_ACCESS_CODE`; retrieve it under the service's Environment settings and share it privately with pilot faculty. It is a staff access code, not the OpenAI key.
 6. Open the service's `https://…onrender.com` address. It hosts both the form and the review service. The page should say **Automated reviews are connected**. This checks configuration; generating a review is the final check of the API account and model.
-7. Load the ESC1000C example, confirm the objective wording, enter the staff access code, authorize sending the text, and generate one review. Check the returned evidence and try editing and exporting.
+7. Load the ENC1102 example, confirm the objective wording, enter the staff access code, authorize sending the text, and generate one review. Check the returned evidence and try editing and exporting.
 8. To enable the same service from GitHub Pages, change only `apiBaseUrl` in `faculty-review/public/config.json` to the service's HTTPS address, without a trailing slash. Never add any secret to this file. The Render version can also use that same address.
 
 If you already created a Render **Web Service**, use these settings instead of creating a second service:
@@ -31,12 +31,13 @@ Add `HOST=0.0.0.0`, `NODE_VERSION=22`, `ALLOWED_ORIGINS=https://anthonyids.githu
 
 ## What is and is not measured
 
-- Alignment uses a custom 1–5 scale. Missing evidence stays unreviewed. This is not a formal Quality Matters review and does not implement its proprietary rubric.
-- AI vulnerability is a provisional ARMS-informed estimate. Five risk labels are used, but the official five-level descriptions have not been verified; do not present these as official calibrated ARMS scores or probabilities.
+- New alignment reviews use selected public QM Seventh Edition standards (2.1, 2.4, 3.1 and 3.3), summarized on a custom 1–5 display. This is not a QM point system, pass/fail judgment, or formal review; the full annotated rubric is not implemented.
+- New AI vulnerability reviews apply the ARMS categories verified from the University of Suffolk page, attributed to De Vita and Brown. Prompt guidance uses concise paraphrases with source attribution, not a reproduction of the framework. Faculty judgments remain necessary.
+- Framework version `arms-suffolk-qm7-v2` is attached by the server to new analyses and preserved in exports/imports. Earlier results are labeled legacy and must be rerun. Deployment changes methodology, not the configured OpenAI model.
 - AIAS permissions use the original 2024 labels and are selected only by faculty. No policy means “Not yet reviewed — instructor policy needed.”
 - The server checks objective IDs, score bounds, and whether supporting quotations occur in the submitted material. Matching quotations do not prove a judgment is correct. Faculty must review it.
 - A strong alignment rating does not demonstrate that a student achieved an objective.
-- The example condenses the supplied Module 1 assignment. It contains no fabricated AI results.
+- The ENC1102 example uses all six outcomes and twenty objectives from the supplied Spring 2025 approved outline, plus a newly authored generalized literary research assignment. It includes no preset AI ratings or invented AI permission policy.
 
 ## Privacy and pilot operation
 
@@ -75,3 +76,5 @@ Tests cover validation, missing/duplicate objectives, fabricated evidence, missi
 - [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
 - [ARMS authors' overview](https://www.aacsb.edu/insights/articles/2024/10/can-that-assignment-be-completed-with-genai)
 - [Original AI Assessment Scale, 2024](https://open-publishing.org/journals/index.php/jutlp/article/download/810/769/1205)
+
+Framework references: [Suffolk ARMS](https://libguides.uos.ac.uk/celt/course-design/Assessment_AI) and [QM Seventh Edition summary](https://www.qualitymatters.org/sites/default/files/PDFs/StandardsfromtheQMHigherEducationRubric.pdf). Sources checked September 29, 2026. QM descriptors are paraphrased; the copyrighted PDF is not redistributed.

@@ -5,7 +5,7 @@ import {validateInput,validateAnalysis,validateCourse,makeEmptyResult,summarySta
 import {analyze} from '../server/analysis.mjs';
 import {buildServer} from '../server/index.mjs';
 import {reportHTML} from '../public/report.mjs';
-const course=JSON.parse(await readFile(new URL('../public/example.json',import.meta.url),'utf8'));
+const course=JSON.parse(await readFile(new URL('./fixtures/geologic-time.json',import.meta.url),'utf8'));
 const input=validateInput({...course,objectivesConfirmed:true,assignment:course.assignments[0]});
 const evidence=[{source:'assignment',quote:'Explain possible causes of the end-Permian and K–T (K–Pg) extinctions below the diagram in complete sentences.'}];
 const raw=()=>({summary:'The sketch requires ordering events and explaining extinctions.',limits:'Delivery is unspecified.',alignment:input.objectives.map(o=>({objectiveId:o.id,score:4,reason:'The required explanation supports this objective.',improvement:'Require students to explain their choices.',evidence})),ai:{riskLevel:4,reason:'AI can prepare an explanation and dates.',improvement:'Add a short oral explanation.',assumptions:'No supervision is specified.',evidence}});
@@ -25,3 +25,22 @@ test('Render service origin is included without exposing environment',async t=>{
 test('saved course validation retains exact objective wording',()=>{const c=validateCourse(course);assert.deepEqual(c.objectives,course.objectives);assert.equal(c.assignments[0].aiasLevel,null);});
 
 test('provider failures give specific explanations without echoing secrets',async()=>{for(const [status,code,match] of [[401,'invalid_api_key',/rejected the API key/],[404,'model_not_found',/configured model/],[429,'insufficient_quota',/no available quota/],[400,'invalid_request_error',/HTTP 400/]]){await assert.rejects(analyze(input,{apiKey:'test',model:'test',fetchImpl:async()=>({ok:false,status,json:async()=>({error:{code,message:'PRIVATE SECRET'}})})}),e=>match.test(e.message)&&!e.message.includes('PRIVATE SECRET'));}});
+
+test('framework provenance distinguishes legacy results and survives validation',async()=>{
+ const {FRAMEWORK_VERSION}=await import('../public/model.mjs');
+ assert.equal(validateAnalysis(raw(),input).frameworkVersion,'legacy');
+ const generated=await analyze(input,{apiKey:'test',model:'test',fetchImpl:async(url,options)=>{
+  const prompt=JSON.parse(options.body).instructions;
+  assert.match(prompt,/ARMS 1 Very Low/);assert.match(prompt,/ARMS 5 Very High/);
+  assert.match(prompt,/QM 3\.1/);assert.match(prompt,/QM 3\.3/);
+  assert.match(prompt,/NOT QM points/);
+  return {ok:true,json:async()=>({status:'completed',output:[{content:[{type:'output_text',text:JSON.stringify(raw())}]}]})};
+ }});
+ assert.equal(generated.frameworkVersion,FRAMEWORK_VERSION);
+ assert.equal(validateAnalysis(generated,input).frameworkVersion,FRAMEWORK_VERSION);
+ assert.match(generated.method,/QM Seventh Edition/);
+ const legacyReport=reportHTML(course,{[input.assignment.id]:validateAnalysis(raw(),input)});
+ assert.match(legacyReport,/Earlier custom alignment/);
+});
+
+test('ENC1102 example retains all supplied outcomes and objectives',async()=>{const c=validateCourse(JSON.parse(await readFile(new URL('../public/example.json',import.meta.url),'utf8')));assert.equal(c.objectives.length,26);assert.equal(c.courseTitle,'ENC 1102 - Composition II');assert.equal(c.objectives.at(-1).text,'6f. deciding whether the initial query should be revised.');assert.equal(c.assignments[0].aiasLevel,null);assert.equal(c.objectivesConfirmed,false);assert.match(c.assignments[0].text,/generalized assignment draft/);});
