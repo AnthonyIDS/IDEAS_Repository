@@ -16,3 +16,12 @@ export function calculate(c,p){validate(c,p);const rows=c.holdings.map(h=>({...h
  return {rows,total,cost,previous,sectors,assets,core,sectorMax,checks,score:Math.round(checks.filter(([,ok])=>ok).length/8*100),largest:rows.reduce((a,b)=>a.weight>b.weight?a:b),drift:rows.filter(r=>Math.abs(r.drift)>5)};
 }
 export function period(history,months){if(!history.length)return [];const end=new Date(history.at(-1).date+'T00:00:00Z'),start=new Date(end);start.setUTCMonth(start.getUTCMonth()-months);return history.filter(x=>new Date(x.date+'T00:00:00Z')>=start);}
+
+export function projection(price,months,growthPercent,rangePercent){
+ if(![price,months,growthPercent,rangePercent].every(Number.isFinite)||price<=0||months<=0||growthPercent < -50||growthPercent>50||rangePercent<0||rangePercent>100)throw Error('Use growth from −50 to 50% and range from 0 to 100%.');
+ const t=months/12,base=price*Math.pow(1+growthPercent/100,t),width=rangePercent/100*Math.sqrt(t);
+ return {base,lower:base*Math.exp(-width),upper:base*Math.exp(width)};
+}
+export function horizonDate(date,months){
+ const d=new Date(date+'T00:00:00Z');const day=d.getUTCDate();d.setUTCDate(1);d.setUTCMonth(d.getUTCMonth()+months);const last=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,0)).getUTCDate();d.setUTCDate(Math.min(day,last));return d.toISOString().slice(0,10);
+}

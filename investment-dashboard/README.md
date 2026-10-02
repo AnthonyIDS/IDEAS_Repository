@@ -2,7 +2,7 @@
 
 A static, mobile-friendly educational investment dashboard. Plain HTML, CSS and JavaScript; Chart.js 4.5.1 UMD from cdnjs. No bundler, package installation, database or frontend API key. Light/dark mode, local theme preference, keyboard controls, searchable holdings, chart fallbacks, editable Markdown commentary and JSON data.
 
-**Educational content only, not personalized financial advice.** The portfolio is hypothetical and has not been assessed for your objectives, time horizon, tax position or capacity for loss. Sample prices and five-year history are fictional, not actual returns, forecasts or a backtest. Stocks shown are research candidates, not claims of attractive current valuations.
+**Educational content only, not personalized financial advice.** The portfolio is hypothetical and has not been assessed for your objectives, time horizon, tax position or capacity for loss. The current prices are a market-data snapshot captured October 2, 2026 before the regular session opened. Share counts and cost bases remain hypothetical. The prior synthetic performance history has been removed; recorded history now begins October 2. Price scenarios are illustrative assumptions, not analyst predictions or a backtest. Stocks shown are research candidates, not claims of attractive current valuations.
 
 ## Repository layout
 
@@ -17,6 +17,8 @@ investment-dashboard/
   model.mjs
   holdings.json
   prices.json
+  prices-2026-10-02.json  # fixed dated quote record
+  predictions.json      # editable scenario assumptions
   commentary.md
   README.md
   scripts/update-prices.mjs
@@ -41,7 +43,7 @@ Open `http://localhost:8000/investment-dashboard/`. Opening `index.html` directl
 
 1. In `AnthonyIDS/IDEAS_Repository`, open **Settings → Pages → Build and deployment → Source → GitHub Actions**. If the existing site uses branch publishing, switch it once; this workflow preserves existing repository pages in its deployment artifact.
 2. Open **Settings → Actions → General** and ensure GitHub Actions are enabled and repository policy permits the workflow's `contents: write`, `pages: write` and `id-token: write` permissions. A branch rule blocking bot pushes must be accommodated by the repository owner; do not disable protections blindly.
-3. For the immediate demo, open **Actions → Investment dashboard → Run workflow**, select `main`, and uncheck **Fetch a fresh Finnhub snapshot**. No API key is needed for the sample deployment.
+3. To deploy the included price snapshot, open **Actions → Investment dashboard → Run workflow**, select `main`, and uncheck **Fetch a fresh Finnhub snapshot**. No API key is needed to deploy the included snapshot; a key is needed for future automated updates.
 4. After successful deployment, visit `https://anthonyids.github.io/IDEAS_Repository/investment-dashboard/`. Existing root pages retain their paths. If the repository uses a custom domain, append `/investment-dashboard/` to that site's base URL.
 5. To enable real quotes, obtain a free API key from [Finnhub](https://finnhub.io/) and add **Settings → Secrets and variables → Actions → New repository secret**, named `FINNHUB_API_KEY`. Never paste the key into a file or chat. Confirm your Finnhub account's current access and redistribution terms before publicly publishing provider data.
 6. Run the workflow with refresh checked. It fetches the 11 holdings plus SPY, validates the complete snapshot, commits `prices.json`, and deploys in the same run. It also runs weekdays at **22:37 UTC** (6:37 p.m. EDT / 5:37 p.m. EST). GitHub schedules may be delayed, and inactive public repositories can have scheduled workflows disabled.
@@ -111,3 +113,13 @@ Requires Node 22+. Tests cover allocation accounting, concentration/drift, inval
 - [Chart.js on cdnjs](https://cdnjs.com/libraries/Chart.js)
 - [GitHub Pages custom workflows](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)
 - [GitHub publishing sources and bot-commit limitation](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
+
+## October 2 update and price outlook
+
+The snapshot was retrieved through the finance market-data lookup on October 2, 2026. Each quote retains the provider's actual trade timestamp. Most are October 2 premarket; UNP's latest supplied trade is October 1 at 7:15 p.m. EDT. These are not October 2 closing prices. The snapshot compilation time appears at the top, and individual last-trade times appear in Eastern Time beside each price. Previous-close values were derived as reported price minus reported absolute price change. Because quote sessions differ, the summary is labeled **Quote change**, not a synchronized daily portfolio return. The new prices move hypothetical weights and may trigger real policy/drift warnings; quantities have not been changed to hide that drift.
+
+`prices-2026-10-02.json` preserves this exact dated snapshot. The normal Finnhub updater continues to replace only `prices.json`; its complete-session validation remains in effect. Real performance history starts with this one snapshot; there is not enough evidence for a real five-year chart. Mixed-timestamp prices describe the latest available snapshot, not a simultaneous executable portfolio valuation.
+
+The Price outlook panel covers eight individual stocks, with calendar horizons one, three and six months after `quoteDate`. From October 2 these are November 2, 2026, January 2, 2027, and April 2, 2027. Closed-market target dates are not moved to trading days. Each cell includes a base value and downside/upside scenarios. The default assumed annual growth is 6%, and the annual sensitivity parameter is 25%, identically applied to all stocks. These inputs are deliberately disclosed assumptions, not company-specific research, measured volatility, consensus targets or estimated probabilities. Do not interpret the ranges as confidence intervals.
+
+For t = months/12, base = P × (1+g)^t, lower = base × exp(−s√t), upper = base × exp(s√t), where g and s are annual percentage inputs divided by 100. The panel permits changing growth from −50% to 50% and the range parameter from 0% to 100%. Changes apply only to the open session; edit `predictions.json` to change saved defaults. Actual prices can be outside the range, including a near-total loss. The calculation excludes earnings revisions, valuation, dividends, corporate actions and company-specific risk. It is a what-if tool, not a reliable prediction service.

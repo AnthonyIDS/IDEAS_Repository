@@ -1,0 +1,5 @@
+{
+  "annualGrowthPercent": 6,
+  "annualRangePercent": 25,
+  "description": "Illustrative shared assumptions for all eight stocks; not analyst targets, fitted volatility, or calibrated probabilities. Base growth is an assumed 6% per year, not an expected return estimate. The 25% range parameter is a sensitivity assumption, not a measured risk statistic."
+}
