@@ -1,0 +1,71 @@
+name: Investment dashboard
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'investment-dashboard/**'
+      - '.github/workflows/investment-dashboard.yml'
+  schedule:
+    - cron: '37 22 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      refresh:
+        description: Fetch a fresh Finnhub snapshot
+        type: boolean
+        default: true
+permissions:
+  contents: read
+concurrency:
+  group: investment-dashboard-pages
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test portfolio calculations
+        run: node --test investment-dashboard/tests/model.test.mjs
+      - name: Validate editable holdings
+        working-directory: investment-dashboard
+        run: >-
+          node --input-type=module -e
+          "import {readFileSync} from 'node:fs'; import {validate} from './model.mjs';
+          validate(JSON.parse(readFileSync('holdings.json', 'utf8')));"
+      - name: Refresh market data
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.refresh)
+        env:
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+        run: node investment-dashboard/scripts/update-prices.mjs
+      - name: Commit refreshed data
+        run: |
+          if ! git diff --quiet -- investment-dashboard/prices.json; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add investment-dashboard/prices.json
+            git commit -m 'Update investment dashboard prices'
+            git push origin HEAD:main
+          fi
+      - name: Prepare static site (preserve existing pages)
+        run: |
+          mkdir -p "$RUNNER_TEMP/pages"
+          rsync -a --exclude='.git' --exclude='.github' --exclude='node_modules' ./ "$RUNNER_TEMP/pages/"
+          touch "$RUNNER_TEMP/pages/.nojekyll"
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/pages
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
