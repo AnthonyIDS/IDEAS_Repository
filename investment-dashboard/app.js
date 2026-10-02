@@ -29,9 +29,9 @@ function renderPredictions(){
  try{
  if(!$('growth').value.trim()||!$('spread').value.trim())throw Error('Enter both assumptions to calculate scenarios.');
  projection(100,1,growth,spread);
- const horizons=[1,3,6];
- $('prediction-head').innerHTML='<tr><th scope="col">Stock</th><th scope="col">Starting price</th>'+horizons.map(m=>`<th scope="col">${m} month${m>1?'s':''}<small>${horizonDate(prices.quoteDate,m)}</small></th>`).join('')+'</tr>';
- $('predictions').innerHTML=state.rows.filter(r=>r.type==='Stock').map(r=>`<tr><td><strong>${esc(r.ticker)}</strong><small>${esc(r.name)}</small></td><td>${money(r.price)}<small>${esc(stamp(prices.quotes[r.ticker].timestamp))}</small></td>${horizons.map(m=>{const f=projection(r.price,m,growth,spread);return `<td><strong>${money(f.base)}</strong><small>Base case · ${pct((f.base/r.price-1)*100)}</small><span class="forecast-range">${money(f.lower)} – ${money(f.upper)}</span><small>Downside – upside</small></td>`;}).join('')}</tr>`).join('');
+ const horizons=[{label:"2 weeks",period:14,unit:"days",date:horizonDate(prices.quoteDate,0,14)},...[1,3,6].map(m=>({label:`${m} month${m>1?"s":""}`,period:m,unit:"months",date:horizonDate(prices.quoteDate,m)}))];
+ $('prediction-head').innerHTML='<tr><th scope="col">Stock</th><th scope="col">Starting price</th>'+horizons.map(h=>`<th scope="col">${h.label}<small>${h.date}</small></th>`).join('')+'</tr>';
+ $('predictions').innerHTML=state.rows.filter(r=>r.type==='Stock').map(r=>`<tr><td><strong>${esc(r.ticker)}</strong><small>${esc(r.name)}</small></td><td>${money(r.price)}<small>${esc(stamp(prices.quotes[r.ticker].timestamp))}</small></td>${horizons.map(h=>{const f=projection(r.price,h.period,growth,spread,h.unit);return `<td><strong>${money(f.base)}</strong><small>Base case · ${pct((f.base/r.price-1)*100)}</small><span class="forecast-range">${money(f.lower)} – ${money(f.upper)}</span><small>Downside – upside</small></td>`;}).join('')}</tr>`).join('');
  $('prediction-note').textContent=`Anchored to the ${prices.quoteDate} snapshot. Base growth assumption: ${growth}% per year; range parameter: ${spread}%. All values in USD. These inputs are assumptions, not a forecast based on company research.`;
  }catch(e){$('prediction-note').textContent=e.message;$('predictions').replaceChildren();}
 }

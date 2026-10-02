@@ -10,3 +10,5 @@ test('Quote parser uses header secret and preserves provider fields',async()=>{c
 
 test('Price scenarios use disclosed assumptions and positive ordered ranges',()=>{for(const m of [1,3,6]){const f=projection(100,m,6,25);assert.ok(f.lower<f.base&&f.base<f.upper);assert.ok(f.lower>0);assert.ok(Math.abs(f.base-100*Math.pow(1.06,m/12))<1e-9);}assert.deepEqual(projection(100,6,0,0),{base:100,lower:100,upper:100});assert.throws(()=>projection(100,1,-100,25));assert.throws(()=>projection(100,1,6,NaN));});
 test('Forecast horizons keep calendar dates and clamp month ends',()=>{assert.equal(horizonDate('2026-10-02',1),'2026-11-02');assert.equal(horizonDate('2026-10-02',3),'2027-01-02');assert.equal(horizonDate('2026-10-02',6),'2027-04-02');assert.equal(horizonDate('2027-01-31',1),'2027-02-28');});
+
+test('Two-week outlook uses 14 calendar days and a 365-day year',()=>{assert.equal(horizonDate('2026-10-02',0,14),'2026-10-16');assert.equal(horizonDate('2026-12-25',0,14),'2027-01-08');const f=projection(100,14,6,25,'days');assert.ok(Math.abs(f.base-100*Math.pow(1.06,14/365))<1e-9);assert.ok(f.lower<f.base&&f.base<f.upper);assert.ok(f.upper<projection(100,1,6,25).upper);});
