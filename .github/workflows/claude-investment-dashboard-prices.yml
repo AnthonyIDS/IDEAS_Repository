@@ -1,4 +1,4 @@
-name: Update prices
+name: Update prices (Claude investment dashboard)
 
 on:
   schedule:
@@ -12,7 +12,7 @@ on:
         type: boolean
         default: false
       research_file:
-        description: "Research file (path from repo root)"
+        description: "Research file (path from claude-investment-dashboard/)"
         type: string
         default: "data/research/research-2026-10-06.json"
 
@@ -20,13 +20,16 @@ permissions:
   contents: write
 
 concurrency:
-  group: update-prices
+  group: claude-investment-dashboard-prices
   cancel-in-progress: false
 
 jobs:
   update:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: claude-investment-dashboard
     steps:
       - uses: actions/checkout@v4
 
@@ -70,5 +73,5 @@ jobs:
       - name: Fail the run if the fetch failed
         if: steps.fetch.outcome != 'success'
         run: |
-          echo "Price fetch failed; the previous snapshot was preserved. See data/refresh-status.json."
+          echo "Price fetch failed; the previous snapshot was preserved. See claude-investment-dashboard/data/refresh-status.json."
           exit 1

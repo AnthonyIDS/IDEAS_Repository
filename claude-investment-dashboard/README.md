@@ -30,7 +30,7 @@ A static investment dashboard for GitHub Pages. It uses plain HTML, CSS and vani
 │   ├── create_forecasts.py         # Creates a NEW forecast batch (never edits old ones)
 │   ├── evaluate_forecasts.py       # Scores forecasts whose evaluation session has closed
 │   └── make_sample_data.py         # Regenerates data/sample/*
-├── .github/workflows/update-prices.yml
+│   (price workflow: .github/workflows/claude-investment-dashboard-prices.yml at the repo root)
 └── .nojekyll
 ```
 
@@ -56,10 +56,10 @@ Without a Finnhub key, quotes fall back to Stooq, which is free and keyless but 
 **Settings → Actions → General → Workflow permissions → Read and write permissions → Save.**
 
 ### 4. Run the first refresh
-**Actions → Update prices → Run workflow.** When it finishes, `data/prices.json` and `data/history.json` exist and the dashboard switches from sample data to live data. After that the workflow runs on its own every weekday, hourly at :35 from 13:35 to 21:35 UTC.
+**Actions → Update prices (Claude investment dashboard) → Run workflow.** When it finishes, `data/prices.json` and `data/history.json` exist and the dashboard switches from sample data to live data. After that the workflow runs on its own every weekday, hourly at :35 from 13:35 to 21:35 UTC.
 
 ### 5. Create the first forecast batch
-**Actions → Update prices → Run workflow.** Tick **"Also create a NEW forecast batch"** and leave the research file at its default (or point it at a newer one). Forecasts are created only on manual runs, because they depend on manually maintained research.
+**Actions → Update prices (Claude investment dashboard) → Run workflow.** Tick **"Also create a NEW forecast batch"** and leave the research file at its default (or point it at a newer one). Forecasts are created only on manual runs, because they depend on manually maintained research.
 
 ### Local preview
 ```bash
