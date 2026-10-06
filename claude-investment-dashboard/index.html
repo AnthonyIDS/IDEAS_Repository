@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Core-Satellite Portfolio Dashboard</title>
+  <meta name="description" content="Static investment dashboard: allocation, performance vs S&P 500, risk, holdings, research outlook and commentary.">
+  <script>
+    // Apply saved theme before paint (per-viewer convenience only).
+    try { var t = localStorage.getItem("theme"); if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
+  <script src="assets/js/app.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <div class="header-row">
+        <div>
+          <h1>Core-Satellite Portfolio Dashboard</h1>
+          <p class="subtitle">Low-cost index core, quality-stock satellites, disciplined sizing.</p>
+        </div>
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle light or dark theme">Theme: auto</button>
+      </div>
+      <p class="notice disclaimer" role="note">Educational content only, not personalized financial advice. Price predictions are uncertain research estimates or modeled scenarios, not guarantees. Actual results may differ substantially.</p>
+      <div id="modeBanner" class="notice sample" role="status"></div>
+      <div id="staleBanner" class="notice warn" role="status"></div>
+      <div class="stamps" id="stamps"></div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- 1. Summary -->
+    <section class="panel" id="summary" aria-labelledby="h-summary">
+      <div class="panel-head"><h2 id="h-summary">Summary</h2><small id="summaryBasis"></small></div>
+      <div class="grid cards" id="cards"></div>
+      <details class="calc">
+        <summary>What these numbers include and exclude</summary>
+        <ul id="calcNotes"></ul>
+      </details>
+    </section>
+
+    <!-- 2. Allocation -->
+    <section class="panel" id="allocation" aria-labelledby="h-alloc">
+      <div class="panel-head"><h2 id="h-alloc">Allocation</h2><small>Current weights at latest quotes</small></div>
+      <div class="grid charts">
+        <div class="chart-box"><h3>By holding</h3><div class="chart-canvas"><canvas id="donut" aria-label="Allocation by holding"></canvas></div></div>
+        <div class="chart-box"><h3>By equity sector (look-through)</h3><div class="chart-canvas"><canvas id="sectorBar" aria-label="Equity sector exposure"></canvas></div></div>
+        <div class="chart-box"><h3>By asset class</h3><div class="chart-canvas"><canvas id="assetBar" aria-label="Asset class exposure"></canvas></div></div>
+      </div>
+      <p class="muted" id="sectorNote" style="margin-top:10px;font-size:.82rem"></p>
+    </section>
+
+    <!-- 3. Performance -->
+    <section class="panel" id="performance" aria-labelledby="h-perf">
+      <div class="panel-head">
+        <h2 id="h-perf">Performance vs S&amp;P 500</h2>
+        <div class="toggle-group" role="group" aria-label="Time range" id="rangeToggle">
+          <button type="button" data-range="1M" aria-pressed="false">1M</button>
+          <button type="button" data-range="6M" aria-pressed="false">6M</button>
+          <button type="button" data-range="1Y" aria-pressed="true">1Y</button>
+          <button type="button" data-range="5Y" aria-pressed="false">5Y</button>
+        </div>
+      </div>
+      <div class="perf-stats" id="perfStats"></div>
+      <div class="chart-canvas tall"><canvas id="perfChart" aria-label="Performance line chart"></canvas></div>
+      <p class="muted" id="perfNote" style="margin-top:10px;font-size:.82rem"></p>
+    </section>
+
+    <!-- 4. Risk -->
+    <section class="panel" id="risk" aria-labelledby="h-risk">
+      <div class="panel-head"><h2 id="h-risk">Risk</h2></div>
+      <div class="grid two">
+        <div>
+          <div class="score-ring"><div class="score-num num" id="divScore">–</div><div><b>Diversification score</b><br><small>0–100, higher is more diversified</small></div></div>
+          <div class="meter"><span id="divMeter" style="width:0%"></span></div>
+          <ul class="checklist" id="scoreParts"></ul>
+          <details class="calc"><summary>Score methodology</summary><ul id="scoreMethod"></ul></details>
+        </div>
+        <div>
+          <h3>Portfolio rules and alerts</h3>
+          <ul class="checklist" id="riskChecks"></ul>
+          <h3 style="margin-top:14px">Drift alerts (&gt; 5 percentage points from target)</h3>
+          <ul class="checklist" id="driftAlerts"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Holdings -->
+    <section class="panel" id="holdings" aria-labelledby="h-hold">
+      <div class="panel-head"><h2 id="h-hold">Holdings</h2><small id="holdingsBasis"></small></div>
+      <div class="table-scroll holdings-wrap">
+        <table class="holdings" id="holdingsTable">
+          <thead><tr>
+            <th>Ticker</th><th>Name</th><th>Sector</th><th class="r">Weight / Target</th>
+            <th class="r">Price</th><th>Quote time</th><th class="r">Return</th><th>Thesis</th><th>Main risk</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 6. Research outlook -->
+    <section class="panel" id="outlook" aria-labelledby="h-outlook">
+      <div class="panel-head"><h2 id="h-outlook">Wall Street Research Outlook</h2><small>Research-based synthesis</small></div>
+      <p style="font-size:.9rem">A research-based synthesis of published analyst research, company announcements and price history for each individual stock. No panel of professionals met to produce it, and no analyst or firm has reviewed or endorsed this dashboard. "Analyst consensus" appears only where a named aggregator documents an actual average of published targets, and those targets keep their original 12-month horizon.</p>
+      <div class="notice warn"><b>Uncertainty is high.</b> Bear/base/bull figures are scenarios, not guaranteed bounds or calibrated confidence intervals. Prices often finish outside the range. "Evidence strength" describes the quality of the supporting evidence, not the chance the forecast comes true.</div>
+      <div id="batchInfo" class="fc-meta"></div>
+      <div class="fc-grid" id="fcGrid"></div>
+
+      <h3 style="margin-top:22px">Forecast history and scorecard</h3>
+      <p class="muted" style="font-size:.85rem">Every forecast batch is preserved with its original creation time and starting price. Pending forecasts wait for their evaluation session; completed ones compare the base case to the observed closing price.</p>
+      <div class="perf-stats" id="scoreSummary"></div>
+      <div class="table-scroll" style="max-height:480px">
+        <table id="historyTable">
+          <thead><tr>
+            <th>Created</th><th>Ticker</th><th>Horizon</th><th class="r">Start</th><th>Target / evaluation</th>
+            <th class="r">Bear</th><th class="r">Base</th><th class="r">Bull</th><th>Status</th><th class="r">Observed</th><th class="r">Error</th><th>In range?</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 7. Commentary -->
+    <section class="panel" id="desk" aria-labelledby="h-desk">
+      <div class="panel-head"><h2 id="h-desk">The Veteran’s Desk</h2><small>Editorial voice, not a real person’s credentials</small></div>
+      <article class="commentary" id="commentary"><p class="muted">Loading commentary…</p></article>
+    </section>
+
+    <!-- Sources -->
+    <section class="panel" id="sources" aria-labelledby="h-sources">
+      <div class="panel-head"><h2 id="h-sources">Data sources and methodology</h2></div>
+      <div id="sourceList" style="font-size:.88rem"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Educational content only, not personalized financial advice. Price predictions are uncertain research estimates or modeled scenarios, not guarantees. Actual results may differ substantially.</p>
+      <p>Static site: reads local JSON files and commentary.md only. Prices are refreshed by a scheduled GitHub Action. See README for calculations and update procedures.</p>
+    </div>
+  </footer>
+</body>
+</html>

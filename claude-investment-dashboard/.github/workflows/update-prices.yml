@@ -1,0 +1,74 @@
+name: Update prices
+
+on:
+  schedule:
+    # Weekdays, hourly at :35 from 13:35 to 21:35 UTC. Covers the US session in
+    # both EDT and EST, plus one run after the 4:00 p.m. ET close.
+    - cron: "35 13-21 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      create_forecasts:
+        description: "Also create a NEW forecast batch from the research file below"
+        type: boolean
+        default: false
+      research_file:
+        description: "Research file (path from repo root)"
+        type: string
+        default: "data/research/research-2026-10-06.json"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-prices
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch quotes and history
+        id: fetch
+        continue-on-error: true
+        env:
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+          ALPHAVANTAGE_API_KEY: ${{ secrets.ALPHAVANTAGE_API_KEY }}
+          STOOQ_API_KEY: ${{ secrets.STOOQ_API_KEY }}
+        run: python scripts/fetch_prices.py
+
+      - name: Evaluate matured forecasts
+        if: steps.fetch.outcome == 'success'
+        run: python scripts/evaluate_forecasts.py
+
+      - name: Create forecast batch (manual runs only)
+        if: steps.fetch.outcome == 'success' && github.event_name == 'workflow_dispatch' && inputs.create_forecasts
+        env:
+          RESEARCH_FILE: ${{ inputs.research_file }}
+        run: python scripts/create_forecasts.py --research "$RESEARCH_FILE"
+
+      - name: Commit changes
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          git add -A data
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Data refresh $(date -u +'%Y-%m-%dT%H:%MZ')"
+            git pull --rebase --autostash
+            git push
+          fi
+
+      - name: Fail the run if the fetch failed
+        if: steps.fetch.outcome != 'success'
+        run: |
+          echo "Price fetch failed; the previous snapshot was preserved. See data/refresh-status.json."
+          exit 1
