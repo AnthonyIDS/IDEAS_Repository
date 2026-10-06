@@ -1,0 +1,30 @@
+{
+  "last_attempt_utc": "2026-10-06T21:09:47Z",
+  "last_attempt_errors": [
+    "history VTI (Stooq): Stooq history unavailable for vti.us: '<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"robots\" content=\"noindex,nofollow\"></head><body><noscript>T'",
+    "history VEA (Stooq): Stooq history unavailable for vea.us: '<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"robots\" content=\"noindex,nofollow\"></head><body><noscript>T'",
+    "history BND (Stooq): Stooq history unavailable for bnd.us: '<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"robots\" content=\"noindex,nofollow\"></head><body><noscript>T'",
+    "history MSFT (Stooq): Stooq history unavailable for msft.us: '<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"robots\" content=\"noindex,nofollow\"></head><body><noscript>T'",
+    "history BRK.B (Stooq): Stooq history unavailable for brk-b.us: '<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"robots\" content=\"noindex,nofollow\"></head><body><noscript>T'",
+    "history JNJ (Stooq): Stooq history unavailable for jnj.us: '<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"robots\" content=\"noindex,nofollow\"></head><body><noscript>T'",
+    "history PG (Stooq): Stooq history unavailable for pg.us: '<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"robots\" content=\"noindex,nofollow\"></head><body><noscript>T'",
+    "history NEE (Stooq): Stooq history unavailable for nee.us: '<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"robots\" content=\"noindex,nofollow\"></head><body><noscript>T'",
+    "history UNP (Stooq): Stooq history unavailable for unp.us: '<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"robots\" content=\"noindex,nofollow\"></head><body><noscript>T'",
+    "history SHEL (Stooq): Stooq history unavailable for shel.us: '<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"robots\" content=\"noindex,nofollow\"></head><body><noscript>T'",
+    "history SPY (Stooq): Stooq history unavailable for spy.us: '<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"robots\" content=\"noindex,nofollow\"></head><body><noscript>T'",
+    "quote VTI (stooq): HTTP Error 404: Not Found",
+    "quote VEA (stooq): HTTP Error 404: Not Found",
+    "quote BND (stooq): HTTP Error 404: Not Found",
+    "quote MSFT (stooq): HTTP Error 404: Not Found",
+    "quote BRK.B (stooq): HTTP Error 404: Not Found",
+    "quote JNJ (stooq): HTTP Error 404: Not Found",
+    "quote PG (stooq): HTTP Error 404: Not Found",
+    "quote NEE (stooq): HTTP Error 404: Not Found",
+    "quote UNP (stooq): HTTP Error 404: Not Found",
+    "quote SHEL (stooq): HTTP Error 404: Not Found",
+    "quote SPY (stooq): HTTP Error 404: Not Found"
+  ],
+  "quotes_refreshed": 0,
+  "quotes_expected": 11,
+  "last_attempt_outcome": "failed \u2014 previous snapshot preserved"
+}
