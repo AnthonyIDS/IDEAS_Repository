@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "_readme": "Live forecast store. Batches are appended by scripts/create_forecasts.py and never edited; evaluations are added by scripts/evaluate_forecasts.py. Archive copies live in data/predictions/archive/.",
+  "batches": [],
+  "evaluations": {}
+}

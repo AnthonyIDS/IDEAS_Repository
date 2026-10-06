@@ -1,0 +1,200 @@
+{
+  "_readme": "Manual research inputs. Each file is dated and never edited after forecasts are created from it; start a new dated file for the next research cycle. Analyst figures are copied from the named aggregator on the observation date. They are 12-month targets and are NOT used as 2/4/6-week predictions.",
+  "research_id": "research-2026-10-06",
+  "compiled_at": "2026-10-06T11:45:00-04:00",
+  "compiled_by": "Dashboard maintainer (research-based synthesis; no analyst reviewed or endorsed this dashboard)",
+  "consensus_policy": "One aggregator (MarketBeat) is used per stock for 'analyst consensus' so the same underlying analyst estimates are not counted twice across sites that republish them. Other sources are used only for independent facts (company announcements, regulators, dated news).",
+  "model_assumptions": {
+    "long_run_equity_drift_annual": 0.06,
+    "drift_note": "Assumed long-run annual equity market return (not a forecast). Each stock's base-case drift = its 1-year beta to SPY (clamped 0-2; 1.0 if unavailable) x this rate, applied per trading session.",
+    "volatility_window_trading_days": 63,
+    "earnings_event_variance_multiplier": 2.5,
+    "earnings_event_note": "Each scheduled earnings release inside the horizon adds one extra day of variance equal to (2.5 x the stock's own daily volatility)^2. This is a modeling assumption, not an observed options-implied move.",
+    "tilt_scale_sigma": 0.25,
+    "tilt_note": "Research tilt in [-1, +1] shifts the base case by tilt x 0.25 x horizon volatility. Tilt reflects near-term evidence (estimate revisions, rating changes, scheduled catalysts), never a 12-month target.",
+    "scenario_width_sigma": 1.0,
+    "scenario_note": "Bear and bull cases are the base case -/+ 1.0 horizon standard deviation under a lognormal assumption. They are scenarios, not calibrated confidence bounds."
+  },
+  "stocks": {
+    "MSFT": {
+      "consensus": {
+        "source": "MarketBeat — Microsoft (MSFT) price target and forecast",
+        "source_url": "https://www.marketbeat.com/stocks/NASDAQ/MSFT/forecast/",
+        "observed_at": "2026-10-06T10:37:00-04:00",
+        "aggregation_method": "MarketBeat average of the most recent 12-month price targets from the analysts it tracks",
+        "analyst_count": 48,
+        "ratings": { "strong_buy": 1, "buy": 40, "hold": 5, "sell": 2 },
+        "consensus_rating": "Moderate Buy",
+        "mean_target_12m": 578.73,
+        "high_target_12m": 870.00,
+        "low_target_12m": 440.00,
+        "target_horizon": "12 months"
+      },
+      "evidence": [
+        { "fact": "Melius Research upgraded MSFT to Buy with a $665 target, citing cybersecurity as a lower-risk AI exposure.", "source": "Quartz", "url": "https://qz.com/melius-research-microsoft-stock-upgrade-buy-665-100526", "published": "2026-10-05" },
+        { "fact": "Fiscal Q4 2026 (reported 2026-07-29): EPS $4.74 vs $4.24 consensus estimate.", "source": "MarketBeat earnings page", "url": "https://www.marketbeat.com/stocks/NASDAQ/MSFT/earnings/", "published": "observed 2026-10-06" },
+        { "fact": "Stock fell about 24% year-to-date by late March 2026 amid a broad tech sell-off; capex reached $37.5B in a quarter (+66%).", "source": "Yahoo Finance / Barchart", "url": "https://finance.yahoo.com/markets/stocks/articles/down-24-2026-buy-dip-144751100.html", "published": "2026-03-31" }
+      ],
+      "catalysts": [
+        { "event": "Fiscal Q1 2027 earnings", "date": "2026-10-28", "status": "estimated (not confirmed by company as of observation)", "source": "MarketBeat earnings page", "url": "https://www.marketbeat.com/stocks/NASDAQ/MSFT/earnings/" }
+      ],
+      "tilt": 0.5,
+      "tilt_reason": "Recent upgrades and an earnings beat point to positive estimate momentum; tempered because the earnings date is unconfirmed and AI-capex worries remain.",
+      "valuation_note": "Not independently verified for this cycle; consult a current P/E source before relying on valuation arguments.",
+      "evidence_strength": "moderate",
+      "evidence_strength_reason": "Broad coverage (48 analysts) and fresh rating changes, but no published 2–6 week targets exist and the key catalyst date is estimated."
+    },
+    "BRK.B": {
+      "consensus": {
+        "source": "MarketBeat — Berkshire Hathaway (BRK.B) price target and forecast",
+        "source_url": "https://www.marketbeat.com/stocks/NYSE/BRK.B/forecast/",
+        "observed_at": "2026-10-06T11:19:00-04:00",
+        "aggregation_method": "MarketBeat average of the most recent 12-month price targets from the analysts it tracks",
+        "analyst_count": 3,
+        "ratings": { "strong_buy": 0, "buy": 1, "hold": 2, "sell": 0 },
+        "consensus_rating": "Hold",
+        "mean_target_12m": 542.50,
+        "high_target_12m": 604.00,
+        "low_target_12m": 481.00,
+        "target_horizon": "12 months"
+      },
+      "evidence": [
+        { "fact": "BRK.B fell 8.3% over the prior year vs a 31.4% S&P 500 gain; concerns include loss of the 'Buffett premium' and GEICO margin pressure.", "source": "Yahoo Finance / Barchart", "url": "https://finance.yahoo.com/markets/stocks/articles/berkshire-hathaway-stock-analyst-estimates-131742382.html", "published": "2026-05-07" }
+      ],
+      "catalysts": [
+        { "event": "Q3 2026 earnings", "date": null, "status": "not announced; Berkshire typically reports on the first Saturday of November, which may fall outside the 2-week horizon", "source": "historical pattern", "url": null }
+      ],
+      "tilt": 0,
+      "tilt_reason": "Very thin sell-side coverage and no dated near-term catalyst; no basis for a directional tilt.",
+      "evidence_strength": "low",
+      "evidence_strength_reason": "Only 3 analysts in the consensus and no confirmed catalyst inside the horizons."
+    },
+    "JNJ": {
+      "consensus": {
+        "source": "MarketBeat — Johnson & Johnson (JNJ) price target and forecast",
+        "source_url": "https://www.marketbeat.com/stocks/NYSE/JNJ/forecast/",
+        "observed_at": "2026-10-05T15:59:00-04:00",
+        "aggregation_method": "MarketBeat average of the most recent 12-month price targets from the analysts it tracks",
+        "analyst_count": 25,
+        "ratings": { "strong_buy": 1, "buy": 18, "hold": 6, "sell": 0 },
+        "consensus_rating": "Moderate Buy",
+        "mean_target_12m": 276.09,
+        "high_target_12m": 320.00,
+        "low_target_12m": 210.00,
+        "target_horizon": "12 months"
+      },
+      "evidence": [
+        { "fact": "Proposed $5.5B resolution of ovarian talc litigation, conditioned on participation by firms representing at least 95% of remaining claims.", "source": "Johnson & Johnson press release", "url": "https://www.jnj.com/media-center/press-releases/johnson-johnson-announces-a-proposed-resolution-of-ovarian-talc-litigation", "published": "2026-07-27" },
+        { "fact": "Management guided 2026 adjusted EPS of $11.45–$11.65 after Q1 sales rose 9.9% to $24.1B.", "source": "Yahoo Finance / Barchart", "url": "https://finance.yahoo.com/markets/stocks/articles/wall-street-analysts-bullish-johnson-143137389.html", "published": "2026-05-04" }
+      ],
+      "catalysts": [
+        { "event": "Q3 2026 earnings call", "date": "2026-10-13", "status": "confirmed (8:30 a.m. ET)", "source": "Johnson & Johnson investor release (2026-08-31)", "url": "https://s203.q4cdn.com/636242992/files/doc_news/Johnson--Johnson-to-Host-Investor-Conference-Call-on-Third-Quarter-Results-2026.pdf" }
+      ],
+      "tilt": 0,
+      "tilt_reason": "Positive guidance is offset by binary talc-settlement and earnings risk; neutral.",
+      "evidence_strength": "moderate",
+      "evidence_strength_reason": "25 analysts, confirmed earnings date and company guidance; short-horizon price evidence remains inherently limited."
+    },
+    "PG": {
+      "consensus": {
+        "source": "MarketBeat — Procter & Gamble (PG) price target and forecast",
+        "source_url": "https://www.marketbeat.com/stocks/NYSE/PG/forecast/",
+        "observed_at": "2026-10-06T09:53:00-04:00",
+        "aggregation_method": "MarketBeat average of the most recent 12-month price targets from the analysts it tracks",
+        "analyst_count": 23,
+        "ratings": { "strong_buy": 0, "buy": 13, "hold": 10, "sell": 0 },
+        "consensus_rating": "Moderate Buy",
+        "mean_target_12m": 161.70,
+        "high_target_12m": 179.00,
+        "low_target_12m": 145.00,
+        "target_horizon": "12 months"
+      },
+      "evidence": [
+        { "fact": "Wells Fargo lowered its expectations for P&G's stock price.", "source": "MarketBeat", "url": "https://www.marketbeat.com/instant-alerts/wells-fargo-company-has-lowered-expectations-for-procter-gamble-nysepg-stock-price-2026-01-05/", "published": "2026-01-05" }
+      ],
+      "catalysts": [
+        { "event": "Fiscal Q1 2026/27 earnings webcast", "date": "2026-10-22", "status": "confirmed (8:30 a.m. ET)", "source": "P&G news release (2026-09-24)", "url": "https://us.pg.com/newsroom/news-releases/PG-to-Webcast-Discussion-of-First-Quarter-2627-Earnings-Results-on-October-22/" }
+      ],
+      "tilt": 0,
+      "tilt_reason": "Split ratings (13 Buy / 10 Hold) and no clear revision trend found in this cycle.",
+      "evidence_strength": "moderate",
+      "evidence_strength_reason": "23 analysts and a confirmed earnings date; limited recent revision data gathered."
+    },
+    "NEE": {
+      "consensus": {
+        "source": "MarketBeat — NextEra Energy (NEE) price target and forecast",
+        "source_url": "https://www.marketbeat.com/stocks/NYSE/NEE/forecast/",
+        "observed_at": "2026-10-06T10:53:00-04:00",
+        "aggregation_method": "MarketBeat average of the most recent 12-month price targets from the analysts it tracks",
+        "analyst_count": 23,
+        "ratings": { "strong_buy": 0, "buy": 18, "hold": 5, "sell": 0 },
+        "consensus_rating": "Moderate Buy",
+        "mean_target_12m": 98.95,
+        "high_target_12m": 112.00,
+        "low_target_12m": 80.00,
+        "target_horizon": "12 months"
+      },
+      "evidence": [
+        { "fact": "All-stock agreement to combine with Dominion Energy (0.8138 NEE shares per D share), announced 2026-05-15.", "source": "VectorShift deal summary", "url": "https://www.vectorshift.ai/research/deals/nextera-energy-dominion-energy-2026", "published": "2026-05" },
+        { "fact": "Shares traded near the bottom of a $74.41–$98.75 52-week range; a quant rating service cut its rating citing debt concerns.", "source": "ad-hoc-news", "url": "https://www.ad-hoc-news.de/boerse/news/corporate-news/nextera-energy-stock-faces-a-sharper-analyst-split-after-downgrade/70235852", "published": "2026-10-05" }
+      ],
+      "catalysts": [
+        { "event": "Q3 2026 earnings", "date": "2026-10-27", "status": "reported as scheduled (before market open)", "source": "ad-hoc-news", "url": "https://www.ad-hoc-news.de/boerse/news/corporate-news/nextera-energy-stock-faces-a-sharper-analyst-split-after-downgrade/70235852" }
+      ],
+      "tilt": -0.5,
+      "tilt_reason": "Persistent downtrend and merger/debt overhang outweigh the gap to 12-month targets over a few weeks.",
+      "evidence_strength": "moderate",
+      "evidence_strength_reason": "23 analysts and a scheduled earnings date, but merger outcomes are hard to evaluate on a weeks-long horizon."
+    },
+    "UNP": {
+      "consensus": {
+        "source": "MarketBeat — Union Pacific (UNP) price target and forecast",
+        "source_url": "https://www.marketbeat.com/stocks/NYSE/UNP/forecast/",
+        "observed_at": "2026-10-05T15:59:00-04:00",
+        "aggregation_method": "MarketBeat average of the most recent 12-month price targets from the analysts it tracks",
+        "analyst_count": 21,
+        "ratings": { "strong_buy": 2, "buy": 15, "hold": 4, "sell": 0 },
+        "consensus_rating": "Moderate Buy",
+        "mean_target_12m": 326.33,
+        "high_target_12m": 363.00,
+        "low_target_12m": 245.00,
+        "target_horizon": "12 months"
+      },
+      "evidence": [
+        { "fact": "STB procedural schedule pushes a final decision on the Norfolk Southern merger to late May 2027; DOJ/DOT preliminary comments due Dec 3.", "source": "WOWT", "url": "https://www.wowt.com/2026/08/19/new-timeline-set-union-pacific-norfolk-southern-merger-proceedings/", "published": "2026-08-19" }
+      ],
+      "catalysts": [
+        { "event": "Q3 2026 earnings", "date": "2026-10-22", "status": "confirmed (7:45 a.m. ET release)", "source": "Union Pacific release via Finviz", "url": "https://finviz.com/news/395167/union-pacific-corporation-announces-third-quarter-2026-earnings-release-date" }
+      ],
+      "tilt": 0,
+      "tilt_reason": "Merger decision is months away; no near-term directional evidence found.",
+      "evidence_strength": "moderate",
+      "evidence_strength_reason": "21 analysts and a confirmed earnings date; regulatory timeline is documented."
+    },
+    "SHEL": {
+      "consensus": {
+        "source": "MarketBeat — Shell (SHEL) price target and forecast",
+        "source_url": "https://www.marketbeat.com/stocks/NYSE/SHEL/forecast/",
+        "observed_at": "2026-10-05T15:59:00-04:00",
+        "aggregation_method": "MarketBeat average of the most recent 12-month price targets from the analysts it tracks",
+        "analyst_count": 19,
+        "ratings": { "strong_buy": 0, "buy": 8, "hold": 11, "sell": 0 },
+        "consensus_rating": "Hold",
+        "mean_target_12m": 106.08,
+        "high_target_12m": 122.40,
+        "low_target_12m": 90.00,
+        "target_horizon": "12 months"
+      },
+      "evidence": [
+        { "fact": "SHEL rose about 24% YTD by early April 2026 as Middle East tensions briefly pushed Brent above $110; Shell lowered its gas output outlook.", "source": "Yahoo Finance / Barchart", "url": "https://finance.yahoo.com/markets/stocks/articles/24-2026-yielding-3-1-233002629.html", "published": "2026-04-09" }
+      ],
+      "catalysts": [
+        { "event": "Q3 2026 results and interim dividend", "date": "2026-10-29", "status": "confirmed (07:00 GMT)", "source": "Shell advance notice", "url": "https://www.shell.com/news-and-insights/newsroom/news-and-media-releases/2026/advance-notice-of-third-quarter-2026-results-and-third-quarter-2026-interim-dividend-announcement.html" }
+      ],
+      "tilt": 0,
+      "tilt_reason": "Price is driven mainly by oil, which this research cannot forecast; neutral.",
+      "evidence_strength": "low",
+      "evidence_strength_reason": "Hold consensus and outcomes dominated by commodity prices and geopolitics that are not forecastable from the available research."
+    }
+  }
+}
