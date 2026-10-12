@@ -1,0 +1,23 @@
+# Render Blueprint for the Claude alignment dashboard service.
+# In Render: New → Blueprint → this repository → Blueprint path: claude-alignment/render.yaml
+services:
+  - type: web
+    name: claude-alignment-dashboard
+    runtime: node
+    plan: free
+    rootDir: claude-alignment
+    buildCommand: cd server && npm ci && npm test
+    startCommand: node server/index.mjs
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # Paste your Anthropic API key in Render when prompted. Never commit it.
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      # Render creates a random code; share it privately with faculty so only they can run reviews.
+      - key: REVIEW_ACCESS_CODE
+        generateValue: true
+      - key: ALLOWED_ORIGINS
+        value: https://anthonyids.github.io
+      # Saved dashboards: add GITHUB_REPO and GITHUB_TOKEN later in Render (see README) to keep them permanently.

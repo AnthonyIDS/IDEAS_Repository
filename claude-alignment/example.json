@@ -1,0 +1,216 @@
+{
+ "schema": 1,
+ "course": {
+  "code": "ESC1000C",
+  "title": "Earth Science",
+  "subject": "Example course (shortened descriptions)"
+ },
+ "outcomes": [
+  {
+   "id": "1",
+   "text": "*Students will use critical thinking to recognize the rigorous standards of scientific theories by:",
+   "parent": null
+  },
+  {
+   "id": "1.1",
+   "text": "describing the steps and principles involved in the scientific method.",
+   "parent": "1"
+  },
+  {
+   "id": "1.2",
+   "text": "evaluating different methods of measurement of natural phenomena.",
+   "parent": "1"
+  },
+  {
+   "id": "2",
+   "text": "*Students will analyze and synthesize earth science data to draw scientifically valid conclusions by:",
+   "parent": null
+  },
+  {
+   "id": "2.1",
+   "text": "identifying rocks and minerals and their properties.",
+   "parent": "2"
+  },
+  {
+   "id": "2.2",
+   "text": "reading and interpreting topographic and geologic maps.",
+   "parent": "2"
+  },
+  {
+   "id": "2.3",
+   "text": "defining the processes that shape the Earth’s surface.",
+   "parent": "2"
+  },
+  {
+   "id": "2.4",
+   "text": "explaining the ways in which geologic materials are dated.",
+   "parent": "2"
+  },
+  {
+   "id": "2.5",
+   "text": "defining the nature of sea water with respect to its chemistry and motion within the ocean basins of the Earth.",
+   "parent": "2"
+  },
+  {
+   "id": "2.6",
+   "text": "describing the structure of our solar system.",
+   "parent": "2"
+  },
+  {
+   "id": "2.7",
+   "text": "explaining the nature of the Earth Moon system",
+   "parent": "2"
+  },
+  {
+   "id": "3",
+   "text": "*Students will recognize the different time scales associated with different earth processes by:",
+   "parent": null
+  },
+  {
+   "id": "3.1",
+   "text": "evaluating the theoretical causes of major evolutionary and extinction events.",
+   "parent": "3"
+  },
+  {
+   "id": "3.2",
+   "text": "distinguishing mountain building, rifting and other events with respect to the forces that produced them.",
+   "parent": "3"
+  },
+  {
+   "id": "3.3",
+   "text": "memorizing the geologic time scale and placing events in their proper place on this scale.",
+   "parent": "3"
+  },
+  {
+   "id": "3.4",
+   "text": "charting the origin of the universe and our solar system.",
+   "parent": "3"
+  },
+  {
+   "id": "4",
+   "text": "*Students will effectively describe interactions between humans and the earth’s spheres by:",
+   "parent": null
+  },
+  {
+   "id": "4.1",
+   "text": "comparing and contrasting different types of marine life relative to each other.",
+   "parent": "4"
+  },
+  {
+   "id": "4.2",
+   "text": "analyzing the different features on the ocean floor.",
+   "parent": "4"
+  },
+  {
+   "id": "4.3",
+   "text": "analyzing the history of astronomical thought.",
+   "parent": "4"
+  },
+  {
+   "id": "5",
+   "text": "*Students will apply their understanding of earth science principles to complex global and local issues by:",
+   "parent": null
+  },
+  {
+   "id": "5.1",
+   "text": "explaining the different ways in which the atmosphere is measured.",
+   "parent": "5"
+  },
+  {
+   "id": "5.2",
+   "text": "labeling and describing components of weather maps.",
+   "parent": "5"
+  },
+  {
+   "id": "5.3",
+   "text": "recognizing how Earth's climate system functions and changes.",
+   "parent": "5"
+  }
+ ],
+ "assignments": [
+  {
+   "id": "a1",
+   "module": 1,
+   "title": "Historical Figures in the Geosciences: Focus on Minorities and Women",
+   "type": "Discussion",
+   "points": null,
+   "instructions": "Research a historical geoscientist, describe their contribution, reflect on representation, and reply to two classmates.\n\n- A biographical paragraph and a few sentences about representation are required.\n- Describe observations, measurements, maps, fossils, or other evidence if available in the source.\n- Include a reference and two thoughtful replies.",
+   "rubric": "",
+   "delivery": "Online, unsupervised",
+   "deliveryNotes": "",
+   "permission": null,
+   "review": null,
+   "overrides": {}
+  },
+  {
+   "id": "a2",
+   "module": 1,
+   "title": "Geologic Time Scale Concept Sketch",
+   "type": "Concept sketch",
+   "points": null,
+   "instructions": "Place ten dated events on a geologic time scale and explain the possible causes of two mass extinctions.\n\n- Include ten named events with dates and appropriate time intervals.\n- Explain possible causes of the end-Permian and K–T/K–Pg extinctions.\n- A hand-drawn or digital sketch is submitted; research is allowed.",
+   "rubric": "",
+   "delivery": "Online, unsupervised",
+   "deliveryNotes": "",
+   "permission": null,
+   "review": null,
+   "overrides": {}
+  },
+  {
+   "id": "a3",
+   "module": 2,
+   "title": "Yellowstone Hotspot Lab",
+   "type": "Canvas lab quiz",
+   "points": 22,
+   "instructions": "Use a hotspot map to measure distance, calculate plate speed, interpret plate direction, compare eruption styles, and upload Yellowstone’s current status.\n\n- Questions 1–4: find the oldest volcanic center, measure its distance with the 100 km scale bar, calculate speed in km/Ma, and convert to cm/year.\n- Questions 5–8: use the age pattern and north arrow to describe overall, earlier, and recent plate directions and judge whether the path was straight.\n- Questions 9–10: compare Hawaiian (basaltic) and Yellowstone (rhyolitic) explosive potential using silica, viscosity, gas, and crust type.\n- Question 11: upload a screenshot of the latest USGS Yellowstone alert level, aviation color code, and update date.",
+   "rubric": "",
+   "delivery": "Online, unsupervised",
+   "deliveryNotes": "",
+   "permission": null,
+   "review": null,
+   "overrides": {}
+  },
+  {
+   "id": "a4",
+   "module": 2,
+   "title": "Plate Boundary Concept Sketches",
+   "type": "Concept sketch",
+   "points": null,
+   "instructions": "Draw three plate boundaries and explain two additional convergence types, linking motion to features and real plate pairs.\n\n- Draw oceanic divergent, continental–oceanic convergent, and transform boundaries.\n- Label movement and features; give a location and both plate names for each sketch.\n- Explain continental–continental and oceanic–oceanic convergence in writing.",
+   "rubric": "",
+   "delivery": "Online, unsupervised",
+   "deliveryNotes": "",
+   "permission": null,
+   "review": null,
+   "overrides": {}
+  },
+  {
+   "id": "a5",
+   "module": 2,
+   "title": "Science or Snake Oil?",
+   "type": "Discussion",
+   "points": null,
+   "instructions": "Propose a testable hypothesis, investigation methods, and evidence that would support or challenge a claim; reply to two peers.\n\n- Select a specific claim and devise a falsifiable hypothesis.\n- Describe observations, measurements, comparisons or controls, and alternative explanations.\n- Propose the investigation without carrying it out, and evaluate two classmates’ methods.",
+   "rubric": "",
+   "delivery": "Online, unsupervised",
+   "deliveryNotes": "",
+   "permission": null,
+   "review": null,
+   "overrides": {}
+  },
+  {
+   "id": "a6",
+   "module": 3,
+   "title": "Groundwater Concept Sketch for County Commissioners",
+   "type": "Concept sketch",
+   "points": null,
+   "instructions": "Create a one-page handout explaining nearby wells going dry and coastal saltwater intrusion under heavy pumping.\n\n- Show water tables before and after pumping, wells, cones of depression, and flow arrows.\n- Show the coastal freshwater–saltwater transition and saltwater movement toward a well.\n- Explain both community consequences in plain language and cite sources; no live presentation is required.",
+   "rubric": "",
+   "delivery": "Online, unsupervised",
+   "deliveryNotes": "",
+   "permission": null,
+   "review": null,
+   "overrides": {}
+  }
+ ]
+}
