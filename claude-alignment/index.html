@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Course Alignment Dashboard</title>
+<meta name="description" content="Faculty build a dashboard showing how well each assessment aligns with course learning objectives (Quality Matters) and how vulnerable it is to AI completion (ARMS), with reviews run by Claude.">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="styles.css">
+<script src="config.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to dashboard</a>
+<header class="topbar">
+  <div class="brand"><div class="brandmark">SPC</div><div><strong>IDEAS · Instructional Design</strong><span class="subbrand" id="subbrand">Course alignment and AI vulnerability</span></div></div>
+  <a href="https://anthonyids.github.io/IDEAS_Repository/">Resource library ↗</a>
+</header>
+<div class="shell">
+  <aside class="sidebar"><div class="sideinner">
+    <div class="course"><p class="eyebrow">Course review</p><b id="side-code">New course</b><p id="side-title">Add your course to begin</p></div>
+    <nav aria-label="Dashboard navigation">
+      <a class="navlink" href="#build"><span class="navicon" aria-hidden="true">✎</span>Build your dashboard</a>
+      <a class="navlink" href="#overview"><span class="navicon" aria-hidden="true">◫</span>The big picture</a>
+      <a class="navlink" href="#matrix"><span class="navicon" aria-hidden="true">▦</span>Alignment grid</a>
+      <a class="navlink" href="#outcomes"><span class="navicon" aria-hidden="true">◎</span>Learning outcomes</a>
+      <a class="navlink" href="#assignments"><span class="navicon" aria-hidden="true">▤</span>Assessments</a>
+      <a class="navlink" href="#help"><span class="navicon" aria-hidden="true">?</span>How to read this page</a>
+    </nav>
+    <div class="sidefoot">
+      <p><strong>Your dashboard</strong></p>
+      <div class="savebox" id="savebox" aria-live="polite"></div>
+      <button class="btn small" data-action="theme">Use dark mode</button>
+      <button class="btn small" data-action="print">Print full review</button>
+    </div>
+  </div></aside>
+  <main class="content" id="main" tabindex="-1"></main>
+</div>
+<dialog id="dialog" aria-labelledby="dialog-title">
+  <div class="dialoghead"><h2 id="dialog-title">Rating evidence</h2><button class="btn" data-action="close-dialog">Close ✕</button></div>
+  <div class="dialogbody" id="dialog-body"></div>
+</dialog>
+<section class="print-report" id="print-report" aria-label="Printable course review"></section>
+<noscript><div class="error">This dashboard needs JavaScript.</div></noscript>
+<script type="module" src="app.js"></script>
+</body>
+</html>

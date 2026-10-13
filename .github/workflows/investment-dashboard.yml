@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'investment-dashboard/**'
+      - 'claude-alignment/**'
       - '.github/workflows/investment-dashboard.yml'
   schedule:
     - cron: '37 22 * * 1-5'
