@@ -1,11 +1,11 @@
 # Render Blueprint for the Claude alignment dashboard service.
-# In Render: New → Blueprint → this repository → Blueprint path: claude-alignment/render.yaml
+# In Render: New → Blueprint → this repository → Blueprint path: alignment-dashboard/render.yaml
 services:
   - type: web
     name: claude-alignment-dashboard
     runtime: node
     plan: free
-    rootDir: claude-alignment
+    rootDir: alignment-dashboard
     buildCommand: cd server && npm ci && npm test
     startCommand: node server/index.mjs
     healthCheckPath: /api/health

@@ -1,4 +1,4 @@
-// Course alignment dashboard: faculty build their course, Claude reviews each
+// The Alignment Dashboard: faculty build their course, Claude reviews each
 // assessment through the Render service, and the dashboard is saved so it can be
 // resumed later from a private link (and always in this browser as a backup).
 
@@ -7,7 +7,7 @@ const CFG = window.ALIGNMENT_CONFIG || {};
 const API = (CFG.apiBaseUrl || '').replace(/\/$/, '') ||
   (location.hostname.endsWith('github.io') || location.protocol === 'file:' ? null : '');
 
-const KEY = 'claude-alignment:';
+const KEY = 'claude-alignment:'; // kept from the original name so browser copies still load
 const SCALE = [
   { value: 1, label: 'No alignment', description: 'The instructions do not require students to do what the objective states. Topic overlap alone is not alignment.' },
   { value: 2, label: 'Slightly aligned', description: 'Related content, but the required work does not ask students to perform the objective’s action.' },
@@ -482,8 +482,8 @@ function buildPrint() {
 function renderSidebar() {
   $('#side-code').textContent = ws.course.code || 'New course';
   $('#side-title').textContent = ws.course.title || 'Add your course to begin';
-  if (ws.course.title || ws.course.code) $('#subbrand').textContent = `Course review · ${ws.course.title || ws.course.code}`;
-  document.title = ws.course.code ? `${ws.course.code} Alignment Dashboard` : 'Course Alignment Dashboard';
+  if (ws.course.title || ws.course.code) $('#subbrand').textContent = `The Alignment Dashboard · ${ws.course.title || ws.course.code}`;
+  document.title = ws.course.code ? `${ws.course.code} · The Alignment Dashboard` : 'The Alignment Dashboard';
   const s = ui.saveState;
   const line = !hasContent(ws) ? '<span class="status">Nothing to save yet</span>'
     : s === 'saving' || s === 'pending' ? '<span class="status"><span class="spinner" aria-hidden="true"></span>Saving…</span>'
@@ -499,7 +499,7 @@ function render() {
     : ({ build: buildView, overview: overviewView, matrix: matrixView, outcomes: outcomesView, assignments: assignmentsView, help: helpView }[route] || overviewView)();
   const main = $('#main');
   const keepScroll = window.scrollY;
-  main.innerHTML = view + `<footer class="footer"><span>SPC IDEAS · Reviews by Claude · Quality Matters and ARMS frameworks</span><span><a href="#help">How to read this page</a></span></footer>`;
+  main.innerHTML = view + `<footer class="footer"><span>The Alignment Dashboard · SPC IDEAS · Reviews by Claude · Quality Matters and ARMS frameworks</span><span><a href="#help">How to read this page</a></span></footer>`;
   window.scrollTo(0, keepScroll);
   const navRoute = route.startsWith('assignment-') ? 'assignments' : route;
   document.querySelectorAll('.navlink').forEach(n => { if (n.getAttribute('href') === '#' + navRoute) n.setAttribute('aria-current', 'page'); else n.removeAttribute('aria-current'); });
