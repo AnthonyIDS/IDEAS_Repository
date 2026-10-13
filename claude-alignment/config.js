@@ -3,5 +3,5 @@
 // Leave it empty when this page is served by the Render service itself.
 // Never put an API key in this file: it is public.
 window.ALIGNMENT_CONFIG = {
-  apiBaseUrl: ""
+  apiBaseUrl: "https://claude-alignment-dashboard.onrender.com"
 };
