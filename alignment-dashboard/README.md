@@ -1,4 +1,4 @@
-# Course Alignment Dashboard (Claude)
+# The Alignment Dashboard
 
 Faculty build a dashboard for their course on GitHub Pages. When they add an assessment, Claude reviews it and the dashboard shows:
 
@@ -7,7 +7,7 @@ Faculty build a dashboard for their course on GitHub Pages. When they add an ass
 
 Faculty can leave and come back: the dashboard saves online and gives them a private resume link, and it is always kept in their browser as well. They can also download a backup file.
 
-Page: `https://anthonyids.github.io/IDEAS_Repository/claude-alignment/`
+Page: `https://anthonyids.github.io/IDEAS_Repository/alignment-dashboard/`
 
 ## How the pieces fit
 
@@ -32,7 +32,7 @@ The API key lives only in Render. Nothing secret is in this repository or in the
 In the [Claude Console](https://platform.claude.com), add billing credit, then create an API key under **API keys**. Keep it private; you will paste it into Render only.
 
 ### 2. Create the Render service
-1. In Render choose **New → Blueprint**, connect `AnthonyIDS/IDEAS_Repository`, and set the Blueprint path to `claude-alignment/render.yaml`.
+1. In Render choose **New → Blueprint**, connect `AnthonyIDS/IDEAS_Repository`, and set the Blueprint path to `alignment-dashboard/render.yaml`.
 2. When asked for `ANTHROPIC_API_KEY`, paste your key.
 3. Deploy. When it finishes, open the service's address (`https://…onrender.com`). The page should load without the "not connected" notice.
 4. In the service's **Environment** tab, copy `REVIEW_ACCESS_CODE`. Share it privately with faculty; it stops strangers from running reviews on your account.
@@ -46,7 +46,7 @@ A free Render service forgets files when it restarts, so saved dashboards need a
 Alternative: a paid Render instance with a persistent disk; set `DATA_DIR` to the disk's mount path instead.
 
 ### 4. Point the GitHub page at the service
-Edit `claude-alignment/config.js` and set `apiBaseUrl` to the Render address, without a trailing slash. Commit. The GitHub page now runs reviews and saves dashboards.
+Edit `alignment-dashboard/config.js` and set `apiBaseUrl` to the Render address, without a trailing slash. Commit. The GitHub page now runs reviews and saves dashboards.
 
 ## Settings (Render → Environment)
 
@@ -74,7 +74,7 @@ Assignment instructions and objectives are sent to the Render service and to Ant
 Requires Node 22.
 
 ```sh
-cd claude-alignment/server
+cd alignment-dashboard/server
 npm install
 npm test
 ANTHROPIC_API_KEY=... ALLOWED_ORIGINS=http://127.0.0.1:8787 node index.mjs
