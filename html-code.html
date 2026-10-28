@@ -158,6 +158,21 @@
       font-size: 14px;
     }
 
+    #button .preview-box .btn {
+      display: inline-block;
+      padding: 8px 14px;
+      border: 1px solid #c7cdd1;
+      border-radius: 3px;
+      background: #f5f5f5;
+      color: #2d3b45;
+      text-decoration: none;
+      line-height: 1.5;
+    }
+
+    #button .preview-box .btn:hover {
+      background: #e8e8e8;
+    }
+
     .footer-rule {
       border: 4px solid var(--spc-blue);
       color: #000000;
@@ -194,6 +209,7 @@
 
     <section class="button-grid" aria-label="Canvas design snippet navigation">
       <button class="nav-button active" type="button" onclick="showPage('page-headers', this)">🔷 Page Headers</button>
+      <button class="nav-button" type="button" onclick="showPage('button', this)">🔗 Button</button>
       <button class="nav-button" type="button" onclick="showPage('horizontal-lines', this)">➖ Horizontal Lines</button>
       <button class="nav-button" type="button" onclick="showPage('student-example', this)">👩‍🎓 Student Example Call Out Box</button>
       <button class="nav-button" type="button" onclick="showPage('ai-callout', this)">💡 AI Information Call Out Box</button>
@@ -238,6 +254,18 @@
 <pre><code>&lt;h2 style="color: #00406e;"&gt;Purpose&lt;/h2&gt;</code></pre>
 
   </div>
+    </section>
+
+    <section id="button" class="snippet-page">
+      <h2 class="snippet-title">🔗 Button</h2>
+      <p>Replace the resource title, URL, and button text with your own content.</p>
+      <p class="preview-label">Preview</p>
+      <div class="preview-box">
+        <p><a class="btn" title="Resource Title" href="https://example.com" target="_blank" rel="noopener"> Button Text </a></p>
+      </div>
+      <p>The preview approximates Canvas button styling; the appearance in Canvas follows your course theme.</p>
+      <p class="code-label">Code</p>
+      <pre><code>&lt;p&gt;&lt;a class="btn" title="Resource Title" href="https://example.com" target="_blank" rel="noopener"&gt; Button Text &lt;/a&gt;&lt;/p&gt;</code></pre>
     </section>
 
     <section id="horizontal-lines" class="snippet-page">
