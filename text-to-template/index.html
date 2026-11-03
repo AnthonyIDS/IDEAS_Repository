@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Text to Template | IDEAS Resource Library</title>
+<style>
+/* Paste plain text on the left, get Canvas-ready HTML in a template style on the right.
+   Everything runs in the browser with fixed formatting rules. No AI, no server. */
+:root {
+  --bg: #f4f8fb;
+  --surface: #ffffff;
+  --ink: #17324d;
+  --muted: #5f6f7f;
+  --line: #d7e2ec;
+  --accent: #00406e;
+  --accent-dark: #002d4d;
+  --accent-ink: #ffffff;
+  --accent-soft: #e1ebf4;
+  --gold: #f2a900;
+  --ok: #1d6a44;
+  --code-bg: #f6f8fb;
+  --font-ui: Arial, Helvetica, sans-serif;
+  --font-code: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d141c; --surface: #141e29; --ink: #e4ebf2; --muted: #98a8b9; --line: #253445;
+    --accent: #7fb2e0; --accent-dark: #0a2236; --accent-ink: #0a1520; --accent-soft: #17304a;
+    --ok: #74d3a0; --code-bg: #0f1821;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d141c; --surface: #141e29; --ink: #e4ebf2; --muted: #98a8b9; --line: #253445;
+  --accent: #7fb2e0; --accent-dark: #0a2236; --accent-ink: #0a1520; --accent-soft: #17304a;
+  --ok: #74d3a0; --code-bg: #0f1821;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-ui); line-height: 1.5; }
+header.top { background: linear-gradient(135deg, #00406e, #002d4d); color: #fff; padding: 22px 16px; }
+header.top .inner { max-width: 1400px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: baseline; justify-content: space-between; }
+header.top h1 { margin: 0; font-size: 1.5rem; }
+header.top p { margin: 4px 0 0; color: #dbe7f1; max-width: 70ch; }
+header.top a { color: #f2a900; font-weight: bold; }
+main { max-width: 1400px; margin: 0 auto; padding: 16px; display: grid; gap: 16px; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: end; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.controls label { display: grid; gap: 4px; font-weight: bold; font-size: 0.9rem; }
+select, button, .btn { font: inherit; font-size: 0.95rem; }
+select { padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); min-width: 260px; }
+button, .btn { padding: 8px 14px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; text-decoration: none; }
+button:hover, .btn:hover { border-color: var(--accent); }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: bold; }
+button:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible, summary:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.spacer { flex: 1; }
+.status { color: var(--ok); font-weight: bold; min-height: 1.5em; font-size: 0.9rem; }
+.panes { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 900px) { .panes { grid-template-columns: 1fr; } select { min-width: 0; width: 100%; } .controls label { flex: 1 1 100%; } }
+.pane { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; display: flex; flex-direction: column; min-width: 0; }
+.pane-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+.pane-head h2 { margin: 0; font-size: 1.05rem; }
+.pane-head .actions { display: flex; flex-wrap: wrap; gap: 6px; }
+textarea { width: 100%; border: 0; resize: vertical; padding: 14px; font-family: var(--font-code); font-size: 0.88rem; line-height: 1.55; background: var(--surface); color: var(--ink); border-radius: 0 0 10px 10px; }
+#source { min-height: 560px; flex: 1; }
+#codeWrap { flex: 1; display: flex; flex-direction: column; }
+#codeWrap #code { flex: 1; }
+#code { min-height: 560px; background: var(--code-bg); }
+[role="tablist"] { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+[role="tab"] { border: 0; border-radius: 0; padding: 6px 12px; }
+[role="tab"][aria-selected="true"] { background: var(--accent-soft); font-weight: bold; }
+#preview { background: #ffffff; color: #2d3b45; padding: 20px 24px; min-height: 560px; border-radius: 0 0 10px 10px; font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.5; overflow-wrap: anywhere; }
+#preview a { color: #0770a3; }
+details.guide { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 0 16px; }
+details.guide summary { cursor: pointer; padding: 12px 0; font-weight: bold; }
+details.guide .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 4px 24px; padding-bottom: 12px; }
+details.guide h3 { margin: 8px 0 4px; font-size: 0.98rem; color: var(--accent); }
+details.guide ul { margin: 0; padding-left: 20px; }
+details.guide code { font-family: var(--font-code); background: var(--code-bg); padding: 1px 4px; border-radius: 4px; font-size: 0.88em; }
+.hint { color: var(--muted); font-size: 0.85rem; margin: 0; padding: 8px 14px; border-bottom: 1px solid var(--line); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="inner">
+    <div>
+      <h1>Text to Template</h1>
+      <p>Paste your page text, choose a template style, and copy Canvas-ready HTML. Formatting follows fixed rules in your browser; nothing is sent to AI or a server.</p>
+    </div>
+    <a href="../index.html">← IDEAS Resource Library</a>
+  </div>
+</header>
+<main>
+  <div class="controls">
+    <label for="style">Template style
+      <select id="style">
+        <option value="module-overview">Module Overview and To Do List</option>
+        <option value="learning-resources">Learning Resources</option>
+        <option value="learning-resources-2">Learning Resources Template 2</option>
+        <option value="assignment">Assignment</option>
+        <option value="assignment-2">Assignment 2</option>
+      </select>
+    </label>
+    <button id="exampleBtn" type="button">Load example text</button>
+    <button id="clearBtn" type="button">Clear</button>
+    <a class="btn" id="viewTemplate" href="../templates.html#module-overview" target="_blank" rel="noopener">View this template</a>
+    <span class="spacer"></span>
+    <button id="downloadBtn" type="button">Download .html</button>
+    <button class="primary" id="copyBtn" type="button">Copy HTML</button>
+  </div>
+  <p class="status" id="status" role="status" aria-live="polite"></p>
+
+  <details class="guide" id="guide">
+    <summary>How to format your text (open this the first time)</summary>
+    <div class="cols">
+      <div>
+        <h3>Title and headings</h3>
+        <ul>
+          <li>The first line becomes the blue title banner.</li>
+          <li>Section names like <em>Module Overview</em>, <em>To Do List</em>, <em>Purpose</em>, <em>Directions</em>, <em>Resource 1: …</em>, <em>Step 1: …</em>, or <em>Connect to Practice</em> on their own line become styled headings.</li>
+          <li>Any other short line written in Title Case also becomes a heading.</li>
+          <li>Force a heading with <code>## Section</code> or a smaller one with <code>### Sub-heading</code>.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Paragraphs and lists</h3>
+        <ul>
+          <li>Each line is its own paragraph.</li>
+          <li>Start a line with <code>-</code>, <code>*</code>, or <code>•</code> for bullets, or <code>1.</code> for numbers. Indent two spaces to nest.</li>
+          <li>A short label ending in a colon, like <code>Read:</code> or <code>Final product:</code>, is made bold.</li>
+          <li>Lines starting <code>Tip:</code>, <code>Strategy for Success:</code>, or <code>Remember:</code> become call-out boxes.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Links, video, and emphasis</h3>
+        <ul>
+          <li>Web addresses become links that open in a new tab. Use <code>[Read: Article Title](https://…)</code> for descriptive link text.</li>
+          <li>A YouTube link alone on a line becomes a responsive video with a Watch link below it.</li>
+          <li><code>**bold**</code> and <code>*italic*</code> work. <code>---</code> adds a divider.</li>
+          <li>Pasting from Word or Google Docs keeps headings, bold, lists, and links.</li>
+        </ul>
+      </div>
+    </div>
+  </details>
+
+  <div class="panes">
+    <section class="pane" aria-labelledby="in-h">
+      <div class="pane-head"><h2 id="in-h">Your text</h2></div>
+      <label class="sr-only" for="source">Your text</label>
+      <textarea id="source" spellcheck="true" placeholder="Paste or type your page text here…"></textarea>
+    </section>
+    <section class="pane" aria-labelledby="out-h">
+      <div class="pane-head">
+        <h2 id="out-h">Canvas-ready page</h2>
+        <div role="tablist" aria-label="Output view">
+          <button type="button" role="tab" id="tabPreview" aria-selected="true" aria-controls="preview">Preview</button>
+          <button type="button" role="tab" id="tabCode" aria-selected="false" aria-controls="codeWrap">HTML</button>
+        </div>
+      </div>
+      <div id="preview" role="tabpanel" aria-labelledby="tabPreview"></div>
+      <div id="codeWrap" role="tabpanel" aria-labelledby="tabCode" hidden>
+        <p class="hint">In Canvas, open the page editor, switch to the HTML editor (&lt;/&gt;), and paste.</p>
+        <label class="sr-only" for="code">Generated HTML</label>
+        <textarea id="code" readonly spellcheck="false"></textarea>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- Template styles, copied from templates.html ---------- */
+  const BLUE = '#00406e';
+  const BANNER = 'color: #ffffff; background: #00406e; text-align: left; padding: 12px 14px; border-radius: 6px;';
+  const HR = '<hr style="border: 1px solid #00406e;" />';
+  const HR_END = '<hr style="border: 8px solid #00406e;" />';
+  const BOX_OVERVIEW = 'border-radius: 8px; padding: 18px 22px; margin: 22px 0; background-color: #f2f6fa; border-width: 1px 1px 1px 6px; border-style: solid; border-color: #d7e2ec #d7e2ec #d7e2ec #00406e;';
+  const BOX_PRACTICE = 'background-color: #f7f9fb; border-width: 1px 1px 1px 5px; border-style: solid; border-color: #d7e2ec #d7e2ec #d7e2ec #00406e; border-radius: 6px; padding: 20px; margin-bottom: 24px;';
+  const BOX_TIP = 'background: #f7fafc; border-left: 6px solid #f2a900; padding: 18px; border-radius: 10px; margin: 18px 0;';
+  const BOX_REMEMBER = 'background: #e8f0f7; border-left: 6px solid #00406e; padding: 20px; border-radius: 12px; margin-top: 22px;';
+  const VIDEO_WRAP = 'position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;';
+  const VIDEO_FRAME = 'position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; border: 0px none currentcolor;';
+
+  const STYLES = {
+    'module-overview': { family: 'overview', anchor: 'module-overview' },
+    'learning-resources': { family: 'resources', anchor: 'learning-resources', top: 'h2', sub: 'h3' },
+    'learning-resources-2': { family: 'resources', anchor: 'learning-resources-2', top: 'h3', sub: 'h4' },
+    'assignment': { family: 'assignment', anchor: 'assignment' },
+    'assignment-2': { family: 'assignment', anchor: 'assignment-2' }
+  };
+
+  // Section names recognised as headings on their own line (case-insensitive, trailing colon allowed).
+  const SECTION_NAMES = [
+    'module overview', 'overview', 'introduction', 'to do list', 'to-do list', 'todo list', 'to do', 'checklist',
+    'learning objectives', 'module objectives', 'purpose', 'assignment overview',
+    'task', 'materials', 'directions', 'instructions', 'academic integrity', 'ai use', 'submission instructions',
+    'submission', 'how to submit', 'grading criteria', 'grading', 'rubric', 'check your understanding',
+    'learning resources', 'resources', 'summary', 'next steps', 'due date', 'due dates'
+  ];
+  const SUB_NAMES = ['essential questions', 'guiding questions', 'connect to practice', 'reflect', 'key terms', 'key concepts'];
+
+  /* ---------- Examples ---------- */
+  const EXAMPLES = {
+    overview: `Module 3: Plate Tectonics and the Shape of Our Planet
+In 2011, the ground near Tōhoku, Japan slipped almost 50 meters in a few minutes. What could move that much rock so fast, and could it happen where you live?
+
+Module Overview
+This module introduces **plate tectonics**, the theory that explains earthquakes, volcanoes, and mountain ranges. You will connect what you learned about Earth's layers in Module 2 to the forces that reshape the surface, then use maps and data to explain real events.
+
+Essential Questions
+- How does the movement of plates shape the places where people live?
+- What evidence would convince you that continents move?
+
+To Do List
+Use this checklist to organize your work. Complete the activities in the order listed.
+1. Read: [Chapter 4: Plate Tectonics](https://example.edu/chapter-4), sections 4.1 to 4.3. Focus on the three types of plate boundaries. [LO: 1, 2]
+2. Explore: Watch the plate boundary animation and note one feature at each boundary type. [LO: 2]
+3. Participate: Post your answer to the Module 3 discussion and reply to two classmates. [LO: 3]
+4. Practice: Complete the boundary-sorting practice quiz. You can retake it as many times as you like. [LO: 2]
+5. Complete: Submit the Earthquake Map Analysis assignment. [LO: 1, 3]`,
+    resources: `Plate Tectonics: Learning Resources
+Imagine you are on a city planning board deciding where a new hospital should go. You need to know which neighborhoods sit near an active fault.
+These resources prepare you to **explain how plate boundaries create hazards.** Use them in order; they support Learning Objectives 1 and 2.
+
+Resource 1: Plate Tectonics Reading
+Read Chapter 4, sections 4.1 to 4.3 (required). Focus on how each boundary type moves.
+[Read: Chapter 4, Plate Tectonics](https://example.edu/chapter-4)
+Connect to Practice
+- Pick one boundary type and name a place on Earth where it occurs.
+- Predict the main hazard for a town near that boundary.
+- Write a two-sentence note you can use in the discussion.
+
+Resource 2: What Is a Plate Boundary? (Video)
+Watch the full video (4 minutes, required). Captions are available in the player.
+https://www.youtube.com/watch?v=kbBhh0qCl4w
+Connect to Practice
+- Pause at each boundary and sketch the direction the plates move.
+- Compare the video's example with the one you chose from the reading.
+
+Check Your Understanding
+Before moving on, make sure you can:
+- Name the three types of plate boundaries.
+- Explain why earthquakes cluster along boundaries.
+If any of these feel unclear, revisit Resource 1 before the practice quiz.`,
+    assignment: `Earthquake Map Analysis
+You will act as a hazard analyst and use real earthquake data to advise a town council about its risk.
+
+Purpose
+This assignment builds your ability to read scientific maps and support a recommendation with evidence, a skill you will use in later science courses and in everyday decisions.
+Aligned Learning Objectives:
+- LO 1: Describe the three types of plate boundaries.
+- LO 3: Use data to evaluate natural hazard risk.
+
+Assignment Overview
+Use the USGS earthquake map at https://earthquake.usgs.gov/earthquakes/map/ to study one region.
+- Final product: A one-page memo, completed individually.
+- Required content: A map screenshot, a description of the boundary, and a risk rating.
+- Evidence and reasoning: At least three earthquakes from the data that support your rating.
+
+Directions
+Step 1: Choose Your Region
+Select one region from the list on the Module 3 page and open it on the map.
+Step 2: Gather Your Data
+Filter the map to the last 30 days and record the five largest earthquakes.
+Strategy for Success: Sort the list by magnitude first; it saves time.
+Step 3: Write Your Memo
+Include these parts:
+1. Your region and its boundary type.
+2. A table of your five earthquakes.
+3. Your risk rating with your reasoning.
+
+Submission Instructions
+Upload your memo as a PDF or Word file to this assignment by Sunday at 11:59 p.m.
+Remember: Name your file Lastname_Module3_Memo.
+
+Grading Criteria
+This assignment is worth 50 points. Review the rubric attached below before you submit.`
+  };
+
+  /* ---------- Helpers ---------- */
+  const $ = id => document.getElementById(id);
+  const src = $('source'), code = $('code'), preview = $('preview'), styleSel = $('style'), status = $('status');
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  const norm = s => s.toLowerCase().replace(/[:\s]+$/, '').replace(/\s+/g, ' ').trim();
+  const hasEmoji = s => /\p{Extended_Pictographic}/u.test(s);
+
+  // Inline formatting: [text](url), bare URLs, **bold**, *italic* / _italic_.
+  function emphasis(escaped) {
+    return escaped
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/__(.+?)__/g, '<strong>$1</strong>')
+      .replace(/(^|[\s(])\*(?!\s)(.+?)\*(?=[\s).,;:!?]|$)/g, '$1<em>$2</em>')
+      .replace(/(^|[\s(])_(?!\s)(.+?)_(?=[\s).,;:!?]|$)/g, '$1<em>$2</em>');
+  }
+  function link(href, text) {
+    return `<a href="${esc(href)}" target="_blank" rel="noopener">${text}</a>`;
+  }
+  function inline(text) {
+    const re = /\[([^\]]+)\]\((https?:\/\/[^\s)]+|mailto:[^\s)]+)\)|(https?:\/\/[^\s<>"]+[^\s<>".,;:!?)\]'])/g;
+    let out = '', last = 0, m;
+    while ((m = re.exec(text))) {
+      out += emphasis(esc(text.slice(last, m.index)));
+      out += m[1] ? link(m[2], emphasis(esc(m[1]))) : link(m[3], esc(m[3]));
+      last = re.lastIndex;
+    }
+    return out + emphasis(esc(text.slice(last)));
+  }
+  // Bold a short leading label such as "Read:" or "Final product:".
+  function labelled(text) {
+    const m = text.match(/^(?:\*\*)?([A-Z][^:\[\]()*]{0,40}?):(?:\*\*)?(\s+|$)([\s\S]*)$/);
+    // A label alone on its line ("Aligned Learning Objectives:") is bolded only when written in Title Case.
+    if (m && !m[3] && !looksLikeTitle(m[1])) return inline(text);
+    if (m && m[1].trim().split(/\s+/).length <= 5 && !/https?$/i.test(m[1])) {
+      const rest = m[3] ? ' ' + inline(m[3]) : '';
+      return `<strong>${esc(m[1].trim())}:</strong>${rest}`;
+    }
+    return inline(text);
+  }
+  function youtubeId(url) {
+    const m = url.match(/^(?:https?:\/\/)?(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/i);
+    return m ? m[1] : null;
+  }
+
+  /* ---------- Step 1: lines into tokens ---------- */
+  function tokenize(text) {
+    const tokens = [];
+    text.replace(/\r\n?/g, '\n').split('\n').forEach(raw => {
+      const line = raw.replace(/ /g, ' ').replace(/\s+$/, '');
+      const t = line.trim();
+      if (!t) { tokens.push({ type: 'blank' }); return; }
+      if (/^([-*_])(\s*\1){2,}$/.test(t)) { tokens.push({ type: 'hr' }); return; }
+      let m = t.match(/^(#{1,4})\s+(.*)$/);
+      if (m) { tokens.push({ type: 'heading', level: Math.min(m[1].length, 3), text: m[2].replace(/^\*\*(.*)\*\*$/, '$1'), forced: true }); return; }
+      const indent = (line.match(/^[ \t]*/)[0].replace(/\t/g, '    ').length);
+      m = t.match(/^([-*•·▪◦‣–—o§])\s+(.*)$/);
+      if (m && !(m[1] === '*' && /\*$/.test(m[2]) && !/^\*/.test(m[2]))) { tokens.push({ type: 'li', ordered: false, indent, text: m[2] }); return; }
+      m = t.match(/^(\d{1,3}|[a-zA-Z])[.)]\s+(.*)$/);
+      if (m && (/\d/.test(m[1]) || indent > 0)) { tokens.push({ type: 'li', ordered: true, alpha: /[a-z]/i.test(m[1]), indent, text: m[2] }); return; }
+      if (/^https?:\/\/\S+$/.test(t) && youtubeId(t)) { tokens.push({ type: 'video', url: t, id: youtubeId(t) }); return; }
+      tokens.push({ type: 'p', text: t });
+    });
+    return tokens;
+  }
+
+  /* ---------- Step 2: decide which lines are headings ---------- */
+  function headingKind(text, cfg) {
+    const n = norm(text.replace(/\*\*/g, '').replace(/\p{Extended_Pictographic}|️/gu, ''));
+    if (SUB_NAMES.includes(n)) return 3;
+    if (SECTION_NAMES.includes(n)) return 2;
+    if (/^step\s+\d+\b/i.test(n)) return cfg.family === 'resources' ? 2 : 3;
+    if (/^(resource|part|section|activity|task)\s+\d+\b/i.test(n)) return 2;
+    return 0;
+  }
+  function looksLikeTitle(text) {
+    const t = text.replace(/\*\*/g, '').trim();
+    if (t.length > 70 || /[.,;!?:]$/.test(t) || /https?:\/\//.test(t)) return false;
+    const words = t.split(/\s+/);
+    if (words.length > 9) return false;
+    const big = words.filter(w => w.replace(/[^\p{L}]/gu, '').length > 3);
+    if (!big.length) return /^\p{Lu}/u.test(t);
+    const caps = big.filter(w => /^[\p{Lu}\d"“'(]/u.test(w)).length;
+    return /^[\p{Lu}\d]/u.test(t) && caps / big.length >= 0.75;
+  }
+  function classify(tokens, cfg) {
+    const out = [];
+    let titleTaken = false;
+    tokens.forEach((tok, i) => {
+      if (tok.type === 'heading' && tok.level === 1 && !titleTaken) { titleTaken = true; out.push({ type: 'title', text: tok.text }); return; }
+      if (!titleTaken && tok.type !== 'blank') {
+        titleTaken = true;
+        if (tok.type === 'p' || tok.type === 'heading') { out.push({ type: 'title', text: tok.text }); return; }
+      }
+      if (tok.type === 'heading') { out.push({ type: 'heading', level: Math.max(2, tok.level), text: tok.text }); return; }
+      if (tok.type === 'p') {
+        const k = headingKind(tok.text, cfg);
+        const next = tokens.slice(i + 1).find(t => t.type !== 'blank');
+        if (k && !/[.!?]$/.test(tok.text)) { out.push({ type: 'heading', level: k, text: tok.text.replace(/:\s*$/, '') }); return; }
+        if (next && next.type !== 'heading' && looksLikeTitle(tok.text) && !/^\*\*.*:\*\*$/.test(tok.text)) {
+          out.push({ type: 'heading', level: 2, text: tok.text }); return;
+        }
+        const call = tok.text.match(/^(?:\*\*)?(strategy for success|strategy tip|tip|helpful tip|remember|important|reminder|note)(?:\*\*)?\s*:(?:\*\*)?\s*(.*)$/i);
+        if (call) {
+          const label = call[1].replace(/\b\w/g, c => c.toUpperCase()).replace(/\bFor\b/, 'for');
+          out.push({ type: 'callout', tone: /remember|important|reminder|note/i.test(call[1]) ? 'remember' : 'tip', label, text: call[2] });
+          return;
+        }
+      }
+      out.push(tok);
+    });
+    // A call-out with nothing after its label takes the next paragraph.
+    for (let i = 0; i < out.length; i++) {
+      if (out[i].type === 'callout' && !out[i].text) {
+        let j = i + 1;
+        while (j < out.length && out[j].type === 'blank') j++;
+        if (out[j] && out[j].type === 'p') { out[i].text = out[j].text; out.splice(i + 1, j - i); }
+      }
+    }
+    return out;
+  }
+
+  /* ---------- Step 3: render blocks ---------- */
+  function renderList(items, start, pad, firstOrdered, opts) {
+    // items: li tokens; returns [html, nextIndex]
+    const baseIndent = items[start].indent;
+    const tag = items[start].ordered ? 'ol' : 'ul';
+    const typeAttr = items[start].ordered && items[start].alpha ? ' style="list-style-type: lower-alpha;"' : (opts.olStyle && tag === 'ol' ? ` style="${opts.olStyle}"` : '');
+    const lines = [`${pad}<${tag}${typeAttr}>`];
+    let i = start;
+    const lis = [];
+    while (i < items.length && items[i].indent >= baseIndent) {
+      if (items[i].indent > baseIndent + 1) {
+        const [sub, ni] = renderList(items, i, pad + '        ', false, {});
+        if (lis.length) lis[lis.length - 1].children.push(sub);
+        i = ni; continue;
+      }
+      lis.push({ text: items[i].text, children: [] });
+      i++;
+    }
+    lis.forEach((li, k) => {
+      const spaced = opts.spaced && k < lis.length - 1 ? ' style="margin-bottom: 8px;"' : '';
+      const body = labelled(li.text);
+      if (li.children.length) lines.push(`${pad}    <li${spaced}>${body}\n${li.children.join('\n')}\n${pad}    </li>`);
+      else lines.push(`${pad}    <li${spaced}>${body}</li>`);
+    });
+    lines.push(`${pad}</${tag}>`);
+    return [lines.join('\n'), i];
+  }
+
+  function renderVideo(tok, pad) {
+    return [
+      `${pad}<div style="${VIDEO_WRAP}">`,
+      `${pad}    <iframe style="${VIDEO_FRAME}" title="YouTube video" src="https://www.youtube.com/embed/${tok.id}" loading="lazy" allowfullscreen="allowfullscreen" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"></iframe>`,
+      `${pad}</div>`,
+      `${pad}<p><a href="https://www.youtube.com/watch?v=${tok.id}" target="_blank" rel="noopener">Watch on YouTube (opens in a new tab)</a></p>`
+    ].join('\n');
+  }
+
+  function renderCallout(tok, pad) {
+    const style = tok.tone === 'remember' ? BOX_REMEMBER : BOX_TIP;
+    return [
+      `${pad}<div style="${style}">`,
+      `${pad}    <p style="margin-top: 0;"><strong>${esc(tok.label)}:</strong></p>`,
+      `${pad}    <p style="margin-bottom: 0;">${inline(tok.text)}</p>`,
+      `${pad}</div>`
+    ].join('\n');
+  }
+
+  // Render a run of body blocks (paragraphs, lists, videos, call-outs) at an indent.
+  function renderBody(blocks, pad, opts) {
+    const out = [];
+    let i = 0, firstP = true;
+    while (i < blocks.length) {
+      const b = blocks[i];
+      if (b.type === 'blank') { i++; continue; }
+      if (b.type === 'li') {
+        const run = [];
+        while (i < blocks.length && (blocks[i].type === 'li' || (blocks[i].type === 'blank' && blocks[i + 1] && blocks[i + 1].type === 'li' && blocks[i + 1].indent > 0))) {
+          if (blocks[i].type === 'li') run.push(blocks[i]);
+          i++;
+        }
+        const minIndent = Math.min(...run.map(r => r.indent));
+        run.forEach(r => { r.indent = r.indent - minIndent > 1 ? r.indent - minIndent : 0; });
+        let k = 0;
+        while (k < run.length) { const [html, nk] = renderList(run, k, pad, true, opts); out.push(html); k = nk; }
+        continue;
+      }
+      if (b.type === 'p') {
+        const lead = opts.lead && firstP ? ' style="margin-top: 16px; font-size: 18px;"' : '';
+        out.push(`${pad}<p${lead}>${labelled(b.text)}</p>`);
+        firstP = false;
+      } else if (b.type === 'video') out.push(renderVideo(b, pad));
+      else if (b.type === 'callout') out.push(renderCallout(b, pad));
+      else if (b.type === 'hr') out.push(`${pad}${HR}`);
+      i++;
+    }
+    return out.join('\n');
+  }
+
+  function headingText(text, emoji) {
+    const t = inline(text.replace(/^\*\*(.*)\*\*$/, '$1'));
+    return emoji && !hasEmoji(text) ? `${t} <span aria-hidden="true">${emoji}</span>` : t;
+  }
+  function resourceEmoji(heading, blocks) {
+    const all = (heading + ' ' + blocks.map(b => b.text || '').join(' ')).toLowerCase();
+    if (blocks.some(b => b.type === 'video') || /\b(video|watch|demonstration|lecture|recording|podcast)\b/.test(all)) return '🎥';
+    if (/\b(read|reading|article|chapter|textbook|book|pages?)\b/.test(heading.toLowerCase())) return '📘';
+    if (/check your understanding/i.test(heading)) return '✅';
+    if (/\b(read|reading|article|chapter|textbook)\b/.test(all)) return '📘';
+    return '📊';
+  }
+
+  function sectionize(blocks) {
+    const intro = [], sections = [];
+    let cur = null;
+    blocks.forEach(b => {
+      if (b.type === 'heading' && b.level === 2) { cur = { heading: b.text, blocks: [] }; sections.push(cur); return; }
+      (cur ? cur.blocks : intro).push(b);
+    });
+    return { intro, sections };
+  }
+  // Split a section's blocks at sub-headings: [{heading|null, blocks}]
+  function subsections(blocks) {
+    const parts = [{ heading: null, blocks: [] }];
+    blocks.forEach(b => {
+      if (b.type === 'heading') parts.push({ heading: b.text, blocks: [] });
+      else parts[parts.length - 1].blocks.push(b);
+    });
+    return parts.filter(p => p.heading || p.blocks.some(b => b.type !== 'blank'));
+  }
+
+  function convert(text, styleKey) {
+    const cfg = STYLES[styleKey];
+    const tokens = classify(tokenize(text), cfg);
+    const titleTok = tokens.find(t => t.type === 'title');
+    const rest = tokens.filter(t => t.type !== 'title');
+    const { intro, sections } = sectionize(rest);
+    const title = titleTok ? titleTok.text.replace(/^\*\*(.*)\*\*$/, '$1') : '[Page Title]';
+    const out = [];
+    const bannerStyle = cfg.family === 'overview' ? BANNER + ' margin-top: 0;' : BANNER;
+    out.push(`<h2 style="${bannerStyle}"><strong>${inline(title)}</strong></h2>`);
+    if (intro.length) out.push(renderBody(intro, '', { lead: cfg.family === 'assignment' }));
+
+    if (cfg.family === 'overview') {
+      sections.forEach((s, idx) => {
+        const n = norm(s.heading);
+        const isOverview = /^(module )?overview$|^introduction$/.test(n);
+        const isTodo = /^(to[- ]?do( list)?|todo list|checklist)$/.test(n);
+        const emoji = isOverview ? '📘' : isTodo ? '✅' : '';
+        const parts = subsections(s.blocks);
+        const inner = (pad, topMargin) => {
+          const lines = [`${pad}<h3 style="color: ${BLUE};${topMargin ? ' margin-top: 0;' : ''}"><strong>${headingText(s.heading, emoji)}</strong></h3>`];
+          parts.forEach(p => {
+            if (p.heading) lines.push(`${pad}<h4 style="color: ${BLUE}; margin-bottom: 6px;"><strong>${headingText(p.heading)}</strong></h4>`);
+            const body = renderBody(p.blocks, pad, { spaced: true, olStyle: isTodo ? 'list-style-type: decimal;' : '' });
+            if (body) lines.push(body);
+          });
+          return lines.join('\n');
+        };
+        if (isOverview) {
+          out.push(`<div style="${BOX_OVERVIEW}">\n${inner('    ', true)}\n</div>`);
+        } else {
+          out.push(idx === 0 && !intro.length ? '' : '<hr />');
+          out.push(inner('', false));
+        }
+      });
+      out.push('<hr style="margin-top: 28px; border: 8px solid #00406e;" />');
+    }
+
+    if (cfg.family === 'resources') {
+      const top = cfg.top, sub = cfg.sub;
+      sections.forEach(s => {
+        out.push(HR);
+        const parts = subsections(s.blocks);
+        const resourceLike = /^(resource|part|activity|step)\s+\d+/i.test(s.heading) || /check your understanding/i.test(s.heading);
+        const emoji = resourceLike ? resourceEmoji(s.heading, s.blocks) : '';
+        out.push(`<${top}>${headingText(s.heading, emoji)}</${top}>`);
+        let boxOpen = false;
+        parts.forEach(p => {
+          if (p.heading && /^connect to practice$|^reflect$|^practice$/i.test(norm(p.heading))) {
+            if (boxOpen) out.push('</div>');
+            out.push(`<div style="${BOX_PRACTICE}">`);
+            out.push(`    <${sub} style="color: ${BLUE}; font-size: 1.2em; margin: 0 0 10px;">${headingText(p.heading)}</${sub}>`);
+            const body = renderBody(p.blocks, '    ', {});
+            if (body) out.push(body);
+            boxOpen = true;
+            return;
+          }
+          if (boxOpen) { out.push('</div>'); boxOpen = false; }
+          if (p.heading) out.push(`<${sub} style="color: ${BLUE};">${headingText(p.heading)}</${sub}>`);
+          const body = renderBody(p.blocks, '', {});
+          if (body) out.push(body);
+        });
+        if (boxOpen) out.push('</div>');
+      });
+      out.push(HR_END);
+    }
+
+    if (cfg.family === 'assignment') {
+      sections.forEach(s => {
+        out.push(HR);
+        out.push(`<h3 style="color: ${BLUE};"><strong>${headingText(s.heading)}</strong></h3>`);
+        subsections(s.blocks).forEach(p => {
+          if (p.heading) out.push(`<h4><strong>${headingText(p.heading)}</strong></h4>`);
+          const body = renderBody(p.blocks, '', {});
+          if (body) out.push(body);
+        });
+      });
+      out.push(HR_END);
+    }
+    return out.filter(Boolean).join('\n') + '\n';
+  }
+
+  /* ---------- Rich paste from Word / Google Docs ---------- */
+  function htmlToMarkup(html) {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    doc.querySelectorAll('style,script,meta,title,head').forEach(n => n.remove());
+    const lines = [];
+    let buf = '';
+    const flush = () => { if (buf.trim()) lines.push(buf.replace(/[ \t]+/g, ' ').trim()); buf = ''; };
+    const isBold = el => {
+      const s = el.getAttribute && (el.getAttribute('style') || '');
+      return /^(B|STRONG)$/.test(el.tagName) || /font-weight:\s*(bold|[6-9]00)/.test(s);
+    };
+    const isItalic = el => /^(I|EM)$/.test(el.tagName) || /font-style:\s*italic/.test((el.getAttribute && el.getAttribute('style')) || '');
+    function inlineText(node) {
+      if (node.nodeType === 3) return node.nodeValue.replace(/\s+/g, ' ');
+      if (node.nodeType !== 1) return '';
+      if (node.tagName === 'BR') return '\n';
+      let inner = Array.from(node.childNodes).map(inlineText).join('');
+      if (node.tagName === 'A' && node.getAttribute('href') && /^(https?:|mailto:)/.test(node.getAttribute('href'))) {
+        const href = node.getAttribute('href');
+        const t = inner.trim();
+        return t && t !== href ? `[${t}](${href})` : href;
+      }
+      // Google Docs wraps everything in <b style="font-weight:normal">.
+      if (node.tagName === 'B' && /font-weight:\s*normal/.test(node.getAttribute('style') || '')) return inner;
+      if (isBold(node) && inner.trim()) return inner.replace(/^(\s*)(.*?)(\s*)$/s, '$1**$2**$3');
+      if (isItalic(node) && inner.trim()) return inner.replace(/^(\s*)(.*?)(\s*)$/s, '$1*$2*$3');
+      return inner;
+    }
+    function walk(node, depth) {
+      if (node.nodeType !== 1) { if (node.nodeType === 3) buf += node.nodeValue.replace(/\s+/g, ' '); return; }
+      const tag = node.tagName;
+      if (/^H[1-6]$/.test(tag)) {
+        flush();
+        const level = Math.min(+tag[1], 3);
+        lines.push('#'.repeat(level) + ' ' + inlineText(node).replace(/\*\*/g, '').replace(/\s+/g, ' ').trim());
+        return;
+      }
+      if (tag === 'UL' || tag === 'OL') {
+        flush();
+        let n = 0;
+        Array.from(node.children).forEach(li => {
+          if (li.tagName === 'UL' || li.tagName === 'OL') { walk(li, depth + 1); return; }
+          if (li.tagName !== 'LI') return;
+          n++;
+          const own = Array.from(li.childNodes).filter(c => !(c.nodeType === 1 && /^(UL|OL)$/.test(c.tagName)));
+          const text = own.map(inlineText).join('').replace(/\s+/g, ' ').trim();
+          lines.push('  '.repeat(depth) + (tag === 'OL' ? `${n}. ` : '- ') + text);
+          Array.from(li.children).filter(c => /^(UL|OL)$/.test(c.tagName)).forEach(c => walk(c, depth + 1));
+        });
+        return;
+      }
+      if (tag === 'HR') { flush(); lines.push('---'); return; }
+      if (/^(P|DIV|LI|TR|BLOCKQUOTE|SECTION|ARTICLE|TABLE|TBODY)$/.test(tag)) {
+        flush();
+        if (Array.from(node.children).some(c => /^(P|DIV|UL|OL|H[1-6]|TABLE|TR|TBODY|BLOCKQUOTE|HR)$/.test(c.tagName))) {
+          Array.from(node.childNodes).forEach(c => walk(c, depth));
+          flush();
+          return;
+        }
+        let text = inlineText(node);
+        // Word list paragraphs keep their bullet as text.
+        if (/MsoListParagraph/.test(node.className || '')) text = text.replace(/^\s*[·•o§▪]\s+/, '- ');
+        text.split('\n').forEach(l => { if (l.trim()) lines.push(l.replace(/\s+/g, ' ').trim()); });
+        return;
+      }
+      if (tag === 'BR') { flush(); return; }
+      // Inline wrappers around block content (Google Docs wraps the whole paste in <b>).
+      if (node.querySelector('p,div,ul,ol,h1,h2,h3,h4,h5,h6,table,hr,li')) {
+        Array.from(node.childNodes).forEach(c => walk(c, depth));
+        return;
+      }
+      buf += inlineText(node);
+    }
+    Array.from(doc.body.childNodes).forEach(n => walk(n, 0));
+    flush();
+    return lines.join('\n');
+  }
+
+  /* ---------- UI ---------- */
+  let timer = null;
+  function run() {
+    const html = src.value.trim() ? convert(src.value, styleSel.value) : '';
+    code.value = html;
+    preview.innerHTML = html || '<p style="color:#5f6f7f">Your formatted page will appear here.</p>';
+    try { localStorage.setItem('t2t-text', src.value); localStorage.setItem('t2t-style', styleSel.value); } catch (e) {}
+  }
+  function schedule() { clearTimeout(timer); timer = setTimeout(run, 150); }
+  function say(msg) { status.textContent = msg; clearTimeout(say.t); say.t = setTimeout(() => { status.textContent = ''; }, 4000); }
+
+  src.addEventListener('input', schedule);
+  src.addEventListener('paste', e => {
+    const html = e.clipboardData && e.clipboardData.getData('text/html');
+    if (!html) return;
+    const markup = htmlToMarkup(html);
+    if (!markup.trim()) return;
+    e.preventDefault();
+    const s = src.selectionStart, en = src.selectionEnd;
+    src.setRangeText(markup, s, en, 'end');
+    run();
+    say('Pasted formatted text. Headings, bold, lists, and links were kept.');
+  });
+  styleSel.addEventListener('change', () => {
+    $('viewTemplate').href = '../templates.html#' + STYLES[styleSel.value].anchor;
+    run();
+  });
+  $('exampleBtn').addEventListener('click', () => {
+    src.value = EXAMPLES[STYLES[styleSel.value].family];
+    run();
+    say('Example loaded. Edit it or replace it with your own text.');
+  });
+  $('clearBtn').addEventListener('click', () => { src.value = ''; run(); src.focus(); });
+
+  function selectTab(which) {
+    const prev = which === 'preview';
+    $('tabPreview').setAttribute('aria-selected', String(prev));
+    $('tabCode').setAttribute('aria-selected', String(!prev));
+    preview.hidden = !prev;
+    $('codeWrap').hidden = prev;
+  }
+  $('tabPreview').addEventListener('click', () => selectTab('preview'));
+  $('tabCode').addEventListener('click', () => selectTab('code'));
+
+  $('copyBtn').addEventListener('click', async () => {
+    if (!code.value) { say('Add some text first.'); return; }
+    try {
+      await navigator.clipboard.writeText(code.value);
+    } catch (e) {
+      selectTab('code'); code.focus(); code.select();
+      document.execCommand && document.execCommand('copy');
+    }
+    say('HTML copied. Paste it into the Canvas HTML editor.');
+  });
+  $('downloadBtn').addEventListener('click', () => {
+    if (!code.value) { say('Add some text first.'); return; }
+    const titleMatch = code.value.match(/<h2[^>]*><strong>([\s\S]*?)<\/strong><\/h2>/);
+    const name = (titleMatch ? titleMatch[1].replace(/<[^>]+>/g, '') : 'canvas-page')
+      .replace(/&[a-z]+;/g, '').replace(/[^\w\s-]/g, '').trim().replace(/\s+/g, '-').toLowerCase().slice(0, 60) || 'canvas-page';
+    const blob = new Blob([code.value], { type: 'text/html' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name + '.html';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    say('Downloaded ' + name + '.html');
+  });
+
+  // Restore the last draft and style, or open with an example.
+  let saved = null, savedStyle = null;
+  try { saved = localStorage.getItem('t2t-text'); savedStyle = localStorage.getItem('t2t-style'); } catch (e) {}
+  const hashStyle = location.hash.slice(1);
+  if (STYLES[hashStyle]) styleSel.value = hashStyle;
+  else if (savedStyle && STYLES[savedStyle]) styleSel.value = savedStyle;
+  $('viewTemplate').href = '../templates.html#' + STYLES[styleSel.value].anchor;
+  src.value = saved || EXAMPLES[STYLES[styleSel.value].family];
+  try { if (!localStorage.getItem('t2t-seen')) { $('guide').open = true; localStorage.setItem('t2t-seen', '1'); } } catch (e) { $('guide').open = true; }
+  run();
+
+  window.__textToTemplate = { convert, htmlToMarkup };
+})();
+</script>
+</body>
+</html>
