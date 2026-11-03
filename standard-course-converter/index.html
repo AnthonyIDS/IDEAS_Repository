@@ -137,6 +137,15 @@ pre .v { color: var(--code-val); }
   .checks { max-height: none; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+.library-controls { flex: 0 0 auto; max-height: 42vh; overflow: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); padding: 8px 12px; }
+.library-controls summary { cursor: pointer; font-weight: bold; }
+.library-fields { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; padding-top: 10px; }
+.library-fields select { max-width: 100%; font: inherit; padding: 6px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 4px; }
+.library-fields a { color: var(--accent); }
+.library-fields p, .library-fields ul { width: 100%; margin: 2px 0; }
+.library-fields textarea { width: 100%; min-height: 90px; flex: none; font-family: var(--font-code); }
+.library-fields li { margin: 5px 0; }
 </style>
 <script>
 /* Minimal SCORM 1.2 wrapper: marks the tool as completed when opened. */
@@ -176,6 +185,7 @@ pre .v { color: var(--code-val); }
     <div class="rules" id="rules" hidden>
       <h2>What the converter does</h2>
       <ul>
+        <li>Loads the Module Overview layout and optional snippets from the resource library. Use Template and snippets to choose, edit and add snippets.</li>
         <li>Puts the page's first heading (or the Module Title) in the navy title banner.</li>
         <li>Keeps all wording, images, videos and links exactly as they are. URLs and embed attributes are never changed.</li>
         <li>Turns other headings and bold-only lines into navy subheadings.</li>
@@ -187,6 +197,26 @@ pre .v { color: var(--code-val); }
     </div>
   </header>
 
+  <details class="library-controls">
+    <summary>Template and snippets</summary>
+    <div class="library-fields">
+      <label for="layoutChoice">Page layout</label>
+      <select id="layoutChoice"><option value="module">Module Overview and To Do List</option><option value="standard">Original standard layout</option></select>
+      <button id="refreshLibrary" type="button">Refresh library</button>
+      <a href="../templates.html#module-overview" target="_blank" rel="noopener">View template</a>
+      <a href="../html-code.html" target="_blank" rel="noopener">View snippets</a>
+      <p id="libraryStatus" role="status" aria-live="polite">Loading library…</p>
+      <label for="snippetChoice">Choose a snippet</label>
+      <select id="snippetChoice" disabled><option value="">Select a snippet…</option></select>
+      <label for="snippetEditor">Snippet HTML — replace example wording and links before adding</label>
+      <textarea id="snippetEditor" rows="5" spellcheck="false" placeholder="Select a snippet to edit its HTML."></textarea>
+      <label for="snippetPosition">Insert snippet</label>
+      <select id="snippetPosition"><option value="before">Before the To Do List (or at the end if there is no list)</option><option value="after">At the end of the page</option></select>
+      <button id="addSnippet" type="button" disabled>Add snippet</button>
+      <ul id="addedSnippets" aria-label="Added snippets"></ul>
+      <p class="hint">Library changes load on each visit or with Refresh library. Your course HTML stays in your browser. Added snippets are kept for this visit only. Canvas-specific interactions should be checked in Canvas.</p>
+    </div>
+  </details>
   <div class="grid">
     <section class="panel" aria-labelledby="in-h">
       <div class="panel-head">
@@ -543,6 +573,7 @@ pre .v { color: var(--code-val); }
 
     let html = out.join('\n')
       .replace(/<(img|br|hr|source|input|embed|track|wbr)\b([^>]*?)\s*\/?>/gi, '<$1$2 />');
+    html = applyLibrary(html, notes);
     html = encodeNonAscii(html);
 
     // Integrity check: every image, embed and link must survive unchanged
@@ -742,7 +773,174 @@ pre .v { color: var(--code-val); }
     } catch (e) { openNewWindow(); }
   });
 
+  let moduleTemplate = null, snippets = [], addedSnippets = [], snippetSerial = 0;
+
+  async function fetchLibrary(path) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12000);
+    try {
+      const response = await fetch(path, { cache: 'no-store', signal: controller.signal });
+      if (!response.ok) throw new Error('Library unavailable');
+      return new DOMParser().parseFromString(await response.text(), 'text/html');
+    } finally { clearTimeout(timeout); }
+  }
+
+  async function loadLibrary() {
+    $('#refreshLibrary').disabled = true;
+    $('#libraryStatus').textContent = 'Loading library…';
+    const results = await Promise.allSettled([
+      fetchLibrary('../templates.html').then(doc => {
+        const code = doc.querySelector('#module-overview textarea');
+        if (!code) throw new Error('Module template missing');
+        const body = new DOMParser().parseFromString(code.value, 'text/html').body;
+        const box = [...body.children].find(el => el.tagName === 'DIV' && el.querySelector('h3'));
+        const todo = [...body.children].find(el => el.tagName === 'H3' && /To Do List/i.test(el.textContent));
+        const list = todo && [...body.children].find(el => el.tagName === 'OL');
+        if (!body.querySelector('h2') || !box || !todo || !list || !body.querySelector('hr')) throw new Error('Template structure changed');
+        return { body, box, todo, list };
+      }),
+      fetchLibrary('../html-code.html').then(doc => {
+        const entries = [];
+        doc.querySelectorAll('.snippet-page').forEach(section => {
+          const title = section.querySelector('.snippet-title')?.textContent.trim();
+          if (!title) return;
+          const codes = [...section.querySelectorAll('pre code')];
+          codes.forEach((code, i) => entries.push({ title: title + (codes.length > 1 ? ' — variant ' + (i + 1) : ''), html: code.textContent.trim() }));
+        });
+        if (!entries.length) throw new Error('Snippets missing');
+        return entries;
+      })
+    ]);
+    const messages = [];
+    if (results[0].status === 'fulfilled') {
+      moduleTemplate = results[0].value;
+      messages.push('Module Overview template loaded.');
+    } else messages.push(moduleTemplate ? 'Template refresh failed; using the last loaded template.' : 'Template unavailable; using the original standard layout. Try Refresh library.');
+    if (results[1].status === 'fulfilled') {
+      snippets = results[1].value;
+      const select = $('#snippetChoice');
+      select.replaceChildren(new Option('Select a snippet…', ''));
+      snippets.forEach((snippet, i) => select.add(new Option(snippet.title, String(i))));
+      select.disabled = false;
+      messages.push(snippets.length + ' snippets available.');
+    } else messages.push(snippets.length ? 'Snippet refresh failed; using the last loaded snippets.' : 'Snippets unavailable. Try Refresh library.');
+    $('#libraryStatus').textContent = messages.join(' ');
+    $('#refreshLibrary').disabled = false;
+    run();
+  }
+
+  function applyLibrary(html, notes) {
+    const body = new DOMParser().parseFromString(html, 'text/html').body;
+    const title = body.firstElementChild;
+    let todo = [...body.children].find(el => el.tagName === 'H3' && el.textContent.trim() === 'To Do List');
+    const closing = [...body.children].reverse().find(el => el.tagName === 'HR');
+    if ($('#layoutChoice').value === 'module') {
+      if (moduleTemplate) {
+        const t = moduleTemplate;
+        title.setAttribute('style', t.body.querySelector('h2').getAttribute('style') || '');
+        closing.setAttribute('style', [...t.body.querySelectorAll('hr')].at(-1).getAttribute('style') || '');
+        const box = t.box.cloneNode(false);
+        const overviewHeading = t.box.querySelector('h3').cloneNode(true);
+        box.append(overviewHeading);
+        const content = [];
+        for (let el = title.nextSibling; el && el !== todo && el !== closing; el = el.nextSibling) content.push(el);
+        // The converter's separator immediately before the checklist belongs outside the overview.
+        const divider = content.at(-1);
+        if (todo && divider?.nodeName === 'HR') content.pop();
+        // Ignore whitespace when locating a separator.
+        const separator = todo?.previousElementSibling;
+        content.forEach(el => {
+          if (el === separator && el.nodeName === 'HR') return;
+          if (el.nodeType === 1 && /^H[1-6]$/.test(el.tagName) && /^Module Overview\s*📘?$/u.test(el.textContent.trim())) return;
+          box.append(el);
+        });
+        if (box.children.length > 1 || box.textContent.trim() !== overviewHeading.textContent.trim()) title.after(box);
+        const eqStyle = t.box.querySelector('h4')?.getAttribute('style');
+        box.querySelectorAll('h3').forEach(heading => {
+          if (/^Essential Questions$/i.test(heading.textContent.trim())) {
+            const h4 = body.ownerDocument.createElement('h4');
+            if (eqStyle) h4.setAttribute('style', eqStyle);
+            h4.innerHTML = heading.innerHTML;
+            heading.replaceWith(h4);
+          }
+        });
+        if (todo) {
+          todo.setAttribute('style', t.todo.getAttribute('style') || '');
+          todo.innerHTML = t.todo.innerHTML;
+          const intro = todo.nextElementSibling;
+          const templateIntro = t.todo.nextElementSibling;
+          if (intro?.tagName === 'P' && templateIntro?.tagName === 'P') intro.innerHTML = templateIntro.innerHTML;
+          const list = intro?.nextElementSibling;
+          if (list?.tagName === 'OL') {
+            list.setAttribute('style', t.list.getAttribute('style') || '');
+            [...list.children].forEach((li, i, items) => {
+              const sample = i === items.length - 1 ? t.list.lastElementChild : t.list.firstElementChild;
+              if (sample.hasAttribute('style')) li.setAttribute('style', sample.getAttribute('style'));
+            });
+          }
+          if (separator?.tagName === 'HR') separator.replaceWith(t.body.querySelector('hr').cloneNode(true));
+        }
+        notes.push({ type: 'ok', text: 'Applied the current Module Overview template from the library. Existing content is grouped in the overview; no hook, questions, objectives or activities were invented.' });
+      } else notes.push({ type: 'warn', text: 'The library template is not loaded. Output currently uses the original standard layout.' });
+    }
+    const beforeAnchor = todo?.previousElementSibling?.tagName === 'HR' ? todo.previousElementSibling : (todo || closing);
+    addedSnippets.forEach(snippet => {
+      const fragment = body.ownerDocument.createElement('template');
+      fragment.innerHTML = snippet.html;
+      (snippet.position === 'before' ? beforeAnchor : closing).before(fragment.content);
+    });
+    if (addedSnippets.length) notes.push({ type: 'warn', text: 'Added ' + addedSnippets.length + ' selected snippet(s). Review example wording, links and Canvas interactions before publishing.' });
+    return body.innerHTML;
+  }
+
+  function renderAddedSnippets() {
+    const list = $('#addedSnippets'); list.replaceChildren();
+    addedSnippets.forEach(snippet => {
+      const li = document.createElement('li');
+      li.append(document.createTextNode(snippet.title + ' · ' + (snippet.position === 'before' ? 'before checklist' : 'end of page') + ' '));
+      const remove = document.createElement('button');
+      remove.type = 'button'; remove.textContent = 'Remove';
+      remove.setAttribute('aria-label', 'Remove ' + snippet.title);
+      remove.addEventListener('click', () => { addedSnippets = addedSnippets.filter(item => item !== snippet); renderAddedSnippets(); run(); });
+      li.append(remove); list.append(li);
+    });
+  }
+
+  $('#refreshLibrary').addEventListener('click', loadLibrary);
+  $('#layoutChoice').addEventListener('change', run);
+  $('#snippetChoice').addEventListener('change', () => {
+    const value = $('#snippetChoice').value;
+    $('#snippetEditor').value = value === '' ? '' : snippets[Number(value)].html;
+    $('#addSnippet').disabled = value === '';
+  });
+  $('#snippetEditor').addEventListener('input', () => { $('#addSnippet').disabled = !$('#snippetEditor').value.trim(); });
+  $('#addSnippet').addEventListener('click', () => {
+    const draft = $('#snippetEditor').value.trim();
+    if (!draft) return;
+    const body = new DOMParser().parseFromString(draft, 'text/html').body;
+    body.querySelectorAll('script, style, link, meta, base').forEach(el => el.remove());
+    body.querySelectorAll('*').forEach(el => [...el.attributes].forEach(attr => {
+      if (/^on/i.test(attr.name) || attr.name === 'srcdoc' || (/^(href|src|action|formaction|xlink:href)$/i.test(attr.name) && /^\s*(javascript|vbscript):/i.test(attr.value))) el.removeAttribute(attr.name);
+    }));
+    // Namespace IDs and their local links so repeated snippets do not collide.
+    const prefix = 'ideas-snippet-' + (++snippetSerial) + '-';
+    const ids = new Map();
+    body.querySelectorAll('[id]').forEach(el => { const old = el.id; ids.set(old, prefix + old); el.id = prefix + old; });
+    body.querySelectorAll('*').forEach(el => {
+      const href = el.getAttribute('href');
+      if (href?.startsWith('#') && ids.has(href.slice(1))) el.setAttribute('href', '#' + ids.get(href.slice(1)));
+      ['for', 'aria-controls', 'aria-labelledby', 'aria-describedby'].forEach(attr => {
+        if (el.hasAttribute(attr)) el.setAttribute(attr, el.getAttribute(attr).split(/\s+/).map(id => ids.get(id) || id).join(' '));
+      });
+    });
+    const selected = $('#snippetChoice').value;
+    addedSnippets.push({ title: selected === '' ? 'Custom snippet' : snippets[Number(selected)].title, html: body.innerHTML, position: $('#snippetPosition').value });
+    renderAddedSnippets(); run();
+  });
+
+
   loadSample();
+  loadLibrary();
 })();
 </script>
 
