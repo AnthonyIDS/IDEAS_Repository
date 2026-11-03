@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>💡IDEAS Standard Course Converter</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;500&family=Lato:wght@400;700&display=swap">
+<style>
+/* Layout: a two-pane workbench. Old page on the left, Canvas-ready page on the right, checks underneath. */
+:root {
+  --bg: #eef2f6;
+  --surface: #ffffff;
+  --ink: #14212e;
+  --muted: #566577;
+  --line: #d3dbe5;
+  --accent: #00406e;
+  --accent-ink: #ffffff;
+  --accent-soft: #e1ebf4;
+  --ok: #1d6a44;
+  --ok-soft: #e0f1e7;
+  --warn: #8a5200;
+  --warn-soft: #fbefd6;
+  --code-bg: #f6f8fb;
+  --code-tag: #00406e;
+  --code-val: #8a3b12;
+  --paper: #ffffff;
+  --font-ui: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --font-code: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d141c; --surface: #141e29; --ink: #e4ebf2; --muted: #98a8b9; --line: #253445;
+    --accent: #7fb2e0; --accent-ink: #0a1520; --accent-soft: #17304a;
+    --ok: #74d3a0; --ok-soft: #12301f; --warn: #f2b860; --warn-soft: #3a2b10;
+    --code-bg: #0f1821; --code-tag: #8fc0ec; --code-val: #f0a878; --paper: #ffffff;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d141c; --surface: #141e29; --ink: #e4ebf2; --muted: #98a8b9; --line: #253445;
+  --accent: #7fb2e0; --accent-ink: #0a1520; --accent-soft: #17304a;
+  --ok: #74d3a0; --ok-soft: #12301f; --warn: #f2b860; --warn-soft: #3a2b10;
+  --code-bg: #0f1821; --code-tag: #8fc0ec; --code-val: #f0a878; --paper: #ffffff;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  margin: 0; overflow: hidden;
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-ui); font-size: 14px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 10px;
+}
+.wrap { height: 100%; max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+
+header.top { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; flex: none; }
+header.top h1 { margin: 0; font-size: 1.05rem; line-height: 1.2; background: #00406e; color: #ffffff; padding: 7px 12px; border-radius: 6px; }
+header.top .sub { margin: 0; color: var(--muted); font-size: 0.85rem; flex: 1 1 240px; min-width: 0; }
+
+.grid { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 12px; }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; }
+.panel-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--line); flex: none; }
+.panel-head h2 { margin: 0; font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+.panel-body { padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; min-width: 0; min-height: 0; flex: 1; }
+
+.btns { display: flex; flex-wrap: wrap; gap: 6px; }
+button, .btn {
+  font: inherit; font-size: 0.85rem; font-weight: 700; cursor: pointer;
+  border-radius: 6px; padding: 5px 10px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--ink);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+button:hover, .btn:hover { border-color: var(--accent); }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+button:focus-visible, .btn:focus-within, input:focus-visible, textarea:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+label.field { display: flex; flex-direction: column; gap: 3px; font-size: 0.82rem; font-weight: 700; flex: none; }
+label.field span.hint { font-weight: 400; color: var(--muted); }
+input[type="text"] {
+  font: inherit; font-size: 0.9rem; padding: 6px 9px; border-radius: 6px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 100%;
+}
+.drop { flex: 1; min-height: 0; display: flex; }
+textarea {
+  font-family: var(--font-code); font-size: 0.76rem; line-height: 1.5;
+  width: 100%; flex: 1; min-height: 0; resize: none; padding: 10px;
+  border: 1px solid var(--line); border-radius: 6px; background: var(--code-bg); color: var(--ink);
+}
+.drop.dragging textarea { border: 2px dashed var(--accent); }
+.example-tag { font-size: 0.72rem; font-weight: 700; letter-spacing: 0; text-transform: none; color: var(--accent); background: var(--accent-soft); padding: 2px 8px; border-radius: 999px; }
+
+.tabs { display: inline-flex; border: 1px solid var(--line); border-radius: 7px; padding: 2px; gap: 2px; }
+.tabs button { border: 0; padding: 4px 10px; background: transparent; color: var(--muted); }
+.tabs button[aria-selected="true"] { background: var(--accent-soft); color: var(--accent); }
+
+.structure { display: flex; flex-wrap: wrap; gap: 5px; flex: none; }
+.chip { font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+.chip.on { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+
+.preview-frame { flex: 1; min-height: 0; overflow: auto; background: #e8ecf0; border-radius: 6px; padding: 10px; }
+#preview { display: block; background: var(--paper); border-radius: 4px; }
+.code-frame { flex: 1; min-height: 0; overflow: auto; background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px; }
+pre { margin: 0; padding: 10px; font-family: var(--font-code); font-size: 0.76rem; line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
+pre .t { color: var(--code-tag); font-weight: 500; }
+pre .v { color: var(--code-val); }
+
+.checks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; flex: none; max-height: 92px; overflow: auto; }
+.checks li { display: flex; gap: 8px; align-items: baseline; padding: 4px 9px; border-radius: 6px; font-size: 0.8rem; }
+.checks li::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; transform: translateY(-1px); }
+.checks li.ok { background: var(--ok-soft); } .checks li.ok::before { background: var(--ok); }
+.checks li.warn { background: var(--warn-soft); } .checks li.warn::before { background: var(--warn); }
+.checks li.info { background: var(--accent-soft); } .checks li.info::before { background: var(--accent); }
+.checks code { font-family: var(--font-code); font-size: 0.76rem; word-break: break-all; }
+
+.status { font-size: 0.8rem; color: var(--ok); font-weight: 700; flex: none; }
+.status:empty { display: none; }
+
+.rules { position: absolute; top: calc(100% + 6px); right: 0; z-index: 20; width: min(560px, 100%); background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; box-shadow: 0 10px 30px rgba(0, 20, 40, 0.18); }
+.rules h2 { margin: 0 0 6px; font-size: 0.95rem; }
+.rules ul { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 3px; font-size: 0.85rem; }
+
+@media (max-width: 920px) {
+  html, body { height: auto; }
+  body { overflow: auto; }
+  .wrap { height: auto; }
+  .grid { grid-template-columns: minmax(0, 1fr); }
+  textarea { min-height: 240px; }
+  .out-body { min-height: 460px; }
+  .checks { max-height: none; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+<script>
+/* Minimal SCORM 1.2 wrapper: marks the tool as completed when opened. */
+(function () {
+  function findAPI(win) {
+    var tries = 0;
+    while (win && !win.API && win.parent && win.parent !== win && tries < 10) { win = win.parent; tries++; }
+    return win && win.API ? win.API : null;
+  }
+  var api = null;
+  try { api = findAPI(window) || (window.opener ? findAPI(window.opener) : null); } catch (e) { api = null; }
+  if (!api) return;
+  var finished = false;
+  try {
+    api.LMSInitialize('');
+    var status = api.LMSGetValue('cmi.core.lesson_status');
+    if (status !== 'completed' && status !== 'passed') api.LMSSetValue('cmi.core.lesson_status', 'completed');
+    api.LMSCommit('');
+  } catch (e) {}
+  function finish() { if (finished) return; finished = true; try { api.LMSCommit(''); api.LMSFinish(''); } catch (e) {} }
+  window.addEventListener('pagehide', finish);
+  window.addEventListener('beforeunload', finish);
+})();
+</script>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="top">
+    <h1>💡IDEAS Standard Course Converter</h1>
+    <p class="sub">Paste or upload an old Canvas page's HTML to get it in the standard template.</p>
+    <div class="btns">
+      <button id="helpBtn" type="button" aria-expanded="false" aria-controls="rules">How it works</button>
+      <button id="fsBtn" type="button">Fullscreen</button>
+    </div>
+    <div class="rules" id="rules" hidden>
+      <h2>What the converter does</h2>
+      <ul>
+        <li>Puts the page's first heading (or the Module Title) in the navy title banner.</li>
+        <li>Keeps all wording, images, videos and links exactly as they are. URLs and embed attributes are never changed.</li>
+        <li>Turns other headings and bold-only lines into navy subheadings.</li>
+        <li>If the page has an Assignment Checklist, To Do List or similar, rebuilds it as the standard To Do List with a bolded action verb on each item. Learning objective codes are kept only where an item already lists them.</li>
+        <li>If there is no checklist, the page is formatted without a To Do List.</li>
+        <li>Every page ends with the thick navy line.</li>
+        <li>Removes faculty notes, template placeholder text, outer wrapper boxes, old divider lines, Word formatting, and inline fonts, font sizes and text alignment.</li>
+      </ul>
+    </div>
+  </header>
+
+  <div class="grid">
+    <section class="panel" aria-labelledby="in-h">
+      <div class="panel-head">
+        <h2 id="in-h">Old page HTML <span class="example-tag" id="exampleTag">Example loaded</span></h2>
+        <div class="btns">
+          <label class="btn" for="file">Upload HTML<input id="file" class="sr-only" type="file" accept=".html,.htm,.txt"></label>
+          <button id="sampleBtn" type="button">Load example</button>
+          <button id="clearBtn" type="button">Clear</button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <label class="field" for="pageName">Module Title <span class="hint">Used only when the page has no heading. A trailing "Copy" is dropped.</span>
+          <input id="pageName" type="text" autocomplete="off" placeholder="e.g. Module 3: Capybara Ethics">
+        </label>
+        <div class="drop" id="drop">
+          <label class="sr-only" for="source">Old page HTML</label>
+          <textarea id="source" spellcheck="false" placeholder="In Canvas, open the page's editor, switch to the HTML view, copy everything, and paste it here. You can also drop an .html file on this box."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="out-h">
+      <div class="panel-head">
+        <h2 id="out-h">Canvas-ready page</h2>
+        <div class="btns">
+          <div class="tabs" role="tablist" aria-label="Output view">
+            <button type="button" role="tab" id="tabPreview" aria-selected="true">Preview</button>
+            <button type="button" role="tab" id="tabCode" aria-selected="false">HTML</button>
+          </div>
+          <button class="primary" id="copyBtn" type="button">Copy HTML</button>
+        </div>
+      </div>
+      <div class="panel-body out-body">
+        <div class="structure" id="structure" aria-label="Page structure"></div>
+        <div class="preview-frame" id="previewWrap"><div id="preview"></div></div>
+        <div class="code-frame" id="codeWrap" hidden><pre><code id="code"></code></pre></div>
+        <div class="status" id="status" role="status" aria-live="polite"></div>
+        <ul class="checks" id="checks" aria-label="Conversion checks"></ul>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script type="text/plain" id="sampleHtml"><div style="padding: 30px 32px 30px 32px;">
+    <h2><span style="font-family: arial, helvetica, sans-serif; font-size: 14pt;">Module 3: Capybara Ethics &ndash; Is It Wrong to Be This Chill?</span></h2>
+    <p>[<span style="background-color: #fbeeb8; color: #c71f23;"><strong>NOTE FOR FACULTY: Introduce the module's big questions here. Delete these highlighted instructions.</strong></span>]</p>
+    <p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://canvas.example.edu/courses/1234/files/5678/preview" alt="A capybara relaxing in a hot spring with an orange balanced on its head" width="480" height="320" /></p>
+    <p><span style="font-family: arial, helvetica, sans-serif; font-size: 12pt;">The capybara is the world&rsquo;s largest rodent and, by most accounts, its most emotionally regulated. Birds sit on it. Monkeys ride it. Ducklings nap on it. It does not complain. In this module we ask the hard questions: is the capybara&rsquo;s radical acceptance a virtue, or simply a lack of ambition? And does wearing an orange on your head count as consent?</span></p>
+    <p><span style="font-size: 12pt;">Start with this short lecture, filmed entirely at a hot spring:</span></p>
+    <p><iframe class="lti-embed" style="width: 480px; height: 278px; display: inline-block;" title="Capybara Ethics Lecture" src="https://canvas.example.edu/courses/1234/external_tools/retrieve?display=borderless&amp;url=https%3A%2F%2Fmedia.example.edu%2Fcapybara-lecture" width="480" height="278" loading="lazy" allowfullscreen="allowfullscreen"></iframe></p>
+    <p><strong><span style="font-size: 12pt;">Essential&nbsp;Questions</span></strong></p>
+    <ul>
+        <li><span style="font-size: 12pt;">If a capybara lets a caiman sit next to it, is that tolerance or poor risk management?</span></li>
+        <li><span style="font-size: 12pt;">Can anyone be &ldquo;too chill&rdquo; in the face of injustice?</span></li>
+        <li><span style="font-size: 12pt;">Who, ethically speaking, owns the hot spring?</span></li>
+    </ul>
+    <p><strong><span style="font-size: 12pt;">Learning Objectives</span></strong></p>
+    <p><span style="font-size: 12pt;">MLO 3. Evaluate rodent-based moral frameworks, to include:&nbsp;</span></p>
+    <ol start="a" type="a">
+        <li><span style="font-size: 12pt;">compare capybara stoicism with Marcus Aurelius, who also rarely ran.</span></li>
+        <li><span style="font-size: 12pt;">apply the Golden Rule of the Hot Spring: share the warm water.</span></li>
+        <li><span style="font-size: 12pt;">defend or critique the practice of sitting on a friend.</span></li>
+    </ol>
+    <p><span style="font-size: 12pt;"><strong>Assignment Checklist</strong></span></p>
+    <ol class="ol1">
+        <ol class="ol1">
+            <li>Read the Capybara Ethics lecture notes [<a href="https://canvas.example.edu/courses/1234/pages/objectives">3a</a>, <a href="https://canvas.example.edu/courses/1234/pages/objectives">3b</a>]</li>
+            <li class="li1">Post and reply to the discussion &ldquo;Would You Let a Bird Sit on You?&rdquo; [3c]</li>
+            <li class="li1">Submit the Chill Journal assignment (500 words, written while sitting very still) [3a, 3c]</li>
+            <li class="li1" style="text-align: center;">Take the Module 3 Quiz [3a, 3b, 3c]</li>
+            <li>Watch at least ten minutes of capybaras doing nothing (optional, strongly encouraged)</li>
+        </ol>
+    </ol>
+    <p>&nbsp;</p>
+</div></script>
+
+<script>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const NAVY = '#00406e';
+  const MEDIA_SEL = 'img, iframe, video, audio, embed, object, source, track';
+  const KEEP_ATTRS = new Set(['IMG', 'IFRAME', 'VIDEO', 'AUDIO', 'EMBED', 'OBJECT', 'SOURCE', 'TRACK', 'A', 'PARAM']);
+  const STRIP_PROPS = ['font-family', 'font-size', 'text-align', 'line-height'];
+  const CANON_VERBS = { 'post and reply': 'Post and Reply', review: 'Review', read: 'Read', watch: 'Watch', complete: 'Complete', submit: 'Submit', take: 'Take', participate: 'Participate', attend: 'Attend' };
+  const VERB_RE = /^(post and reply|review|read|watch|complete|submit|take|participate|attend)\b\s*(?:(?:to|the)\s+)?/i;
+  const CHECK_RE = /\b(to[\s-]?do(\s+list)?|check\s*-?\s*list|what to do)\b/i;
+  const LEADIN_RE = /in order to (successfully )?complete|complete the following|please do the following/i;
+  const ENT = { '–': '&ndash;', '—': '&mdash;', '‘': '&lsquo;', '’': '&rsquo;', '“': '&ldquo;', '”': '&rdquo;', '…': '&hellip;', ' ': '&nbsp;', '©': '&copy;', '®': '&reg;', '•': '&bull;' };
+
+  const H2_STYLE = `color: #ffffff; background: ${NAVY}; text-align: left; padding: 12px 14px; border-radius: 6px;`;
+  const H3_STYLE = `color: ${NAVY};`;
+
+  function unwrap(el) {
+    const p = el.parentNode; if (!p) return;
+    while (el.firstChild) p.insertBefore(el.firstChild, el);
+    el.remove();
+  }
+  const hasMedia = (el) => el.matches?.(MEDIA_SEL) || !!el.querySelector?.(MEDIA_SEL);
+  const textOf = (html) => { const t = document.createElement('template'); t.innerHTML = html; return t.content.textContent; };
+  const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const encodeNonAscii = (s) => s.replace(/[^\x00-\x7f]/gu, (c) => ENT[c] || '&#' + c.codePointAt(0) + ';');
+
+  function snapshot(root) {
+    return {
+      media: [...root.querySelectorAll(MEDIA_SEL)].map((e) => e.outerHTML),
+      links: [...root.querySelectorAll('a[href]')].map((a) => a.getAttribute('href')),
+    };
+  }
+  function missing(before, after) {
+    const pool = [...after]; const out = [];
+    before.forEach((x) => { const i = pool.indexOf(x); if (i === -1) out.push(x); else pool.splice(i, 1); });
+    return out;
+  }
+
+  function trimEdges(el) {
+    const w = el.ownerDocument.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    const nodes = []; while (w.nextNode()) nodes.push(w.currentNode);
+    const real = nodes.filter((n) => n.textContent.trim());
+    if (!real.length) return;
+    nodes.slice(0, nodes.indexOf(real[0])).forEach((n) => n.remove());
+    real[0].textContent = real[0].textContent.replace(/^\s+/, '');
+    const last = real[real.length - 1];
+    nodes.slice(nodes.indexOf(last) + 1).forEach((n) => n.remove());
+    last.textContent = last.textContent.replace(/\s+$/, '');
+  }
+
+  function isBoldOnly(p) {
+    const t = p.textContent.trim();
+    if (!t || t.length > 120 || /[.!?]$/.test(t) || hasMedia(p)) return false;
+    const w = p.ownerDocument.createTreeWalker(p, NodeFilter.SHOW_TEXT);
+    while (w.nextNode()) {
+      const n = w.currentNode;
+      if (!n.textContent.trim()) continue;
+      const b = n.parentElement.closest('strong, b');
+      if (!b || !p.contains(b)) return false;
+    }
+    return true;
+  }
+
+  function toH3(el, doc) {
+    const h = doc.createElement('h3');
+    h.setAttribute('style', H3_STYLE);
+    const s = doc.createElement('strong');
+    const c = el.cloneNode(true);
+    c.querySelectorAll('strong, b').forEach(unwrap);
+    s.innerHTML = c.innerHTML.trim();
+    h.appendChild(s);
+    el.replaceWith(h);
+    return h;
+  }
+
+  function inferVerb(text) {
+    if (/discussion/i.test(text)) return 'Post and Reply';
+    if (/\b(quiz|exam|test)\b/i.test(text)) return 'Take';
+    if (/\b(assignment|project|paper|essay)\b/i.test(text)) return 'Submit';
+    return 'Review';
+  }
+
+  function formatItem(li, state) {
+    let html = li.innerHTML.trim();
+    let codes = [];
+    const m = html.match(/\s*\[((?:(?!\]).)*)\]\s*\.?\s*$/s);
+    if (m) {
+      const found = textOf(m[1]).match(/\b\d+[a-z]\b/gi);
+      if (found) {
+        codes = found; html = html.slice(0, m.index).trim();
+        const t = document.createElement('template'); t.innerHTML = m[1];
+        t.content.querySelectorAll('a[href]').forEach((a) => state.codeLinks.push(a.getAttribute('href')));
+      }
+    }
+    let verb, rest;
+    const lead = html.match(/^<(strong|b)>\s*([^<]{1,30}?)\s*:?\s*<\/\1>\s*:?\s*/i);
+    if (lead) {
+      verb = lead[2].replace(/:$/, '').trim();
+      rest = html.slice(lead[0].length);
+    } else {
+      const v = html.match(VERB_RE);
+      if (v) { verb = CANON_VERBS[v[1].toLowerCase()]; rest = html.slice(v[0].length); }
+      else { verb = inferVerb(textOf(html)); rest = html; }
+    }
+    rest = rest.replace(/^([a-z])/, (c) => c.toUpperCase());
+    let bracket = '';
+    if (codes.length) {
+      bracket = state.firstCodesUsed ? ` [${codes.join(', ')}]` : ` [Learning Objectives: ${codes.join(', ')}]`;
+      state.firstCodesUsed = true;
+      state.codeItems++;
+    }
+    return `<li><strong>${verb}:</strong> ${rest}${bracket}</li>`;
+  }
+
+  function serList(l) {
+    const open = l.outerHTML.match(/^<[^>]+>/)[0];
+    const tag = l.tagName.toLowerCase();
+    return `${open}\n${[...l.children].map((c) => '    ' + c.outerHTML).join('\n')}\n</${tag}>`;
+  }
+  function ser(node) {
+    if (node.nodeType === 3) { const t = node.textContent.trim(); return t ? `<p>${esc(t)}</p>` : ''; }
+    if (node.nodeType !== 1) return '';
+    if (/^(OL|UL)$/.test(node.tagName)) return serList(node);
+    return node.outerHTML;
+  }
+
+  function convert(input, pageName) {
+    const notes = [];
+    const doc = new DOMParser().parseFromString(input, 'text/html');
+    const root = doc.body;
+    const docTitle = (doc.title || '').trim();
+    const before = snapshot(root);
+
+    // Comments, scripts, Word tags
+    const cw = doc.createTreeWalker(root, NodeFilter.SHOW_COMMENT); const comments = [];
+    while (cw.nextNode()) comments.push(cw.currentNode);
+    comments.forEach((c) => c.remove());
+    root.querySelectorAll('script, style, meta, link').forEach((e) => e.remove());
+    [...root.getElementsByTagName('*')].filter((e) => e.tagName.includes(':')).forEach(unwrap);
+
+    // Outer wrapper boxes
+    let unwrapped = 0;
+    for (;;) {
+      const els = [...root.children];
+      const strayText = [...root.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
+      if (els.length === 1 && !strayText && /^(DIV|SECTION|ARTICLE|MAIN)$/.test(els[0].tagName)) { unwrap(els[0]); unwrapped++; } else break;
+    }
+    if (unwrapped) notes.push({ type: 'info', text: 'Removed the outer wrapper box around the page.' });
+
+    // Faculty notes and template placeholders
+    let fac = 0;
+    root.querySelectorAll('span, mark').forEach((el) => {
+      if (!el.isConnected) return;
+      const style = (el.getAttribute('style') || '').toLowerCase();
+      const t = el.textContent.trim().replace(/^\[/, '');
+      if (style.includes('fbeeb8') || /^note for faculty/i.test(t)) { el.remove(); fac++; }
+    });
+    let ph = 0;
+    root.querySelectorAll('p').forEach((p) => {
+      const t = p.textContent;
+      if (/be sure to remove the .*(note|developer)/i.test(t) || /type your information here/i.test(t)) { p.remove(); ph++; }
+    });
+    if (fac) notes.push({ type: 'info', text: `Removed ${fac} faculty note${fac > 1 ? 's' : ''}.` });
+    if (ph) notes.push({ type: 'info', text: `Removed ${ph} line${ph > 1 ? 's' : ''} of template placeholder text.` });
+
+    // Formatting cleanup (never touches images, embeds or links)
+    root.querySelectorAll('*').forEach((el) => {
+      if (KEEP_ATTRS.has(el.tagName)) return;
+      el.removeAttribute('class');
+      el.removeAttribute('lang');
+      if (el.hasAttribute('style')) {
+        const kept = el.getAttribute('style').split(';').map((s) => s.trim()).filter(Boolean).filter((d) => {
+          const p = d.split(':')[0].trim().toLowerCase();
+          return !STRIP_PROPS.includes(p) && !p.startsWith('mso-');
+        });
+        if (kept.length) el.setAttribute('style', kept.join('; ') + ';'); else el.removeAttribute('style');
+      }
+      if ((el.tagName === 'OL' || el.tagName === 'UL') && el.hasAttribute('start') && !/^\d+$/.test(el.getAttribute('start'))) el.removeAttribute('start');
+    });
+    root.querySelectorAll('span, font').forEach((s) => { if (s.tagName === 'FONT' || !s.attributes.length) unwrap(s); });
+    root.querySelectorAll('strong strong, b b, strong b, b strong').forEach(unwrap);
+    root.normalize();
+
+    // Whitespace
+    const tw = doc.createTreeWalker(root, NodeFilter.SHOW_TEXT); const texts = [];
+    while (tw.nextNode()) texts.push(tw.currentNode);
+    texts.forEach((t) => {
+      if (t.parentElement && t.parentElement.closest('pre, code, textarea')) return;
+      t.textContent = t.textContent.replace(/ /g, ' ').replace(/\s+/g, ' ');
+    });
+    root.querySelectorAll('p, li, h1, h2, h3, h4, h5, h6, td, th, figcaption, blockquote').forEach(trimEdges);
+
+    // Old divider lines
+    const hrs = root.querySelectorAll('hr');
+    if (hrs.length) { hrs.forEach((h) => h.remove()); notes.push({ type: 'info', text: `Removed ${hrs.length} old divider line${hrs.length > 1 ? 's' : ''}. The template's lines are added fresh.` }); }
+
+    // Empty elements
+    for (let changed = true; changed;) {
+      changed = false;
+      root.querySelectorAll('p, span, strong, b, em, i, u, div, h1, h2, h3, h4, h5, h6, li, ol, ul, blockquote').forEach((el) => {
+        if (!el.isConnected || hasMedia(el)) return;
+        const t = el.textContent.replace(/\s/g, '');
+        if (t === '' || (el.tagName === 'P' && /^[\[\]]+$/.test(t))) { el.remove(); changed = true; }
+      });
+    }
+
+    // Nested list wrappers
+    for (let again = true; again;) {
+      again = false;
+      root.querySelectorAll('ol, ul').forEach((l) => {
+        if (!l.isConnected) return;
+        const kids = [...l.children];
+        if (kids.length && kids.every((k) => k.tagName === 'OL' || k.tagName === 'UL')) { unwrap(l); again = true; }
+      });
+    }
+
+    // Title
+    let title = '', titleFrom = '';
+    const th = [...root.children].slice(0, 3).find((e) => /^H[12]$/.test(e.tagName) && e.textContent.trim());
+    if (th) { title = th.textContent; th.remove(); titleFrom = 'the page heading'; }
+    else if (pageName.trim()) { title = pageName; titleFrom = 'the Module Title field'; }
+    else if (docTitle) { title = docTitle; titleFrom = 'the file title'; }
+    const rawTitle = title.replace(/\s+/g, ' ').trim();
+    title = rawTitle.replace(/\[add[^\]]*\]/gi, '').replace(/\s+copy\s*$/i, '').replace(/\s+/g, ' ').trim();
+    if (rawTitle && /\s+copy$/i.test(rawTitle)) notes.push({ type: 'info', text: 'Dropped "Copy" from the end of the title.' });
+    if (!title) { title = '[ENTER PAGE TITLE]'; notes.push({ type: 'warn', text: 'No heading found. Type the Module Title on the left, or replace [ENTER PAGE TITLE] after pasting.' }); }
+    else notes.push({ type: 'ok', text: `Title taken from ${titleFrom}.` });
+
+    // Subheadings
+    root.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach((h) => toH3(h, doc));
+    [...root.querySelectorAll('p')].filter(isBoldOnly).forEach((p) => toH3(p, doc));
+
+    // Checklist
+    const nodes = [...root.childNodes].filter((n) => n.nodeType === 1 || (n.nodeType === 3 && n.textContent.trim()));
+    let headIdx = -1, listIdx = -1;
+    for (let i = 0; i < nodes.length && listIdx < 0; i++) {
+      const n = nodes[i];
+      if (n.nodeType !== 1) continue;
+      const isHead = n.tagName === 'H3' && CHECK_RE.test(n.textContent) && n.textContent.trim().length < 60;
+      const isLead = n.tagName === 'P' && LEADIN_RE.test(n.textContent);
+      if (!isHead && !isLead) continue;
+      let j = i + 1;
+      while (j < nodes.length && nodes[j].nodeType === 1 && nodes[j].tagName === 'P' && LEADIN_RE.test(nodes[j].textContent)) j++;
+      if (j < nodes.length && nodes[j].nodeType === 1 && /^(OL|UL)$/.test(nodes[j].tagName)) { headIdx = i; listIdx = j; }
+    }
+
+    const codeLinks = [];
+    const out = [`<h2 style="${H2_STYLE}"><strong>${esc(title)}</strong></h2>`];
+    let structure = { content: 0, items: 0, after: 0 };
+    if (listIdx >= 0) {
+      const beforeNodes = nodes.slice(0, headIdx);
+      const list = nodes[listIdx];
+      const afterNodes = nodes.slice(listIdx + 1);
+      beforeNodes.forEach((n) => { const s = ser(n); if (s) out.push(s); });
+      structure.content = beforeNodes.length;
+      const state = { firstCodesUsed: false, codeItems: 0, codeLinks };
+      const items = [...list.children].filter((c) => c.tagName === 'LI').map((li) => formatItem(li, state));
+      structure.items = items.length;
+      out.push(`<hr style="border: 1px solid ${NAVY};" />`);
+      out.push(`<h3 style="${H3_STYLE}"><strong>To Do List</strong></h3>`);
+      out.push('<p>In order to successfully complete this module, please do the following:</p>');
+      out.push(`<ol>\n${items.map((i) => '    ' + i).join('\n')}\n</ol>`);
+      notes.push({ type: 'ok', text: `Rebuilt the checklist as the To Do List with ${items.length} item${items.length === 1 ? '' : 's'}.` });
+      if (state.codeItems) notes.push({ type: 'ok', text: `Kept learning objective codes on ${state.codeItems} item${state.codeItems > 1 ? 's' : ''}.` });
+      else notes.push({ type: 'info', text: 'No learning objective codes were listed on the checklist items, so none were added.' });
+      if (afterNodes.length) {
+        afterNodes.forEach((n) => { const s = ser(n); if (s) out.push(s); });
+        structure.after = afterNodes.length;
+        notes.push({ type: 'warn', text: `${afterNodes.length} block${afterNodes.length > 1 ? 's' : ''} of content came after the checklist and ${afterNodes.length > 1 ? 'were' : 'was'} kept below the To Do List. Check that this is where ${afterNodes.length > 1 ? 'they belong' : 'it belongs'}.` });
+      }
+    } else {
+      nodes.forEach((n) => { const s = ser(n); if (s) out.push(s); });
+      structure.content = nodes.length;
+      notes.push({ type: 'info', text: 'No assignment checklist found, so the page is formatted without a To Do List.' });
+    }
+    out.push(`<hr style="border: 8px solid ${NAVY};" />`);
+    out.push('<p>&nbsp;</p>');
+
+    let html = out.join('\n')
+      .replace(/<(img|br|hr|source|input|embed|track|wbr)\b([^>]*?)\s*\/?>/gi, '<$1$2 />');
+    html = encodeNonAscii(html);
+
+    // Integrity check: every image, embed and link must survive unchanged
+    const afterDoc = new DOMParser().parseFromString(html, 'text/html');
+    const after = snapshot(afterDoc.body);
+    const lostMedia = missing(before.media, after.media);
+    const lostLinks = missing(missing(before.links, codeLinks), after.links);
+    if (codeLinks.length) notes.push({ type: 'info', text: `Removed ${codeLinks.length} link${codeLinks.length > 1 ? 's' : ''} from learning objective codes, keeping the codes as plain text.` });
+    if (!lostMedia.length && !lostLinks.length) {
+      const m = before.media.length, l = before.links.length - codeLinks.length;
+      const parts = [];
+      if (m) parts.push(`${m} image${m === 1 ? '' : 's'} and video${m === 1 ? '' : 's'}`);
+      if (l) parts.push(`${l} link${l === 1 ? '' : 's'}`);
+      if (parts.length) notes.unshift({ type: 'ok', text: `All ${parts.join(' and ')} kept exactly as in the original, including URLs.` });
+    } else {
+      if (lostMedia.length) notes.unshift({ type: 'warn', text: `${lostMedia.length} image or embed from the original is not in the output (it was inside removed content): `, code: lostMedia.map((x) => x.slice(0, 160)).join('\n') });
+      if (lostLinks.length) notes.unshift({ type: 'warn', text: `${lostLinks.length} link${lostLinks.length > 1 ? 's' : ''} from the original ${lostLinks.length > 1 ? 'are' : 'is'} not in the output (inside removed content): `, code: lostLinks.join('\n') });
+    }
+
+    return { html, notes, structure, hasList: listIdx >= 0 };
+  }
+
+  // ---------- UI ----------
+  const source = $('#source'), pageName = $('#pageName');
+  const exampleTag = $('#exampleTag');
+  let current = null, timer = null, isExample = false;
+
+  function highlight(code) {
+    return esc(code)
+      .replace(/"[^"]*"/g, (m) => `<span class=v>${m}</span>`)
+      .replace(/(&lt;\/?)([a-z0-9]+)/gi, '$1<span class=t>$2</span>');
+  }
+
+  const PREVIEW_CSS = `
+    :host { display: block; }
+    .page { background: #ffffff; color: #2d3b45; font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.5; padding: 20px 24px; border-radius: 4px; overflow-wrap: anywhere; }
+    @media (max-width: 520px) { .page { padding: 16px; } }
+    h2 { font-size: 1.6em; line-height: 1.25; margin: 0 0 0.8em; }
+    h3 { font-size: 1.25em; line-height: 1.3; margin: 1.2em 0 0.5em; }
+    p { margin: 0 0 0.9em; }
+    ol, ul { margin: 0 0 1em; padding-left: 2em; }
+    li { margin-bottom: 0.25em; }
+    a { color: #0374b5; }
+    hr { margin: 1.2em 0; }
+    .ph { max-width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 12px; background: #eef2f6; border: 1px dashed #8a9bb0; color: #4a5a6c; font-size: 13px; border-radius: 4px; }
+    .ph b { display: block; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 2px; }
+  `;
+  function placeholder(el, kind, label) {
+    const d = document.createElement('div');
+    d.className = 'ph';
+    const w = parseInt(el.getAttribute('width'), 10) || 480;
+    const h = parseInt(el.getAttribute('height'), 10) || 270;
+    d.style.width = w + 'px';
+    d.style.aspectRatio = `${w} / ${h}`;
+    const st = (el.getAttribute('style') || '').replace(/\s/g, '');
+    if (st.includes('margin-left:auto')) d.style.margin = '0 auto';
+    const b = document.createElement('b'); b.textContent = kind;
+    const s = document.createElement('span'); s.textContent = label || '';
+    d.append(b, s);
+    el.replaceWith(d);
+  }
+  function renderPreview(html) {
+    const host = $('#preview');
+    const sr = host.shadowRoot || host.attachShadow({ mode: 'open' });
+    const t = document.createElement('template');
+    t.innerHTML = html;
+    t.content.querySelectorAll('img').forEach((el) => placeholder(el, 'Image', el.getAttribute('alt')));
+    t.content.querySelectorAll('iframe, video, embed, object').forEach((el) => placeholder(el, 'Video or embed', el.getAttribute('title')));
+    t.content.querySelectorAll('a[href]').forEach((a) => { a.target = '_blank'; a.rel = 'noopener'; });
+    sr.innerHTML = `<style>${PREVIEW_CSS}</style><div class="page"></div>`;
+    sr.querySelector('.page').appendChild(t.content);
+  }
+
+  function renderChecks(notes) {
+    const ul = $('#checks'); ul.textContent = '';
+    notes.forEach((n) => {
+      const li = document.createElement('li'); li.className = n.type;
+      const span = document.createElement('span'); span.textContent = n.text;
+      if (n.code) { const c = document.createElement('code'); c.textContent = n.code; span.appendChild(c); }
+      li.appendChild(span); ul.appendChild(li);
+    });
+  }
+  function renderStructure(r) {
+    const el = $('#structure'); el.textContent = '';
+    const chips = [
+      ['Title banner', true],
+      [`Content · ${r.structure.content} block${r.structure.content === 1 ? '' : 's'}`, r.structure.content > 0],
+      [r.hasList ? `To Do List · ${r.structure.items} item${r.structure.items === 1 ? '' : 's'}` : 'No To Do List', r.hasList],
+    ];
+    if (r.structure.after) chips.push([`After list · ${r.structure.after}`, true]);
+    chips.push(['Closing line', true]);
+    chips.forEach(([label, on]) => { const c = document.createElement('span'); c.className = 'chip' + (on ? ' on' : ''); c.textContent = label; el.appendChild(c); });
+  }
+
+  function run() {
+    const src = source.value;
+    $('#status').textContent = '';
+    if (!src.trim()) {
+      current = null;
+      $('#code').textContent = '';
+      renderPreview('<p style="color:#566577">Paste or upload a page to see it here.</p>');
+      renderChecks([]); $('#structure').textContent = '';
+      return;
+    }
+    try {
+      current = convert(src, pageName.value);
+      $('#code').innerHTML = highlight(current.html);
+      renderPreview(current.html);
+      renderChecks(current.notes);
+      renderStructure(current);
+    } catch (e) {
+      current = null;
+      renderChecks([{ type: 'warn', text: 'This HTML could not be converted. Check that you copied the whole page from the HTML view. Details: ' + e.message }]);
+    }
+  }
+  const schedule = () => { clearTimeout(timer); timer = setTimeout(run, 250); };
+
+  function setExample(on) { isExample = on; exampleTag.hidden = !on; }
+  function loadSample() {
+    source.value = $('#sampleHtml').textContent;
+    pageName.value = '';
+    setExample(true); run();
+  }
+
+  source.addEventListener('input', () => { setExample(false); schedule(); });
+  pageName.addEventListener('input', () => { setExample(false); schedule(); });
+  $('#sampleBtn').addEventListener('click', loadSample);
+  $('#clearBtn').addEventListener('click', () => { source.value = ''; pageName.value = ''; setExample(false); run(); source.focus(); });
+
+  function readFile(file) {
+    if (!file) return;
+    const r = new FileReader();
+    r.onload = () => { source.value = String(r.result || ''); setExample(false); run(); };
+    r.onerror = () => renderChecks([{ type: 'warn', text: 'That file could not be read. Try copying the HTML and pasting it instead.' }]);
+    r.readAsText(file);
+  }
+  $('#file').addEventListener('change', (e) => { readFile(e.target.files[0]); e.target.value = ''; });
+  const drop = $('#drop');
+  drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('dragging'); });
+  drop.addEventListener('dragleave', () => drop.classList.remove('dragging'));
+  drop.addEventListener('drop', (e) => { e.preventDefault(); drop.classList.remove('dragging'); readFile(e.dataTransfer.files[0]); });
+
+  function showTab(which) {
+    const preview = which === 'preview';
+    $('#tabPreview').setAttribute('aria-selected', String(preview));
+    $('#tabCode').setAttribute('aria-selected', String(!preview));
+    $('#previewWrap').hidden = !preview;
+    $('#codeWrap').hidden = preview;
+  }
+  $('#tabPreview').addEventListener('click', () => showTab('preview'));
+  $('#tabCode').addEventListener('click', () => showTab('code'));
+
+  $('#copyBtn').addEventListener('click', () => {
+    const status = $('#status');
+    if (!current) { status.textContent = 'Nothing to copy yet. Paste a page first.'; return; }
+    const done = () => { status.textContent = 'Copied. In Canvas, open the page editor, switch to the HTML view, and paste over everything.'; };
+    const fallback = () => {
+      showTab('code');
+      const range = document.createRange(); range.selectNodeContents($('#code'));
+      const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+      status.textContent = 'Your browser blocked the copy button. The HTML is selected; press Ctrl+C (or Cmd+C) to copy it.';
+    };
+    try { navigator.clipboard.writeText(current.html).then(done, fallback); } catch (e) { fallback(); }
+  });
+
+  // How it works popover
+  const helpBtn = $('#helpBtn'), rules = $('#rules');
+  helpBtn.addEventListener('click', () => {
+    rules.hidden = !rules.hidden;
+    helpBtn.setAttribute('aria-expanded', String(!rules.hidden));
+  });
+  document.addEventListener('click', (e) => {
+    if (!rules.hidden && !rules.contains(e.target) && e.target !== helpBtn) { rules.hidden = true; helpBtn.setAttribute('aria-expanded', 'false'); }
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !rules.hidden) { rules.hidden = true; helpBtn.setAttribute('aria-expanded', 'false'); helpBtn.focus(); } });
+
+  // Fullscreen
+  const fsBtn = $('#fsBtn');
+  const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement;
+  const syncFs = () => { fsBtn.textContent = fsEl() ? 'Exit fullscreen' : 'Fullscreen'; };
+  document.addEventListener('fullscreenchange', syncFs);
+  document.addEventListener('webkitfullscreenchange', syncFs);
+  function openNewWindow() {
+    let w = null;
+    try { w = window.open(location.href, '_blank'); } catch (e) { w = null; }
+    if (!w) { $('#status').textContent = 'Fullscreen is blocked here. Ask your Canvas admin to allow fullscreen for this tool, or open it in its own tab.'; }
+  }
+  fsBtn.addEventListener('click', () => {
+    if (fsEl()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; }
+    const root = document.documentElement;
+    const req = root.requestFullscreen || root.webkitRequestFullscreen;
+    const enabled = document.fullscreenEnabled || document.webkitFullscreenEnabled;
+    if (!req || !enabled) { openNewWindow(); return; }
+    try {
+      const r = req.call(root);
+      if (r && r.catch) r.catch(openNewWindow);
+    } catch (e) { openNewWindow(); }
+  });
+
+  loadSample();
+})();
+</script>
+
+</body>
+</html>
