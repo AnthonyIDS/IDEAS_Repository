@@ -81,6 +81,11 @@ textarea { width: 100%; border: 0; resize: vertical; padding: 14px; font-family:
 .snipbar button:disabled, .snipbar select:disabled { opacity: 0.55; cursor: not-allowed; }
 .snip-note { margin: 0; font-size: 0.85rem; color: var(--muted); }
 .snip-note a { color: var(--accent); }
+.manualbar { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--line); background: #fff4d6; color: #5a3d00; font-size: 0.88rem; }
+.manualbar p { margin: 0; flex: 1 1 260px; }
+.manualbar.stale { background: #fde2c4; font-weight: bold; }
+#preview[contenteditable="true"] { cursor: text; }
+#preview[contenteditable="true"]:focus { outline: 3px solid #f2a900; outline-offset: -3px; }
 #preview .t2t-flash { outline: 3px solid #f2a900; outline-offset: 4px; transition: outline-color 1.2s; }
 details.guide { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 0 16px; }
 details.guide summary { cursor: pointer; padding: 12px 0; font-weight: bold; }
@@ -159,6 +164,7 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
           <li>Accordions, dropdowns, and Clickable Steps make one item per heading you highlight.</li>
           <li>Quick Check uses the first line as the question and the list below it as answers. End the right answer with <code>*</code>.</li>
           <li>Snippets stay applied while you keep editing your text. Use <strong>Undo</strong> or <strong>Remove all</strong> to take them off.</li>
+          <li>You can also click into the Preview and fix wording there. After that, the HTML follows the Preview. Select <strong>Rebuild from Your text</strong> to go back to building it from your text.</li>
         </ul>
       </div>
     </div>
@@ -186,9 +192,13 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
           <button id="undoSnippet" type="button" disabled>Undo</button>
           <button id="clearSnippets" type="button" disabled>Remove all</button>
         </div>
-        <p class="snip-note" id="snipNote">Highlight text in the Preview below, choose a snippet, then select Apply. <a href="../html-code.html" target="_blank" rel="noopener">See all snippets</a></p>
+        <p class="snip-note" id="snipNote">Click into the Preview to edit wording directly. Highlight text, choose a snippet, then select Apply. <a href="../html-code.html" target="_blank" rel="noopener">See all snippets</a></p>
       </div>
-      <div id="preview" role="tabpanel" aria-labelledby="tabPreview"></div>
+      <div class="manualbar" id="manualBar" role="status" hidden>
+        <p id="manualMsg">You edited the Preview directly. The HTML now follows the Preview, so changes to Your text or the style won't show until you rebuild.</p>
+        <button id="rebuildBtn" type="button">Rebuild from Your text</button>
+      </div>
+      <div id="preview" role="tabpanel" aria-labelledby="tabPreview" aria-label="Page preview, editable" spellcheck="true"></div>
       <div id="codeWrap" role="tabpanel" aria-labelledby="tabCode" hidden>
         <p class="hint">In Canvas, open the page editor, switch to the HTML editor (&lt;/&gt;), and paste.</p>
         <label class="sr-only" for="code">Generated HTML</label>
@@ -706,7 +716,33 @@ This assignment is worth 50 points. Review the rubric attached below before you 
 
   /* ---------- UI ---------- */
   let timer = null;
-  function run() {
+  /* Direct edits in the Preview. Once the Preview is edited, the HTML follows it (manualHtml)
+     until the user rebuilds from their text. history holds snapshots for Undo. */
+  let manualHtml = null;
+  let history = [];
+  let lastEdit = 0;
+  const serialize = el => el.innerHTML.replace(/<(hr|br|img)([^>]*?)\s*\/?>/g, '<$1$2 />').replace(/\n{3,}/g, '\n\n');
+  function setManual(html) {
+    manualHtml = html;
+    code.value = html;
+    $('manualBar').hidden = false;
+    updateSnipButtons();
+    try { localStorage.setItem('t2t-manual', html); } catch (e) {}
+  }
+  function leaveManual() {
+    manualHtml = null; history = [];
+    $('manualBar').hidden = true;
+    $('manualBar').classList.remove('stale');
+    try { localStorage.removeItem('t2t-manual'); } catch (e) {}
+  }
+  function run(sourceChanged) {
+    if (manualHtml !== null) {
+      // Keep the edited Preview. Flag that Your text has changed since.
+      if (sourceChanged) $('manualBar').classList.add('stale');
+      try { localStorage.setItem('t2t-text', src.value); localStorage.setItem('t2t-style', styleSel.value); } catch (e) {}
+      updateSnipButtons();
+      return;
+    }
     let html = src.value.trim() ? convert(src.value, styleSel.value) : '';
     if (html && ops.length) {
       // Re-apply the snippets the user chose, matched to their text, on top of the fresh conversion.
@@ -721,6 +757,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     }
     code.value = html;
     preview.innerHTML = html || '<p style="color:#5f6f7f">Your formatted page will appear here.</p>';
+    preview.contentEditable = html ? 'true' : 'false';
     updateSnipButtons();
     try {
       localStorage.setItem('t2t-text', src.value); localStorage.setItem('t2t-style', styleSel.value);
@@ -781,8 +818,8 @@ This assignment is worth 50 points. Review the rubric attached below before you 
 
   function updateSnipButtons() {
     $('applySnippet').disabled = snipSel.disabled || !code.value;
-    $('undoSnippet').disabled = !ops.length;
-    $('clearSnippets').disabled = !ops.length;
+    $('undoSnippet').disabled = manualHtml !== null ? !history.length : !ops.length;
+    $('clearSnippets').disabled = manualHtml !== null || !ops.length;
   }
 
   // Remember the highlight in the Preview, since using the dropdown can clear it.
@@ -1021,17 +1058,51 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     }
     const snip = library[+snipSel.value];
     const op = { key: keyFor(blocks), html: snip.html, name: snip.name };
-    ops.push(op);
-    run();
-    if (!ops.includes(op)) return;
+    if (manualHtml !== null) {
+      history.push(manualHtml);
+      if (!applyOp(preview, op)) { history.pop(); say('That text could not be matched. Try highlighting it again.'); return; }
+      setManual(serialize(preview));
+    } else {
+      ops.push(op);
+      run();
+      if (!ops.includes(op)) return;
+    }
     savedRange = null;
     if (sel) sel.removeAllRanges();
     say(`Applied “${snip.name}”. ${op.note || 'Undo removes it.'}`);
   });
   snipSel.addEventListener('change', () => { try { localStorage.setItem('t2t-snippet', snipSel.value); } catch (e) {} });
-  $('undoSnippet').addEventListener('click', () => { const op = ops.pop(); run(); if (op) say(`Removed “${op.name}”.`); });
+  $('undoSnippet').addEventListener('click', () => {
+    if (manualHtml !== null) {
+      const prev = history.pop();
+      if (prev === undefined) return;
+      if (!history.length) { leaveManual(); run(); say('Undid your Preview edits.'); return; }
+      preview.innerHTML = prev;
+      setManual(prev);
+      say('Undid the last change.');
+      return;
+    }
+    const op = ops.pop(); run(); if (op) say(`Removed “${op.name}”.`);
+  });
   $('clearSnippets').addEventListener('click', () => { ops = []; run(); say('Removed all snippets.'); });
-  function schedule() { clearTimeout(timer); timer = setTimeout(run, 150); }
+  try { document.execCommand('defaultParagraphSeparator', false, 'p'); } catch (e) {}
+  preview.addEventListener('input', () => {
+    if (manualHtml === null) { history = [code.value]; }
+    else if (Date.now() - lastEdit > 1500) history.push(manualHtml);
+    lastEdit = Date.now();
+    setManual(serialize(preview));
+  });
+  // Paste into the Preview as plain text so outside formatting doesn't sneak into the Canvas HTML.
+  preview.addEventListener('paste', e => {
+    const text = e.clipboardData && e.clipboardData.getData('text/plain');
+    if (text == null) return;
+    e.preventDefault();
+    document.execCommand('insertText', false, text);
+  });
+  // Keep links in the editable Preview from navigating away on click.
+  preview.addEventListener('click', e => { if (e.target.closest('a')) e.preventDefault(); });
+  $('rebuildBtn').addEventListener('click', () => { leaveManual(); run(); say('Rebuilt from Your text. Preview edits were discarded; applied snippets were kept.'); });
+  function schedule() { clearTimeout(timer); timer = setTimeout(() => run(true), 150); }
   function say(msg) { status.textContent = msg; clearTimeout(say.t); say.t = setTimeout(() => { status.textContent = ''; }, 4000); }
 
   src.addEventListener('input', schedule);
@@ -1043,20 +1114,21 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     e.preventDefault();
     const s = src.selectionStart, en = src.selectionEnd;
     src.setRangeText(markup, s, en, 'end');
-    run();
+    run(true);
     say('Pasted formatted text. Headings, bold, lists, and links were kept.');
   });
   styleSel.addEventListener('change', () => {
     $('viewTemplate').href = '../templates.html#' + STYLES[styleSel.value].anchor;
-    run();
+    run(true);
   });
   $('exampleBtn').addEventListener('click', () => {
     src.value = EXAMPLES[STYLES[styleSel.value].family];
     ops = [];
+    leaveManual();
     run();
     say('Example loaded. Edit it or replace it with your own text.');
   });
-  $('clearBtn').addEventListener('click', () => { src.value = ''; ops = []; run(); src.focus(); });
+  $('clearBtn').addEventListener('click', () => { src.value = ''; ops = []; leaveManual(); run(); src.focus(); });
 
   function selectTab(which) {
     const prev = which === 'preview';
@@ -1106,6 +1178,10 @@ This assignment is worth 50 points. Review the rubric attached below before you 
   src.value = saved || EXAMPLES[STYLES[styleSel.value].family];
   try { if (!localStorage.getItem('t2t-seen')) { $('guide').open = true; localStorage.setItem('t2t-seen', '1'); } } catch (e) { $('guide').open = true; }
   run();
+  try {
+    const m = saved && localStorage.getItem('t2t-manual');
+    if (m) { preview.innerHTML = m; preview.contentEditable = 'true'; history = [code.value]; setManual(m); }
+  } catch (e) {}
   loadLibrary();
 
   window.__textToTemplate = { convert, htmlToMarkup };
