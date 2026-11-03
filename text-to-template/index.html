@@ -55,7 +55,7 @@ button:hover, .btn:hover { border-color: var(--accent); }
 button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: bold; }
 button:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible, summary:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
 .spacer { flex: 1; }
-.status { color: var(--ok); font-weight: bold; min-height: 1.5em; font-size: 0.9rem; }
+.status { color: var(--ok); font-weight: bold; min-height: 1.5em; font-size: 0.9rem; margin: -6px 0; }
 .panes { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media (max-width: 900px) { .panes { grid-template-columns: 1fr; } select { min-width: 0; width: 100%; } .controls label { flex: 1 1 100%; } }
 .pane { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; display: flex; flex-direction: column; min-width: 0; }
@@ -72,6 +72,16 @@ textarea { width: 100%; border: 0; resize: vertical; padding: 14px; font-family:
 [role="tab"][aria-selected="true"] { background: var(--accent-soft); font-weight: bold; }
 #preview { background: #ffffff; color: #2d3b45; padding: 20px 24px; min-height: 560px; border-radius: 0 0 10px 10px; font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.5; overflow-wrap: anywhere; }
 #preview a { color: #0770a3; }
+#preview a.btn { display: inline-block; padding: 8px 14px; background: #f5f5f5; border: 1px solid #c7cdd1; border-radius: 4px; color: #2d3b45; text-decoration: none; }
+#preview ::selection { background: #ffe08a; color: #14212e; }
+.snipbar { padding: 10px 14px; border-bottom: 1px solid var(--line); display: grid; gap: 6px; background: var(--accent-soft); }
+.snipbar label { font-weight: bold; font-size: 0.9rem; }
+.snipbar .row { display: flex; flex-wrap: wrap; gap: 6px; }
+.snipbar select { flex: 1 1 240px; min-width: 0; }
+.snipbar button:disabled, .snipbar select:disabled { opacity: 0.55; cursor: not-allowed; }
+.snip-note { margin: 0; font-size: 0.85rem; color: var(--muted); }
+.snip-note a { color: var(--accent); }
+#preview .t2t-flash { outline: 3px solid #f2a900; outline-offset: 4px; transition: outline-color 1.2s; }
 details.guide { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 0 16px; }
 details.guide summary { cursor: pointer; padding: 12px 0; font-weight: bold; }
 details.guide .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 4px 24px; padding-bottom: 12px; }
@@ -142,6 +152,15 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
           <li>Pasting from Word or Google Docs keeps headings, bold, lists, and links.</li>
         </ul>
       </div>
+      <div>
+        <h3>Snippets from the HTML Code library</h3>
+        <ul>
+          <li>Highlight text in the Preview, choose a snippet, and select <strong>Apply</strong>. The snippet wraps or restyles the whole paragraphs, lists, and headings you touched.</li>
+          <li>Accordions, dropdowns, and Clickable Steps make one item per heading you highlight.</li>
+          <li>Quick Check uses the first line as the question and the list below it as answers. End the right answer with <code>*</code>.</li>
+          <li>Snippets stay applied while you keep editing your text. Use <strong>Undo</strong> or <strong>Remove all</strong> to take them off.</li>
+        </ul>
+      </div>
     </div>
   </details>
 
@@ -158,6 +177,16 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
           <button type="button" role="tab" id="tabPreview" aria-selected="true" aria-controls="preview">Preview</button>
           <button type="button" role="tab" id="tabCode" aria-selected="false" aria-controls="codeWrap">HTML</button>
         </div>
+      </div>
+      <div class="snipbar" id="snipbar">
+        <label for="snippetChoice">Reformat highlighted text with a snippet</label>
+        <div class="row">
+          <select id="snippetChoice" disabled><option>Loading snippet library…</option></select>
+          <button class="primary" id="applySnippet" type="button" disabled>Apply to highlighted text</button>
+          <button id="undoSnippet" type="button" disabled>Undo</button>
+          <button id="clearSnippets" type="button" disabled>Remove all</button>
+        </div>
+        <p class="snip-note" id="snipNote">Highlight text in the Preview below, choose a snippet, then select Apply. <a href="../html-code.html" target="_blank" rel="noopener">See all snippets</a></p>
       </div>
       <div id="preview" role="tabpanel" aria-labelledby="tabPreview"></div>
       <div id="codeWrap" role="tabpanel" aria-labelledby="tabCode" hidden>
@@ -678,11 +707,330 @@ This assignment is worth 50 points. Review the rubric attached below before you 
   /* ---------- UI ---------- */
   let timer = null;
   function run() {
-    const html = src.value.trim() ? convert(src.value, styleSel.value) : '';
+    let html = src.value.trim() ? convert(src.value, styleSel.value) : '';
+    if (html && ops.length) {
+      // Re-apply the snippets the user chose, matched to their text, on top of the fresh conversion.
+      const box = document.createElement('div');
+      box.innerHTML = html;
+      const kept = ops.filter(op => applyOp(box, op));
+      if (kept.length < ops.length) {
+        say((ops.length - kept.length) + ' snippet(s) no longer matched your text and were removed.');
+        ops = kept;
+      }
+      html = box.innerHTML.replace(/<(hr|br|img)([^>]*?)\s*\/?>/g, '<$1$2 />').replace(/\n{3,}/g, '\n\n');
+    }
     code.value = html;
     preview.innerHTML = html || '<p style="color:#5f6f7f">Your formatted page will appear here.</p>';
-    try { localStorage.setItem('t2t-text', src.value); localStorage.setItem('t2t-style', styleSel.value); } catch (e) {}
+    updateSnipButtons();
+    try {
+      localStorage.setItem('t2t-text', src.value); localStorage.setItem('t2t-style', styleSel.value);
+      localStorage.setItem('t2t-ops', JSON.stringify(ops));
+    } catch (e) {}
   }
+
+  /* ---------- Snippets from html-code.html, applied to highlighted text ---------- */
+  let ops = [];
+  let library = [];
+  let savedRange = null;
+  const snipSel = $('snippetChoice');
+  const BLOCK = 'p,h1,h2,h3,h4,h5,h6,ul,ol,table,details,blockquote,hr,pre';
+  const clean = s => (s || '').replace(/ /g, ' ').replace(/\s+/g, ' ').trim();
+  const isHeading = el => /^H[1-6]$/.test(el.tagName) ||
+    (el.tagName === 'P' && el.children.length === 1 && /^(STRONG|B)$/.test(el.children[0].tagName) && clean(el.textContent) === clean(el.children[0].textContent) && clean(el.textContent).length < 120);
+  const parse = html => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content; };
+  const elementsOf = frag => Array.from(frag.childNodes).filter(n => n.nodeType === 1);
+
+  async function loadLibrary() {
+    try {
+      const res = await fetch('../html-code.html', { cache: 'no-store' });
+      if (!res.ok) throw new Error(res.status);
+      const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
+      const seen = {};
+      doc.querySelectorAll('section.snippet-page').forEach(section => {
+        let title = '', label = '';
+        section.querySelectorAll('h2.snippet-title, p.preview-label, p.code-label, pre').forEach(el => {
+          if (el.matches('h2.snippet-title')) { title = clean(el.textContent); label = ''; return; }
+          if (el.matches('p.preview-label, p.code-label')) {
+            const l = clean(el.textContent).replace(/\b(preview|code)\b/gi, '').replace(/^[\s:–—-]+|[\s:–—-]+$/g, '').trim();
+            if (l) label = l;
+            return;
+          }
+          const html = el.textContent.trim();
+          if (!html) return;
+          let name = label ? `${label}` : title.replace(/^\P{L}+/u, '');
+          const key = title + '|' + name;
+          seen[key] = (seen[key] || 0) + 1;
+          if (seen[key] > 1) name += ` (${seen[key]})`;
+          library.push({ group: title, name, html });
+        });
+      });
+      if (!library.length) throw new Error('empty');
+      snipSel.innerHTML = '';
+      const groups = {};
+      library.forEach((s, i) => {
+        if (!groups[s.group]) { groups[s.group] = document.createElement('optgroup'); groups[s.group].label = s.group; snipSel.appendChild(groups[s.group]); }
+        const o = document.createElement('option'); o.value = String(i); o.textContent = s.name; groups[s.group].appendChild(o);
+      });
+      snipSel.disabled = false;
+      try { const last = localStorage.getItem('t2t-snippet'); if (last && library[+last]) snipSel.value = last; } catch (e) {}
+    } catch (e) {
+      snipSel.innerHTML = '<option>Snippet library unavailable here. Open this page from the GitHub Pages site.</option>';
+    }
+    updateSnipButtons();
+  }
+
+  function updateSnipButtons() {
+    $('applySnippet').disabled = snipSel.disabled || !code.value;
+    $('undoSnippet').disabled = !ops.length;
+    $('clearSnippets').disabled = !ops.length;
+  }
+
+  // Remember the highlight in the Preview, since using the dropdown can clear it.
+  document.addEventListener('selectionchange', () => {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount && !sel.isCollapsed && preview.contains(sel.getRangeAt(0).commonAncestorContainer)) {
+      savedRange = sel.getRangeAt(0).cloneRange();
+    }
+  });
+  preview.addEventListener('mousedown', () => { savedRange = null; });
+
+  // Turn a highlight into the run of whole blocks (paragraphs, lists, headings, boxes) it touches.
+  function blocksFromRange(range) {
+    const toEl = n => (n.nodeType === 1 ? n : n.parentElement);
+    let common = toEl(range.commonAncestorContainer);
+    const inner = common.closest(BLOCK);
+    if (inner && preview.contains(inner)) return [inner];
+    let s = toEl(range.startContainer), e = toEl(range.endContainer);
+    while (s.parentElement && s.parentElement !== common) s = s.parentElement;
+    while (e.parentElement && e.parentElement !== common) e = e.parentElement;
+    if (s === common || e === common) return [];
+    const out = [];
+    for (let n = s; n; n = n.nextElementSibling) { out.push(n); if (n === e) break; }
+    // A drag that ends at the very start of the next block shouldn't pull that block in.
+    const touched = n => {
+      if (n.tagName === 'HR') return true;
+      const r = document.createRange();
+      r.selectNodeContents(n);
+      if (range.compareBoundaryPoints(Range.START_TO_START, r) > 0) r.setStart(range.startContainer, range.startOffset);
+      if (range.compareBoundaryPoints(Range.END_TO_END, r) < 0) r.setEnd(range.endContainer, range.endOffset);
+      return clean(r.toString()) !== '';
+    };
+    while (out.length > 1 && !touched(out[out.length - 1])) out.pop();
+    while (out.length > 1 && !touched(out[0])) out.shift();
+    return out;
+  }
+  function keyFor(blocks) {
+    return { tag: blocks[0].tagName, text: clean(blocks[0].textContent), count: blocks.length };
+  }
+  function findBlocks(root, key) {
+    const match = Array.from(root.getElementsByTagName(key.tag)).find(el => clean(el.textContent) === key.text);
+    if (!match) return null;
+    const out = [];
+    for (let n = match; n && out.length < key.count; n = n.nextElementSibling) out.push(n);
+    return out.length === key.count ? out : null;
+  }
+
+  // Split blocks into [{title, body[]}] at each heading.
+  function groupByHeading(blocks) {
+    const groups = [];
+    blocks.forEach(b => {
+      if (isHeading(b)) groups.push({ title: clean(b.textContent), body: [] });
+      else {
+        if (!groups.length) groups.push({ title: '', body: [] });
+        groups[groups.length - 1].body.push(b);
+      }
+    });
+    return groups;
+  }
+  function setText(el, text) {
+    // Put text into the deepest element that holds the snippet's sample wording.
+    let target = el;
+    while (target.children.length === 1 && clean(target.textContent) === clean(target.children[0].textContent)) target = target.children[0];
+    const icon = Array.from(target.children).find(c => c.tagName === 'SPAN' && clean(c.textContent).length <= 2);
+    target.textContent = '';
+    if (icon) { target.appendChild(icon); target.appendChild(document.createTextNode(' ')); }
+    target.appendChild(document.createTextNode(text));
+  }
+  function fill(container, nodes) {
+    while (container.firstChild) container.removeChild(container.firstChild);
+    nodes.forEach(n => { container.appendChild(document.createTextNode('\n')); container.appendChild(n); });
+    container.appendChild(document.createTextNode('\n'));
+  }
+  const bodyOrText = (g, fallback) => (g.body.length ? g.body : [Object.assign(document.createElement('p'), { textContent: g.title || fallback })]);
+
+  // Build the snippet around the selected blocks. Returns the nodes to insert and whether to keep the originals.
+  function buildSnippet(html, blocks) {
+    const frag = parse(html);
+    const roots = elementsOf(frag);
+    const root = roots[0];
+    if (!root) return null;
+
+    if (root.tagName === 'HR') return { nodes: [root], keep: true };
+
+    // Headings: restyle every heading in the selection, or turn the first paragraph into this heading.
+    if (/^H[1-6]$/.test(root.tagName) && roots.length === 1) {
+      const heads = blocks.filter(isHeading);
+      const targets = heads.length ? heads : [blocks[0]];
+      const nodes = blocks.map(bk => {
+        if (!targets.includes(bk)) return bk;
+        const h = root.cloneNode(true);
+        setText(h, clean(bk.textContent));
+        return h;
+      });
+      return { nodes };
+    }
+
+    if (root.tagName === 'P' && root.querySelector('a')) {
+      const a = root.querySelector('a');
+      const link = blocks.map(b => (b.tagName === 'A' ? b : b.querySelector('a'))).find(Boolean);
+      if (link) { a.setAttribute('href', link.getAttribute('href')); }
+      const label = link ? clean(link.textContent) : clean(blocks[0].textContent);
+      a.textContent = ' ' + label + ' ';
+      if (a.hasAttribute('title')) a.setAttribute('title', label);
+      // The button replaces the first highlighted block; anything after it stays as it was.
+      return { nodes: [root, ...blocks.slice(1)] };
+    }
+
+    // Clickable Steps: one tab per heading in the selection.
+    if (root.classList.contains('tabs')) {
+      const groups = groupByHeading(blocks);
+      if (groups.length === 1 && !groups[0].title) groups.splice(0, 1, ...blocks.map((b, i) => ({ title: 'Step ' + (i + 1), body: [b] })));
+      const tabList = root.querySelector('ul');
+      const linkTpl = Array.from(tabList.querySelectorAll('li'));
+      const panelTpl = Array.from(root.children).filter(c => c.tagName === 'DIV');
+      const uid = 'tab-' + Math.random().toString(36).slice(2, 6) + '-';
+      const lis = [], panels = [];
+      groups.forEach((g, i) => {
+        const li = linkTpl[i % linkTpl.length].cloneNode(true);
+        const a = li.querySelector('a');
+        a.setAttribute('href', '#' + uid + (i + 1));
+        a.textContent = ` ${i + 1}. ${g.title || 'Step ' + (i + 1)} `;
+        lis.push(li);
+        const panel = (panelTpl[i % panelTpl.length] || document.createElement('div')).cloneNode(false);
+        panel.id = uid + (i + 1);
+        const h = document.createElement('h3'); h.textContent = g.title || 'Step ' + (i + 1);
+        fill(panel, [h, ...g.body]);
+        panels.push(panel);
+      });
+      fill(tabList, lis);
+      fill(root, [tabList, ...panels]);
+      return { nodes: [root] };
+    }
+
+    // Quick Check: first block is the question; list items become the answer choices.
+    const firstDetails = root.querySelector('details');
+    if (firstDetails && root.tagName !== 'DETAILS' && /Correct!|Not quite/.test(root.textContent)) {
+      const list = blocks.find(b => /^(UL|OL)$/.test(b.tagName));
+      // Answer choices come from a list, or from the lines after the question when there is no list.
+      const choices = list ? Array.from(list.children).filter(li => li.tagName === 'LI') : blocks.slice(1);
+      if (choices.length) {
+        const tplRight = Array.from(root.querySelectorAll('details')).find(d => /correct/i.test(d.textContent)) || firstDetails;
+        const tplWrong = Array.from(root.querySelectorAll('details')).find(d => /not quite/i.test(d.textContent)) || firstDetails;
+        const question = root.querySelector('details').previousElementSibling;
+        const qText = list ? clean(blocks.filter(b => b !== list).map(b => b.textContent).join(' ')) : clean(blocks[0].textContent);
+        if (question && qText) { setText(question, qText); }
+        const allDetails = Array.from(root.querySelectorAll('details'));
+        const anchor = allDetails[0];
+        choices.forEach((li, i) => {
+          let t = clean(li.textContent);
+          const right = /\*$|\(correct\)$/i.test(t);
+          t = t.replace(/\s*(\*|\(correct\))$/i, '');
+          const d = (right ? tplRight : tplWrong).cloneNode(true);
+          d.querySelector('summary').textContent = `${String.fromCharCode(65 + i)}. ${t}`;
+          const fb = d.querySelector('div');
+          if (fb) fb.innerHTML = right ? '<strong>Correct!</strong> [Explain why this answer is right.]' : '<strong>Not quite.</strong> [Explain why this answer is not the best choice.]';
+          d.setAttribute('style', i < choices.length - 1 ? 'margin-bottom: 12px;' : '');
+          if (!d.getAttribute('style')) d.removeAttribute('style');
+          anchor.parentNode.insertBefore(d, anchor);
+          anchor.parentNode.insertBefore(document.createTextNode('\n'), anchor);
+        });
+        allDetails.forEach(d => d.remove());
+        return { nodes: [root], note: choices.some(li => /\*$|\(correct\)$/i.test(clean(li.textContent))) ? '' : 'Tip: end the right answer with * in your text to mark it correct.' };
+      }
+    }
+
+    // Dropdowns and accordions: one per heading in the selection.
+    if (root.tagName === 'DETAILS' || (root.querySelector('details') && !root.querySelector('details details'))) {
+      const tpl = root.tagName === 'DETAILS' ? root : root.querySelector('details');
+      const groups = groupByHeading(blocks);
+      const made = groups.map(g => {
+        const d = tpl.cloneNode(true);
+        const summary = d.querySelector('summary');
+        if (g.title) setText(summary, g.title);
+        const body = Array.from(d.children).find(c => c !== summary) || d;
+        if (body === d) { g.body.forEach(n => d.appendChild(n)); } else fill(body, bodyOrText(g, ''));
+        return d;
+      });
+      if (root.tagName === 'DETAILS') return { nodes: made };
+      const all = Array.from(root.querySelectorAll('details'));
+      const parent = all[0].parentNode;
+      made.forEach(d => { parent.insertBefore(d, all[0]); parent.insertBefore(document.createTextNode('\n'), all[0]); });
+      all.forEach(d => d.remove());
+      return { nodes: [root] };
+    }
+
+    // Call-out boxes and other containers: keep the box's badge, heading, and label lines; put the selection inside.
+    let content = blocks;
+    const boxHeading = Array.from(root.children).find(c => /^H[1-6]$/.test(c.tagName));
+    if (boxHeading && isHeading(blocks[0]) && blocks.length > 1) {
+      setText(boxHeading, clean(blocks[0].textContent));
+      content = blocks.slice(1);
+    }
+    const kids = Array.from(root.children);
+    const keep = [];
+    for (const c of kids) {
+      const t = clean(c.textContent);
+      const isLabel = /^H[1-6]$/.test(c.tagName) ||
+        (c.tagName === 'P' && c.querySelector('span') && t.length < 40 && !c.querySelector('br')) ||
+        (c.tagName === 'P' && isHeading(c) && /:$/.test(t)) ||
+        (c.tagName === 'P' && isHeading(c) && keep.length === 0 && t.length < 60);
+      if (isLabel && keep.length === kids.indexOf(c)) keep.push(c); else break;
+    }
+    fill(root, [...keep, ...content]);
+    // Re-indent lightly so the HTML stays readable.
+    Array.from(root.childNodes).forEach(n => { if (n.nodeType === 3) n.nodeValue = '\n    '; });
+    if (root.lastChild && root.lastChild.nodeType === 3) root.lastChild.nodeValue = '\n';
+    return { nodes: [root] };
+  }
+
+  function applyOp(root, op) {
+    const blocks = findBlocks(root, op.key);
+    if (!blocks) return false;
+    const before = blocks[0];
+    const parent = before.parentNode;
+    const marker = document.createComment('t2t');
+    parent.insertBefore(marker, before);
+    const built = buildSnippet(op.html, blocks.slice());
+    if (!built) { parent.removeChild(marker); return false; }
+    if (!built.keep) blocks.forEach(b => { if (b.parentNode === parent) parent.removeChild(b); });
+    built.nodes.forEach(n => { parent.insertBefore(n, marker); parent.insertBefore(document.createTextNode('\n'), marker); });
+    parent.removeChild(marker);
+    op.note = built.note || '';
+    return true;
+  }
+
+  $('applySnippet').addEventListener('click', () => {
+    const sel = window.getSelection();
+    let range = sel && sel.rangeCount && !sel.isCollapsed && preview.contains(sel.getRangeAt(0).commonAncestorContainer) ? sel.getRangeAt(0) : savedRange;
+    if (!range) { say('Highlight some text in the Preview first.'); return; }
+    const blocks = blocksFromRange(range);
+    if (!blocks.length) { say('Highlight text inside the page preview.'); return; }
+    if (blocks[0].tagName === 'H2' && blocks[0] === preview.firstElementChild && blocks.length > 1) {
+      say('The page title banner was left out of the selection.');
+      blocks.shift();
+    }
+    const snip = library[+snipSel.value];
+    const op = { key: keyFor(blocks), html: snip.html, name: snip.name };
+    ops.push(op);
+    run();
+    if (!ops.includes(op)) return;
+    savedRange = null;
+    if (sel) sel.removeAllRanges();
+    say(`Applied “${snip.name}”. ${op.note || 'Undo removes it.'}`);
+  });
+  snipSel.addEventListener('change', () => { try { localStorage.setItem('t2t-snippet', snipSel.value); } catch (e) {} });
+  $('undoSnippet').addEventListener('click', () => { const op = ops.pop(); run(); if (op) say(`Removed “${op.name}”.`); });
+  $('clearSnippets').addEventListener('click', () => { ops = []; run(); say('Removed all snippets.'); });
   function schedule() { clearTimeout(timer); timer = setTimeout(run, 150); }
   function say(msg) { status.textContent = msg; clearTimeout(say.t); say.t = setTimeout(() => { status.textContent = ''; }, 4000); }
 
@@ -704,10 +1052,11 @@ This assignment is worth 50 points. Review the rubric attached below before you 
   });
   $('exampleBtn').addEventListener('click', () => {
     src.value = EXAMPLES[STYLES[styleSel.value].family];
+    ops = [];
     run();
     say('Example loaded. Edit it or replace it with your own text.');
   });
-  $('clearBtn').addEventListener('click', () => { src.value = ''; run(); src.focus(); });
+  $('clearBtn').addEventListener('click', () => { src.value = ''; ops = []; run(); src.focus(); });
 
   function selectTab(which) {
     const prev = which === 'preview';
@@ -715,6 +1064,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     $('tabCode').setAttribute('aria-selected', String(!prev));
     preview.hidden = !prev;
     $('codeWrap').hidden = prev;
+    $('snipbar').hidden = !prev;
   }
   $('tabPreview').addEventListener('click', () => selectTab('preview'));
   $('tabCode').addEventListener('click', () => selectTab('code'));
@@ -745,7 +1095,10 @@ This assignment is worth 50 points. Review the rubric attached below before you 
 
   // Restore the last draft and style, or open with an example.
   let saved = null, savedStyle = null;
-  try { saved = localStorage.getItem('t2t-text'); savedStyle = localStorage.getItem('t2t-style'); } catch (e) {}
+  try {
+    saved = localStorage.getItem('t2t-text'); savedStyle = localStorage.getItem('t2t-style');
+    if (saved) ops = JSON.parse(localStorage.getItem('t2t-ops') || '[]') || [];
+  } catch (e) { ops = []; }
   const hashStyle = location.hash.slice(1);
   if (STYLES[hashStyle]) styleSel.value = hashStyle;
   else if (savedStyle && STYLES[savedStyle]) styleSel.value = savedStyle;
@@ -753,6 +1106,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
   src.value = saved || EXAMPLES[STYLES[styleSel.value].family];
   try { if (!localStorage.getItem('t2t-seen')) { $('guide').open = true; localStorage.setItem('t2t-seen', '1'); } } catch (e) { $('guide').open = true; }
   run();
+  loadLibrary();
 
   window.__textToTemplate = { convert, htmlToMarkup };
 })();
