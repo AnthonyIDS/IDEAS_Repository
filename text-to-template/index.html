@@ -64,8 +64,9 @@ button:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visi
 .pane-head .actions { display: flex; flex-wrap: wrap; gap: 6px; }
 textarea { width: 100%; border: 0; resize: vertical; padding: 14px; font-family: var(--font-code); font-size: 0.88rem; line-height: 1.55; background: var(--surface); color: var(--ink); border-radius: 0 0 10px 10px; }
 #source { min-height: 560px; flex: 1; }
-#codeWrap { flex: 1; display: flex; flex-direction: column; }
-#codeWrap #code { flex: 1; }
+.wrapcol { flex: 1; display: flex; flex-direction: column; }
+.wrapcol textarea { flex: 1; }
+#applyStyle.pending { box-shadow: 0 0 0 3px rgba(242, 169, 0, 0.6); }
 #code { min-height: 560px; background: var(--code-bg); }
 [role="tablist"] { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
 [role="tab"] { border: 0; border-radius: 0; padding: 6px 12px; }
@@ -129,6 +130,7 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
         <option value="assignment-2">Assignment 2</option>
       </select>
     </label>
+    <button class="primary" id="applyStyle" type="button">Apply</button>
     <button id="exampleBtn" type="button">Load example text</button>
     <button id="clearBtn" type="button">Clear</button>
     <a class="btn" id="viewTemplate" href="../templates.html#module-overview" target="_blank" rel="noopener">View this template</a>
@@ -144,7 +146,7 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
       <div>
         <h3>Title and headings</h3>
         <ul>
-          <li>The first line becomes the blue title banner.</li>
+          <li>Choose a template style and select <strong>Apply</strong>. The first line becomes the blue title banner.</li>
           <li>Section names like <em>Module Overview</em>, <em>To Do List</em>, <em>Purpose</em>, <em>Directions</em>, <em>Resource 1: …</em>, <em>Step 1: …</em>, or <em>Connect to Practice</em> on their own line become styled headings.</li>
           <li>Any other short line written in Title Case also becomes a heading.</li>
           <li>Force a heading with <code>## Section</code> or a smaller one with <code>### Sub-heading</code>.</li>
@@ -175,25 +177,33 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
           <li>Accordions, dropdowns, and Clickable Steps make one item per heading you highlight.</li>
           <li>Quick Check uses the first line as the question and the list below it as answers. End the right answer with <code>*</code>.</li>
           <li>Snippets stay applied while you keep editing your text. Use <strong>Undo</strong> or <strong>Remove all</strong> to take them off.</li>
-          <li>You can also click into the Preview and fix wording there, or edit the code itself on the <strong>HTML</strong> tab. After that, the page keeps your edits. Select <strong>Rebuild from Your text</strong> to go back to building it from your text.</li>
+          <li>You can also click into the Preview and fix wording there, or edit the code itself on the <strong>HTML</strong> tab next to Your text. After that, the page keeps your edits. Select <strong>Rebuild from Your text</strong> to go back to building it from your text.</li>
         </ul>
       </div>
     </div>
   </details>
 
   <div class="panes">
-    <section class="pane" aria-labelledby="in-h">
-      <div class="pane-head"><h2 id="in-h">Your text</h2></div>
-      <label class="sr-only" for="source">Your text</label>
-      <textarea id="source" spellcheck="true" placeholder="Paste or type your page text here…"></textarea>
+    <section class="pane" aria-label="Your text and HTML">
+      <div class="pane-head">
+        <div role="tablist" aria-label="Edit">
+          <button type="button" role="tab" id="tabText" aria-selected="true" aria-controls="sourceWrap">Your text</button>
+          <button type="button" role="tab" id="tabCode" aria-selected="false" aria-controls="codeWrap">HTML</button>
+        </div>
+      </div>
+      <div id="sourceWrap" class="wrapcol" role="tabpanel" aria-labelledby="tabText">
+        <label class="sr-only" for="source">Your text</label>
+        <textarea id="source" spellcheck="true" placeholder="Paste or type your page text here…"></textarea>
+      </div>
+      <div id="codeWrap" class="wrapcol" role="tabpanel" aria-labelledby="tabCode" hidden>
+        <p class="hint" id="codeHint">You can edit this HTML directly; the Preview updates as you type. In Canvas, open the page editor, switch to the HTML editor (&lt;/&gt;), and paste.</p>
+        <label class="sr-only" for="code">Generated HTML</label>
+        <textarea id="code" spellcheck="false" aria-describedby="codeHint"></textarea>
+      </div>
     </section>
     <section class="pane" aria-labelledby="out-h">
       <div class="pane-head">
-        <h2 id="out-h">Canvas-ready page</h2>
-        <div role="tablist" aria-label="Output view">
-          <button type="button" role="tab" id="tabPreview" aria-selected="true" aria-controls="preview">Preview</button>
-          <button type="button" role="tab" id="tabCode" aria-selected="false" aria-controls="codeWrap">HTML</button>
-        </div>
+        <h2 id="out-h">Canvas-ready page: Preview</h2>
       </div>
       <div class="snipbar" id="snipbar">
         <h3 class="snip-head" id="snipHead">Reformat highlighted text with a snippet</h3>
@@ -208,15 +218,10 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
         <p class="snip-note" id="snipNote">Click into the Preview to edit wording directly. Highlight text, pick a category and design, then select Apply. <a href="../html-code.html" target="_blank" rel="noopener">See all snippets</a></p>
       </div>
       <div class="manualbar" id="manualBar" role="status" hidden>
-        <p id="manualMsg">You edited the Preview or HTML directly. The page now keeps those edits, so changes to Your text or the style won't show until you rebuild.</p>
+        <p id="manualMsg">You edited the Preview or HTML directly. The page now keeps those edits, so changes to Your text won't show until you rebuild or apply a style.</p>
         <button id="rebuildBtn" type="button">Rebuild from Your text</button>
       </div>
-      <div id="preview" role="tabpanel" aria-labelledby="tabPreview" aria-label="Page preview, editable" spellcheck="true"></div>
-      <div id="codeWrap" role="tabpanel" aria-labelledby="tabCode" hidden>
-        <p class="hint" id="codeHint">You can edit this HTML directly; the Preview updates as you type. In Canvas, open the page editor, switch to the HTML editor (&lt;/&gt;), and paste.</p>
-        <label class="sr-only" for="code">Generated HTML</label>
-        <textarea id="code" spellcheck="false" aria-describedby="codeHint"></textarea>
-      </div>
+      <div id="preview" aria-label="Page preview, editable" spellcheck="true"></div>
     </section>
   </div>
 </main>
@@ -732,6 +737,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
   /* Direct edits in the Preview. Once the Preview is edited, the HTML follows it (manualHtml)
      until the user rebuilds from their text. history holds snapshots for Undo. */
   let manualHtml = null;
+  let appliedStyle = 'module-overview';
   let history = [];
   let lastEdit = 0;
   let lastGenerated = null;
@@ -753,11 +759,11 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     if (manualHtml !== null) {
       // Keep the edited Preview. Flag that Your text has changed since.
       if (sourceChanged) $('manualBar').classList.add('stale');
-      try { localStorage.setItem('t2t-text', src.value); localStorage.setItem('t2t-style', styleSel.value); } catch (e) {}
+      try { localStorage.setItem('t2t-text', src.value); localStorage.setItem('t2t-style', appliedStyle); } catch (e) {}
       updateSnipButtons();
       return;
     }
-    let html = src.value.trim() ? convert(src.value, styleSel.value) : '';
+    let html = src.value.trim() ? convert(src.value, appliedStyle) : '';
     if (html && ops.length) {
       // Re-apply the snippets the user chose, matched to their text, on top of the fresh conversion.
       const box = document.createElement('div');
@@ -775,7 +781,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     preview.contentEditable = html ? 'true' : 'false';
     updateSnipButtons();
     try {
-      localStorage.setItem('t2t-text', src.value); localStorage.setItem('t2t-style', styleSel.value);
+      localStorage.setItem('t2t-text', src.value); localStorage.setItem('t2t-style', appliedStyle);
       localStorage.setItem('t2t-ops', JSON.stringify(ops));
     } catch (e) {}
   }
@@ -1201,12 +1207,29 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     run(true);
     say('Pasted formatted text. Headings, bold, lists, and links were kept.');
   });
+  // The style menu only takes effect when Apply is selected.
+  function markStylePending() {
+    const pending = styleSel.value !== appliedStyle;
+    $('applyStyle').classList.toggle('pending', pending);
+    $('applyStyle').textContent = pending ? 'Apply style' : 'Apply';
+  }
   styleSel.addEventListener('change', () => {
     $('viewTemplate').href = '../templates.html#' + STYLES[styleSel.value].anchor;
-    run(true);
+    markStylePending();
+    if (styleSel.value !== appliedStyle) say('Select Apply to use the ' + styleSel.options[styleSel.selectedIndex].text + ' style.');
+  });
+  $('applyStyle').addEventListener('click', () => {
+    const hadEdits = manualHtml !== null;
+    appliedStyle = styleSel.value;
+    leaveManual();
+    run();
+    markStylePending();
+    say('Applied the ' + styleSel.options[styleSel.selectedIndex].text + ' style' + (hadEdits ? '. Direct edits in the Preview or HTML were replaced; snippets were kept.' : '.'));
   });
   $('exampleBtn').addEventListener('click', () => {
     src.value = EXAMPLES[STYLES[styleSel.value].family];
+    appliedStyle = styleSel.value;
+    markStylePending();
     ops = [];
     leaveManual();
     run();
@@ -1214,15 +1237,15 @@ This assignment is worth 50 points. Review the rubric attached below before you 
   });
   $('clearBtn').addEventListener('click', () => { src.value = ''; ops = []; leaveManual(); run(); src.focus(); });
 
+  // Left side: Your text and HTML share one pane, so the Preview stays visible beside either.
   function selectTab(which) {
-    const prev = which === 'preview';
-    $('tabPreview').setAttribute('aria-selected', String(prev));
-    $('tabCode').setAttribute('aria-selected', String(!prev));
-    preview.hidden = !prev;
-    $('codeWrap').hidden = prev;
-    $('snipbar').hidden = !prev;
+    const text = which === 'text';
+    $('tabText').setAttribute('aria-selected', String(text));
+    $('tabCode').setAttribute('aria-selected', String(!text));
+    $('sourceWrap').hidden = !text;
+    $('codeWrap').hidden = text;
   }
-  $('tabPreview').addEventListener('click', () => selectTab('preview'));
+  $('tabText').addEventListener('click', () => selectTab('text'));
   $('tabCode').addEventListener('click', () => selectTab('code'));
 
   $('copyBtn').addEventListener('click', async () => {
@@ -1258,6 +1281,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
   const hashStyle = location.hash.slice(1);
   if (STYLES[hashStyle]) styleSel.value = hashStyle;
   else if (savedStyle && STYLES[savedStyle]) styleSel.value = savedStyle;
+  appliedStyle = styleSel.value;
   $('viewTemplate').href = '../templates.html#' + STYLES[styleSel.value].anchor;
   src.value = saved || EXAMPLES[STYLES[styleSel.value].family];
   try { if (!localStorage.getItem('t2t-seen')) { $('guide').open = true; localStorage.setItem('t2t-seen', '1'); } } catch (e) { $('guide').open = true; }
