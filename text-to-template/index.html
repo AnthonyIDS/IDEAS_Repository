@@ -239,6 +239,7 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
   const BOX_PRACTICE = 'background-color: #f7f9fb; border-width: 1px 1px 1px 5px; border-style: solid; border-color: #d7e2ec #d7e2ec #d7e2ec #00406e; border-radius: 6px; padding: 20px; margin-bottom: 24px;';
   const BOX_TIP = 'background: #f7fafc; border-left: 6px solid #f2a900; padding: 18px; border-radius: 10px; margin: 18px 0;';
   const BOX_REMEMBER = 'background: #e8f0f7; border-left: 6px solid #00406e; padding: 20px; border-radius: 12px; margin-top: 22px;';
+  const BOX_AI = 'background-color: #fff5f5; border-width: 5px 1px 1px; border-style: solid; border-color: #b42332 #edc6c6 #edc6c6; border-radius: 12px; padding: 24px; margin: 20px 0px; font-family: Arial, sans-serif; color: #27343b; line-height: 1.7;';
   const VIDEO_WRAP = 'position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;';
   const VIDEO_FRAME = 'position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; border: 0px none currentcolor;';
 
@@ -585,9 +586,13 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     if (intro.length) out.push(renderBody(intro, '', { lead: cfg.family === 'assignment' }));
 
     if (cfg.family === 'overview') {
+      // The template's signature is the shaded overview card. Use the section named Overview or
+      // Introduction, otherwise the first section, so any text gets the card.
+      let boxIdx = sections.findIndex(s => /^(module )?overview$|^introduction$/.test(norm(s.heading)));
+      if (boxIdx < 0) boxIdx = 0;
       sections.forEach((s, idx) => {
         const n = norm(s.heading);
-        const isOverview = /^(module )?overview$|^introduction$/.test(n);
+        const isOverview = idx === boxIdx;
         const isTodo = /^(to[- ]?do( list)?|todo list|checklist)$/.test(n);
         const emoji = isOverview ? '📘' : isTodo ? '✅' : '';
         const parts = subsections(s.blocks);
@@ -615,9 +620,15 @@ This assignment is worth 50 points. Review the rubric attached below before you 
       sections.forEach(s => {
         out.push(HR);
         const parts = subsections(s.blocks);
-        const resourceLike = /^(resource|part|activity|step)\s+\d+/i.test(s.heading) || /check your understanding/i.test(s.heading);
-        const emoji = resourceLike ? resourceEmoji(s.heading, s.blocks) : '';
+        // Every section is treated as a resource: an emoji on its heading, and its list in a practice box.
+        const isCheck = /check your understanding/i.test(s.heading);
+        const resourceLike = /^(resource|part|activity|step)\s+\d+/i.test(s.heading) || isCheck;
+        const guess = resourceEmoji(s.heading, s.blocks);
+        // Other sections get an emoji only when they are clearly a video or a reading.
+        const emoji = resourceLike || guess !== '📊' ? guess : '';
         out.push(`<${top}>${headingText(s.heading, emoji)}</${top}>`);
+        const isPractice = h => h && /^connect to practice$|^reflect$|^practice$/i.test(norm(h));
+        const autoBox = !isCheck && !parts.some(p => isPractice(p.heading));
         let boxOpen = false;
         parts.forEach(p => {
           if (p.heading && /^connect to practice$|^reflect$|^practice$/i.test(norm(p.heading))) {
@@ -631,8 +642,15 @@ This assignment is worth 50 points. Review the rubric attached below before you 
           }
           if (boxOpen) { out.push('</div>'); boxOpen = false; }
           if (p.heading) out.push(`<${sub} style="color: ${BLUE};">${headingText(p.heading)}</${sub}>`);
-          const body = renderBody(p.blocks, '', {});
+          const firstLi = autoBox ? p.blocks.findIndex(b => b.type === 'li') : -1;
+          const lead = firstLi < 0 ? p.blocks : p.blocks.slice(0, firstLi);
+          const body = renderBody(lead, '', {});
           if (body) out.push(body);
+          if (firstLi >= 0) {
+            out.push(`<div style="${BOX_PRACTICE}">`);
+            out.push(renderBody(p.blocks.slice(firstLi), '    ', {}).replace(/^(\s*)<(ul|ol)>/, '$1<$2 style="margin: 0;">'));
+            out.push('</div>');
+          }
         });
         if (boxOpen) out.push('</div>');
       });
@@ -643,6 +661,21 @@ This assignment is worth 50 points. Review the rubric attached below before you 
       sections.forEach(s => {
         out.push(HR);
         out.push(`<h3 style="color: ${BLUE};"><strong>${headingText(s.heading)}</strong></h3>`);
+        // Assignment 2 puts academic integrity and AI-use expectations in its red policy card.
+        if (styleKey === 'assignment-2' && /academic integrity|\bai\b|artificial intelligence|collaboration|honesty|plagiarism|policy/i.test(s.heading)) {
+          const lines = [`<div style="${BOX_AI}">`];
+          subsections(s.blocks).forEach(p => {
+            if (p.heading) lines.push(`    <h4 style="margin: 0 0 12px; color: #851b28; font-size: 24px;"><strong>${headingText(p.heading)}</strong></h4>`);
+            const body = renderBody(p.blocks, '    ', {});
+            if (body) lines.push(body.replace(/<p>/g, '<p style="margin: 0 0 16px;">').replace(/<strong>/g, '<strong style="color: #851b28;">'));
+          });
+          let card = lines.join('\n');
+          // The card's last paragraph sits flush with its bottom edge, as in the template.
+          const at = card.lastIndexOf('<p style="margin: 0 0 16px;">');
+          if (at >= 0 && !/<(p|ul|ol|div|h4)[\s>]/.test(card.slice(at + 5))) card = card.slice(0, at) + '<p style="margin-bottom: 0;">' + card.slice(at + 29);
+          out.push(card + '\n</div>');
+          return;
+        }
         subsections(s.blocks).forEach(p => {
           if (p.heading) out.push(`<h4><strong>${headingText(p.heading)}</strong></h4>`);
           const body = renderBody(p.blocks, '', {});
