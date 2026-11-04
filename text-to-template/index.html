@@ -1094,7 +1094,12 @@ This assignment is worth 50 points. Review the rubric attached below before you 
         (c.tagName === 'P' && isHeading(c) && keep.length === 0 && t.length < 60);
       if (isLabel && keep.length === kids.indexOf(c)) keep.push(c); else break;
     }
-    fill(root, [...keep, ...content]);
+    // A long sample heading (like "Answer: What is a Large Language Model?") is example wording, not a
+    // box label, so leave it out when the highlight didn't bring its own heading.
+    const usedOwnHeading = content !== blocks;
+    const labels = keep.filter(c => usedOwnHeading || !/^H[1-6]$/.test(c.tagName) || clean(c.textContent).split(' ').length <= 4);
+    labels.forEach(c => { if (c.lastChild && c.lastChild.nodeType === 3) c.lastChild.nodeValue = c.lastChild.nodeValue.replace(/[\s ]+$/, ''); });
+    fill(root, [...labels, ...content]);
     // Re-indent lightly so the HTML stays readable.
     Array.from(root.childNodes).forEach(n => { if (n.nodeType === 3) n.nodeValue = '\n    '; });
     if (root.lastChild && root.lastChild.nodeType === 3) root.lastChild.nodeValue = '\n';
