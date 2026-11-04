@@ -1025,15 +1025,56 @@ This assignment is worth 50 points. Review the rubric attached below before you 
       return { nodes };
     }
 
+    // Button: every link in the selection becomes a button that goes to that link's address.
     if (root.tagName === 'P' && root.querySelector('a')) {
-      const a = root.querySelector('a');
-      const link = blocks.map(b => (b.tagName === 'A' ? b : b.querySelector('a'))).find(Boolean);
-      if (link) { a.setAttribute('href', link.getAttribute('href')); }
-      const label = link ? clean(link.textContent) : clean(blocks[0].textContent);
-      a.textContent = ' ' + label + ' ';
-      if (a.hasAttribute('title')) a.setAttribute('title', label);
-      // The button replaces the first highlighted block; anything after it stays as it was.
-      return { nodes: [root, ...blocks.slice(1)] };
+      const URL_RE = /(https?:\/\/[^\s<>"]+[^\s<>".,;:!?)\]'])/;
+      const makeButton = (href, label) => {
+        const p = root.cloneNode(true);
+        const a = p.querySelector('a');
+        a.setAttribute('href', href);
+        a.textContent = ' ' + label + ' ';
+        if (a.hasAttribute('title')) a.setAttribute('title', label);
+        return p;
+      };
+      // The words around a link, used as the label when the link shows its bare address.
+      const labelFor = (el, link) => {
+        const own = clean(link.textContent);
+        if (own && !/^https?:\/\//i.test(own)) return own.replace(/\s*\(opens in a new tab\)$/i, '');
+        const around = clean(el.textContent.replace(link.textContent, '')).replace(/[:\-–—\s]+$/, '').replace(/^[:\-–—\s]+/, '');
+        return around || own;
+      };
+      // Buttons for one block (a paragraph, heading or list item), or null when it has no link.
+      const buttonsFor = el => {
+        const links = Array.from(el.querySelectorAll('a[href]')).filter(l => !/^#/.test(l.getAttribute('href')));
+        if (links.length) return links.map(l => makeButton(l.getAttribute('href'), labelFor(el, l)));
+        const m = el.textContent.match(URL_RE);
+        if (!m) return null;
+        const label = clean(el.textContent.replace(m[1], '')).replace(/[:\-–—\s]+$/, '').replace(/^[:\-–—\s]+/, '');
+        return [makeButton(m[1], label || m[1])];
+      };
+      const nodes = [];
+      let made = 0;
+      blocks.forEach(bk => {
+        if (/^(UL|OL)$/.test(bk.tagName)) {
+          // Linked items become buttons; the other items stay in a list, in order.
+          let rest = null;
+          Array.from(bk.children).forEach(li => {
+            const btns = buttonsFor(li);
+            if (btns) { rest = null; made += btns.length; nodes.push(...btns); return; }
+            if (!rest) { rest = bk.cloneNode(false); nodes.push(rest); }
+            rest.appendChild(document.createTextNode('\n    '));
+            rest.appendChild(li);
+          });
+          nodes.forEach(n => { if (/^(UL|OL)$/.test(n.tagName) && !/\n$/.test(n.lastChild && n.lastChild.nodeValue || '')) n.appendChild(document.createTextNode('\n')); });
+          return;
+        }
+        const btns = /^(P|H[1-6]|LI)$/.test(bk.tagName) ? buttonsFor(bk) : null;
+        if (btns) { made += btns.length; nodes.push(...btns); } else nodes.push(bk);
+      });
+      if (made) return { nodes };
+      // No link anywhere: the first block becomes a button that still needs its address.
+      const label = clean(blocks[0].textContent);
+      return { nodes: [makeButton(root.querySelector('a').getAttribute('href'), label), ...blocks.slice(1)], note: 'No link was in the highlighted text, so the button still goes to ' + root.querySelector('a').getAttribute('href') + '. Add the address in the HTML tab, or highlight text that has a link.' };
     }
 
     // Clickable Steps: one tab per heading in the selection.
