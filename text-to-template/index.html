@@ -75,10 +75,21 @@ textarea { width: 100%; border: 0; resize: vertical; padding: 14px; font-family:
 #preview a.btn { display: inline-block; padding: 8px 14px; background: #f5f5f5; border: 1px solid #c7cdd1; border-radius: 4px; color: #2d3b45; text-decoration: none; }
 #preview ::selection { background: #ffe08a; color: #14212e; }
 .snipbar { padding: 10px 14px; border-bottom: 1px solid var(--line); display: grid; gap: 6px; background: var(--accent-soft); }
-.snipbar label { font-weight: bold; font-size: 0.9rem; }
-.snipbar .row { display: flex; flex-wrap: wrap; gap: 6px; }
-.snipbar select { flex: 1 1 240px; min-width: 0; }
-.snipbar button:disabled, .snipbar select:disabled { opacity: 0.55; cursor: not-allowed; }
+.snipbar .snip-head { margin: 0; font-size: 0.95rem; color: var(--accent); }
+.snipbar .row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.snipbar button:disabled { opacity: 0.55; cursor: not-allowed; }
+/* Category buttons and design cards follow the HTML Code snippet page (html-code.html). */
+.snip-cats { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
+.snip-cat { border: 1px solid #c9d7e3; background: #ffffff; color: #00406e; text-align: center; padding: 8px 10px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; min-height: 42px; line-height: 1.25; }
+.snip-cat:hover { background: #eef5fb; border-color: #00406e; }
+.snip-cat[aria-expanded="true"] { background: #00406e; color: #ffffff; border-color: #00406e; }
+.snip-variants { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; max-height: 330px; overflow-y: auto; padding: 2px; }
+.snip-card { display: grid; grid-template-rows: auto 1fr; gap: 6px; text-align: left; padding: 8px; border: 1px solid #d7e2ec; border-radius: 12px; background: #ffffff; color: #00406e; font-weight: bold; font-size: 0.82rem; }
+.snip-card[aria-checked="true"] { border: 2px solid #f2a900; padding: 7px; box-shadow: 0 0 0 3px rgba(242, 169, 0, 0.25); }
+.snip-mini { border: 1px solid #d7e2ec; border-radius: 8px; background: #fbfdff; padding: 8px; max-height: 200px; overflow: hidden; pointer-events: none; color: #2d3b45; font-weight: normal; font-family: Arial, sans-serif; zoom: 0.55; }
+.snip-mini .btn { display: inline-block; padding: 8px 14px; border: 1px solid #c7cdd1; border-radius: 3px; background: #f5f5f5; color: #2d3b45; text-decoration: none; }
+.snip-chosen { flex: 1 1 200px; font-size: 0.85rem; color: var(--muted); }
+.snip-chosen strong { color: var(--ink); }
 .snip-note { margin: 0; font-size: 0.85rem; color: var(--muted); }
 .snip-note a { color: var(--accent); }
 .manualbar { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--line); background: #fff4d6; color: #5a3d00; font-size: 0.88rem; }
@@ -160,7 +171,7 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
       <div>
         <h3>Snippets from the HTML Code library</h3>
         <ul>
-          <li>Highlight text in the Preview, choose a snippet, and select <strong>Apply</strong>. The snippet wraps or restyles the whole paragraphs, lists, and headings you touched.</li>
+          <li>Highlight text in the Preview, pick a snippet category and design, and select <strong>Apply</strong>. The snippet wraps or restyles the whole paragraphs, lists, and headings you touched.</li>
           <li>Accordions, dropdowns, and Clickable Steps make one item per heading you highlight.</li>
           <li>Quick Check uses the first line as the question and the list below it as answers. End the right answer with <code>*</code>.</li>
           <li>Snippets stay applied while you keep editing your text. Use <strong>Undo</strong> or <strong>Remove all</strong> to take them off.</li>
@@ -185,14 +196,16 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
         </div>
       </div>
       <div class="snipbar" id="snipbar">
-        <label for="snippetChoice">Reformat highlighted text with a snippet</label>
+        <h3 class="snip-head" id="snipHead">Reformat highlighted text with a snippet</h3>
+        <div class="snip-cats" id="snipCats" role="group" aria-labelledby="snipHead"><p class="snip-note">Loading the snippet library…</p></div>
+        <div class="snip-variants" id="snipVariants" role="radiogroup" aria-label="Snippet design" hidden></div>
         <div class="row">
-          <select id="snippetChoice" disabled><option>Loading snippet library…</option></select>
+          <span class="snip-chosen" id="snipChosen" aria-live="polite">No snippet chosen</span>
           <button class="primary" id="applySnippet" type="button" disabled>Apply to highlighted text</button>
           <button id="undoSnippet" type="button" disabled>Undo</button>
           <button id="clearSnippets" type="button" disabled>Remove all</button>
         </div>
-        <p class="snip-note" id="snipNote">Click into the Preview to edit wording directly. Highlight text, choose a snippet, then select Apply. <a href="../html-code.html" target="_blank" rel="noopener">See all snippets</a></p>
+        <p class="snip-note" id="snipNote">Click into the Preview to edit wording directly. Highlight text, pick a category and design, then select Apply. <a href="../html-code.html" target="_blank" rel="noopener">See all snippets</a></p>
       </div>
       <div class="manualbar" id="manualBar" role="status" hidden>
         <p id="manualMsg">You edited the Preview directly. The HTML now follows the Preview, so changes to Your text or the style won't show until you rebuild.</p>
@@ -769,7 +782,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
   let ops = [];
   let library = [];
   let savedRange = null;
-  const snipSel = $('snippetChoice');
+  let selected = -1;
   const BLOCK = 'p,h1,h2,h3,h4,h5,h6,ul,ol,table,details,blockquote,hr,pre';
   const clean = s => (s || '').replace(/ /g, ' ').replace(/\s+/g, ' ').trim();
   const isHeading = el => /^H[1-6]$/.test(el.tagName) ||
@@ -783,41 +796,97 @@ This assignment is worth 50 points. Review the rubric attached below before you 
       if (!res.ok) throw new Error(res.status);
       const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
       const seen = {};
-      doc.querySelectorAll('section.snippet-page').forEach(section => {
-        let title = '', label = '';
-        section.querySelectorAll('h2.snippet-title, p.preview-label, p.code-label, pre').forEach(el => {
+      // Categories in the order of the page's navigation buttons, then any section without one.
+      const order = Array.from(doc.querySelectorAll('.nav-button')).map(b => (b.getAttribute('onclick') || '').match(/showPage\('([^']+)'/)).filter(Boolean).map(m => m[1]);
+      const sections = Array.from(doc.querySelectorAll('section.snippet-page'));
+      sections.sort((a, b) => {
+        const ia = order.indexOf(a.id), ib = order.indexOf(b.id);
+        return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
+      });
+      const tidy = t => clean(t).replace(/\b(preview|code)\b/gi, '').replace(/^[\s:–—-]+|[\s:–—-]+$/g, '').replace(/\s{2,}/g, ' ').trim();
+      sections.forEach(section => {
+        const navBtn = doc.querySelector(`.nav-button[onclick*="'${section.id}'"]`);
+        let title = '', label = '', codeLabel = '', preview = '';
+        section.querySelectorAll('h2.snippet-title, p.preview-label, p.code-label, .preview-box, pre').forEach(el => {
           if (el.matches('h2.snippet-title')) { title = clean(el.textContent); label = ''; return; }
-          if (el.matches('p.preview-label, p.code-label')) {
-            const l = clean(el.textContent).replace(/\b(preview|code)\b/gi, '').replace(/^[\s:–—-]+|[\s:–—-]+$/g, '').trim();
-            if (l) label = l;
-            return;
-          }
+          if (el.matches('p.preview-label')) { label = tidy(el.textContent); codeLabel = ''; preview = ''; return; }
+          if (el.matches('p.code-label')) { codeLabel = tidy(el.textContent); return; }
+          if (el.matches('.preview-box')) { if (!el.closest('pre')) preview = el.innerHTML; return; }
           const html = el.textContent.trim();
           if (!html) return;
-          let name = label ? `${label}` : title.replace(/^\P{L}+/u, '');
-          const key = title + '|' + name;
+          const group = navBtn ? clean(navBtn.textContent) : title;
+          let name = label || codeLabel || group.replace(/^\P{L}+/u, '');
+          const key = group + '|' + name;
           seen[key] = (seen[key] || 0) + 1;
           if (seen[key] > 1) name += ` (${seen[key]})`;
-          library.push({ group: title, name, html });
+          library.push({ group, name, html, preview: preview || html });
+          preview = '';
         });
       });
       if (!library.length) throw new Error('empty');
-      snipSel.innerHTML = '';
-      const groups = {};
-      library.forEach((s, i) => {
-        if (!groups[s.group]) { groups[s.group] = document.createElement('optgroup'); groups[s.group].label = s.group; snipSel.appendChild(groups[s.group]); }
-        const o = document.createElement('option'); o.value = String(i); o.textContent = s.name; groups[s.group].appendChild(o);
-      });
-      snipSel.disabled = false;
-      try { const last = localStorage.getItem('t2t-snippet'); if (last && library[+last]) snipSel.value = last; } catch (e) {}
+      renderCategories();
+      try {
+        const last = JSON.parse(localStorage.getItem('t2t-snippet') || 'null');
+        const i = last ? library.findIndex(x => x.group === last.group && x.name === last.name) : -1;
+        if (i >= 0) chooseSnippet(i, false);
+      } catch (e) {}
     } catch (e) {
-      snipSel.innerHTML = '<option>Snippet library unavailable here. Open this page from the GitHub Pages site.</option>';
+      $('snipCats').innerHTML = '<p class="snip-note">The snippet library could not load here. Open this page from the GitHub Pages site.</p>';
     }
     updateSnipButtons();
   }
 
+  // Category buttons, like the navigation on the HTML Code page.
+  function renderCategories() {
+    const cats = $('snipCats');
+    cats.innerHTML = '';
+    [...new Set(library.map(x => x.group))].forEach(group => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'snip-cat'; b.textContent = group;
+      b.setAttribute('aria-expanded', 'false');
+      b.setAttribute('aria-controls', 'snipVariants');
+      b.addEventListener('click', () => openCategory(group));
+      cats.appendChild(b);
+    });
+  }
+  // Design cards for one category, each with a small live preview from the HTML Code page.
+  function openCategory(group) {
+    const panel = $('snipVariants');
+    const open = panel.dataset.group === group && !panel.hidden;
+    $('snipCats').querySelectorAll('.snip-cat').forEach(b => b.setAttribute('aria-expanded', String(!open && b.textContent === group)));
+    if (open) { panel.hidden = true; panel.dataset.group = ''; return; }
+    panel.dataset.group = group;
+    panel.innerHTML = '';
+    library.forEach((item, i) => {
+      if (item.group !== group) return;
+      const card = document.createElement('button');
+      card.type = 'button'; card.className = 'snip-card';
+      card.setAttribute('role', 'radio');
+      card.setAttribute('aria-checked', String(i === selected));
+      card.dataset.index = String(i);
+      const name = document.createElement('span'); name.textContent = item.name;
+      const mini = document.createElement('div'); mini.className = 'snip-mini'; mini.setAttribute('aria-hidden', 'true');
+      mini.innerHTML = item.preview;
+      mini.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
+      mini.querySelectorAll('a').forEach(a => a.setAttribute('tabindex', '-1'));
+      card.append(name, mini);
+      card.addEventListener('click', () => chooseSnippet(i, true));
+      panel.appendChild(card);
+    });
+    panel.hidden = false;
+  }
+  function chooseSnippet(i, remember) {
+    selected = i;
+    const item = library[i];
+    $('snipChosen').innerHTML = '';
+    $('snipChosen').append('Chosen: ', Object.assign(document.createElement('strong'), { textContent: item.name }), ` (${item.group.replace(/^\P{L}+/u, '')})`);
+    $('snipVariants').querySelectorAll('.snip-card').forEach(c => c.setAttribute('aria-checked', String(+c.dataset.index === i)));
+    if (remember) { try { localStorage.setItem('t2t-snippet', JSON.stringify({ group: item.group, name: item.name })); } catch (e) {} }
+    updateSnipButtons();
+  }
+
   function updateSnipButtons() {
-    $('applySnippet').disabled = snipSel.disabled || !code.value;
+    $('applySnippet').disabled = selected < 0 || !code.value;
     $('undoSnippet').disabled = manualHtml !== null ? !history.length : !ops.length;
     $('clearSnippets').disabled = manualHtml !== null || !ops.length;
   }
@@ -1056,7 +1125,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
       say('The page title banner was left out of the selection.');
       blocks.shift();
     }
-    const snip = library[+snipSel.value];
+    const snip = library[selected];
     const op = { key: keyFor(blocks), html: snip.html, name: snip.name };
     if (manualHtml !== null) {
       history.push(manualHtml);
@@ -1071,7 +1140,6 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     if (sel) sel.removeAllRanges();
     say(`Applied “${snip.name}”. ${op.note || 'Undo removes it.'}`);
   });
-  snipSel.addEventListener('change', () => { try { localStorage.setItem('t2t-snippet', snipSel.value); } catch (e) {} });
   $('undoSnippet').addEventListener('click', () => {
     if (manualHtml !== null) {
       const prev = history.pop();
