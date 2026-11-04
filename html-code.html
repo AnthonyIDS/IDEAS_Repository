@@ -193,6 +193,31 @@
         font-size: 17px;
       }
     }
+
+    .copy-controls {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 10px 0;
+    }
+    .copy-html-button {
+      background: var(--spc-blue);
+      color: white;
+      border: 1px solid var(--spc-blue);
+      border-radius: 6px;
+      padding: 10px 16px;
+      font: inherit;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .copy-html-button:hover { background: var(--spc-blue-dark); }
+    .copy-html-button:focus-visible {
+      outline: 3px solid var(--spc-gold);
+      outline-offset: 3px;
+    }
+    .copy-html-button:disabled { opacity: 0.7; cursor: wait; }
+    .copy-status { font-size: 14px; }
   </style>
 </head>
 
@@ -209,34 +234,36 @@
 
     <section class="button-grid" aria-label="Canvas design snippet navigation">
       <button class="nav-button active" type="button" onclick="showPage('page-headers', this)">🔷 Page Headers</button>
-      <button class="nav-button" type="button" onclick="showPage('button', this)">🔗 Button</button>
       <button class="nav-button" type="button" onclick="showPage('horizontal-lines', this)">➖ Horizontal Lines</button>
+      <button class="nav-button" type="button" onclick="showPage('button', this)">🔗 Button</button>
       <button class="nav-button" type="button" onclick="showPage('student-example', this)">👩‍🎓 Student Example Call Out Box</button>
       <button class="nav-button" type="button" onclick="showPage('ai-callout', this)">💡 AI Information Call Out Box</button>
-      <button class="nav-button" type="button" onclick="showPage('important-info', this)">⚠️ Important Information Call Out Box</button>
       <button class="nav-button" type="button" onclick="showPage('accordion-dropdowns', this)">▾ Accordion Dropdowns</button>
       <button class="nav-button" type="button" onclick="showPage('clickable-steps', this)">🧭 Clickable Steps</button>
        <button class="nav-button" type="button" onclick="showPage('clickable-info-icon', this)">ⓘ Clickable Info Icon</button>
       <button class="nav-button" type="button" onclick="showPage('quick-check', this)">✅ Quick Check Quiz</button>
-      <button class="nav-button" type="button" onclick="showPage('template-example', this)">📄 Template Example</button>
      
     </section>
 
     <section id="page-headers" class="snippet-page active">
       <h2 class="snippet-title">🔷 Page Headers</h2>
-      <p class="preview-label">Preview Rounded</p>
+      <p class="preview-label">H2 Banner</p>
       <div class="preview-box">
         <h2 style="color: #ffffff; background: #00406e; text-align: left; padding: 12px 14px; border-radius: 6px;"><strong>Overview</strong></h2>
       </div>
       <p class="code-label">Code</p>
-      <pre><code>&lt;h2 style="color: #ffffff; background: #00406e; text-align: left; padding: 12px 14px; border-radius: 6px;"&gt;&lt;strong&gt;Overview&lt;/strong&gt;&lt;/h2&gt;</code></pre>
+      <div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-1" aria-controls="snippet-code-1">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-1">&lt;h2 style="color: #ffffff; background: #00406e; text-align: left; padding: 12px 14px; border-radius: 6px;"&gt;&lt;strong&gt;Overview&lt;/strong&gt;&lt;/h2&gt;</code></pre>
    <p>&nbsp;</p>
 
-  <p class="preview-label">Preview: Simple Section Heading</p>
+  <p class="preview-label">H2 with Blue Font</p>
 
   <div class="preview-box">
 
-    <h2 style="color: #00406e;">Purpose</h2>
+    <h2 style="color: #00406e;">Directions</h2>
 
   </div>
 
@@ -244,16 +271,24 @@
 
   <div class="code-box">
 
-<pre><code>&lt;h2 style="color: #00406e;"&gt;Purpose&lt;/h2&gt;</code></pre>
+<div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-2" aria-controls="snippet-code-2">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-2">&lt;h2 style="color: #00406e;"&gt;Directions&lt;/h2&gt;</code></pre>
 
   </div>
 
-      <p class="preview-label" style="margin-top: 24px;">Preview: H3 Heading</p>
+      <p class="preview-label" style="margin-top: 24px;">H3 Bold with Blue Font</p>
       <div class="preview-box">
-        <h3 style="color: #00406e;"><strong>What You Need to Do</strong></h3>
+        <h3 style="color: #00406e;"><strong>To Do List</strong></h3>
       </div>
       <p class="code-label">Code</p>
-      <pre><code>&lt;h3 style="color: #00406e;"&gt;&lt;strong&gt;What You Need to Do&lt;/strong&gt;&lt;/h3&gt;</code></pre>
+      <div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-3" aria-controls="snippet-code-3">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-3">&lt;h3 style="color: #00406e;"&gt;&lt;strong&gt;To Do List&lt;/strong&gt;&lt;/h3&gt;</code></pre>
     </section>
 
     <section id="button" class="snippet-page">
@@ -265,7 +300,11 @@
       </div>
       <p>The preview approximates Canvas button styling; the appearance in Canvas follows your course theme.</p>
       <p class="code-label">Code</p>
-      <pre><code>&lt;p&gt;&lt;a class="btn" title="Resource Title" href="https://example.com" target="_blank" rel="noopener"&gt; Button Text &lt;/a&gt;&lt;/p&gt;</code></pre>
+      <div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-4" aria-controls="snippet-code-4">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-4">&lt;p&gt;&lt;a class="btn" title="Resource Title" href="https://example.com" target="_blank" rel="noopener"&gt; Button Text &lt;/a&gt;&lt;/p&gt;</code></pre>
     </section>
 
     <section id="horizontal-lines" class="snippet-page">
@@ -275,19 +314,27 @@
         <hr style="border: 1px solid #00406e;" />
       </div>
       <p class="code-label">Separating Content Code</p>
-      <pre><code>&lt;hr style="border: 1px solid #00406e;" /&gt;</code></pre>
+      <div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-5" aria-controls="snippet-code-5">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-5">&lt;hr style="border: 1px solid #00406e;" /&gt;</code></pre>
 
       <p class="preview-label" style="margin-top: 24px;">Ending a Page Preview</p>
       <div class="preview-box">
         <hr style="border: 4px solid #00406e; color: #000000; background-color: #ffffff;" />
       </div>
       <p class="code-label">Ending a Page Code</p>
-      <pre><code>&lt;hr style="border: 4px solid #00406e; color: #000000; background-color: #ffffff;" /&gt;</code></pre>
+      <div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-6" aria-controls="snippet-code-6">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-6">&lt;hr style="border: 4px solid #00406e; color: #000000; background-color: #ffffff;" /&gt;</code></pre>
     </section>
 
     <section id="student-example" class="snippet-page">
       <h2 class="snippet-title">👩‍🎓 Student Example Call Out Box</h2>
-      <p class="preview-label">Preview</p>
+      <p class="preview-label">Blue Call Out Box</p>
       <div class="preview-box">
         <div style="background: #e8f0f7; border-left: 6px solid #003366; padding: 20px; border-radius: 8px;">
           <h4 style="color: #003366;">Student Example:</h4>
@@ -295,14 +342,18 @@
         </div>
       </div>
       <p class="code-label">Code</p>
-      <pre><code>&lt;div style="background: #e8f0f7; border-left: 6px solid #003366; padding: 20px; border-radius: 8px;"&gt;
+      <div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-7" aria-controls="snippet-code-7">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-7">&lt;div style="background: #e8f0f7; border-left: 6px solid #003366; padding: 20px; border-radius: 8px;"&gt;
 &lt;h4 style="color: #003366;"&gt;Student Example:&lt;/h4&gt;
 &lt;p&gt;&lt;strong&gt;Example:&lt;/strong&gt; Sample content here.&lt;/p&gt;
 &lt;/div&gt;</code></pre>
 
       <p>&nbsp;</p>
 
-<p class="preview-label">Preview 2 - Important Notice</p>
+<p class="preview-label">Red Call Out Box</p>
 
 <div class="preview-box">
 
@@ -318,7 +369,11 @@
 
 <p class="code-label">Code</p>
 
-<pre><code>&lt;div style="background: #fdf0f0; border-left: 6px solid #8b1e1e; padding: 20px; border-radius: 8px;"&gt;
+<div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-8" aria-controls="snippet-code-8">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-8">&lt;div style="background: #fdf0f0; border-left: 6px solid #8b1e1e; padding: 20px; border-radius: 8px;"&gt;
 
     &lt;p&gt;&lt;strong&gt;Important:&lt;/strong&gt;&lt;/p&gt;
 
@@ -326,7 +381,7 @@
 
 &lt;/div&gt;</code></pre>
 
- <p class="preview-label">Preview</p>
+ <p class="preview-label">Yellow Call Out Box</p>
 
   <div class="preview-box">
 
@@ -360,7 +415,11 @@
 
   <div class="code-box">
 
-<pre><code>&lt;div style="background: #fff8e6; border-left: 6px solid #f2a900; padding: 20px; border-radius: 8px;" title="embedded content"&gt;
+<div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-9" aria-controls="snippet-code-9">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-9">&lt;div style="background: #fff8e6; border-left: 6px solid #f2a900; padding: 20px; border-radius: 8px;" title="embedded content"&gt;
 
     &lt;h4 style="color: #00406e;"&gt;&lt;strong&gt;Good Example:&lt;/strong&gt;&lt;/h4&gt;
 
@@ -405,7 +464,11 @@
 </div>
       </div>
       <p class="code-label">Code - AI Policy (Red)</p>
-      <pre><code>&lt;div style="background-color: #fff5f5; border: 1px solid #edc6c6; border-top: 5px solid #b42332; border-radius: 12px; padding: 24px; margin: 20px 0; font-family: Arial, sans-serif; color: #27343b; line-height: 1.7;"&gt;
+      <div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-10" aria-controls="snippet-code-10">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-10">&lt;div style="background-color: #fff5f5; border: 1px solid #edc6c6; border-top: 5px solid #b42332; border-radius: 12px; padding: 24px; margin: 20px 0; font-family: Arial, sans-serif; color: #27343b; line-height: 1.7;"&gt;
     &lt;p style="margin: 0 0 14px;"&gt;&lt;span style="display: inline-block; background-color: #fbe0e3; color: #851b28; border: 1px solid #edc6c6; border-radius: 6px; padding: 4px 12px; font-size: 12px; font-weight: bold; letter-spacing: 1px;"&gt;RED — NO AI&lt;/span&gt;&lt;/p&gt;
     &lt;h3 style="margin: 0 0 12px; color: #851b28; font-size: 24px;"&gt;&lt;strong&gt;AI Policy&lt;/strong&gt;&lt;/h3&gt;
     &lt;p style="margin: 0 0 16px;"&gt;AI use is not permitted for &lt;strong&gt;[Assignment Name]&lt;/strong&gt;. Complete this assignment without AI assistance.&lt;/p&gt;
@@ -432,7 +495,11 @@
 </div>
       </div>
       <p class="code-label">Code - AI Policy (Yellow)</p>
-      <pre><code>&lt;div style="background-color: #fffbed; border: 1px solid #ead9a0; border-top: 5px solid #d2a118; border-radius: 12px; padding: 24px; margin: 20px 0; font-family: Arial, sans-serif; color: #27343b; line-height: 1.7;"&gt;
+      <div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-11" aria-controls="snippet-code-11">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-11">&lt;div style="background-color: #fffbed; border: 1px solid #ead9a0; border-top: 5px solid #d2a118; border-radius: 12px; padding: 24px; margin: 20px 0; font-family: Arial, sans-serif; color: #27343b; line-height: 1.7;"&gt;
     &lt;p style="margin: 0 0 14px;"&gt;&lt;span style="display: inline-block; background-color: #ffedb1; color: #705000; border: 1px solid #ead9a0; border-radius: 6px; padding: 4px 12px; font-size: 12px; font-weight: bold; letter-spacing: 1px;"&gt;YELLOW — SOME AI&lt;/span&gt;&lt;/p&gt;
     &lt;h3 style="margin: 0 0 12px; color: #705000; font-size: 24px;"&gt;&lt;strong&gt;AI Policy&lt;/strong&gt;&lt;/h3&gt;
     &lt;p style="margin: 0 0 16px;"&gt;Limited AI use is acceptable for &lt;strong&gt;[Assignment Name]&lt;/strong&gt;, only within the boundaries described below.&lt;/p&gt;
@@ -459,7 +526,11 @@
 </div>
       </div>
       <p class="code-label">Code - AI Policy (Green)</p>
-      <pre><code>&lt;div style="background-color: #f0f9f4; border: 1px solid #bedfcd; border-top: 5px solid #238354; border-radius: 12px; padding: 24px; margin: 20px 0; font-family: Arial, sans-serif; color: #27343b; line-height: 1.7;"&gt;
+      <div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-12" aria-controls="snippet-code-12">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-12">&lt;div style="background-color: #f0f9f4; border: 1px solid #bedfcd; border-top: 5px solid #238354; border-radius: 12px; padding: 24px; margin: 20px 0; font-family: Arial, sans-serif; color: #27343b; line-height: 1.7;"&gt;
     &lt;p style="margin: 0 0 14px;"&gt;&lt;span style="display: inline-block; background-color: #d9f0e3; color: #155c3b; border: 1px solid #bedfcd; border-radius: 6px; padding: 4px 12px; font-size: 12px; font-weight: bold; letter-spacing: 1px;"&gt;GREEN — AI USE ACCEPTABLE&lt;/span&gt;&lt;/p&gt;
     &lt;h3 style="margin: 0 0 12px; color: #155c3b; font-size: 24px;"&gt;&lt;strong&gt;AI Policy&lt;/strong&gt;&lt;/h3&gt;
     &lt;p style="margin: 0 0 16px;"&gt;AI use is acceptable for &lt;strong&gt;[Assignment Name]&lt;/strong&gt;. You remain responsible for the accuracy, quality, and integrity of your submitted work.&lt;/p&gt;
@@ -482,7 +553,11 @@
         </div>
       </div>
       <p class="code-label">Code</p>
-      <pre><code>&lt;div style="padding: 24px; text-align: left; background: linear-gradient(135deg, #1f2933 0%, #2f3e4d 100%); border-left: 8px solid #f2a900; border-radius: 14px; margin: 20px 0; font-family: Arial, sans-serif; color: #e5edf5; line-height: 1.7;"&gt;
+      <div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-13" aria-controls="snippet-code-13">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-13">&lt;div style="padding: 24px; text-align: left; background: linear-gradient(135deg, #1f2933 0%, #2f3e4d 100%); border-left: 8px solid #f2a900; border-radius: 14px; margin: 20px 0; font-family: Arial, sans-serif; color: #e5edf5; line-height: 1.7;"&gt;
     &lt;h3 style="margin-top: 0; color: #f2a900; font-size: 24px;"&gt;💡 AI Insights&lt;/h3&gt;
     &lt;p style="font-size: 16px; margin-bottom: 18px; color: #d6dee6;"&gt;AI can act as a creative partner for designing courses that are accessible, inclusive, and engaging. When aligned with the three &lt;strong&gt;UDL principles&lt;/strong&gt;, AI supports flexibility from the start.&lt;/p&gt;
     &lt;ul style="padding-left: 22px; margin: 12px 0;"&gt;
@@ -502,7 +577,11 @@
       </div>
 
       <p class="code-label">Code</p>
-      <pre><code>&lt;div style="background-color: #f5f2ff; border-width: 1px 1px 1px 6px; border-style: solid; border-color: #ded5f5 #ded5f5 #ded5f5 #7550c8; padding: 20px 24px; border-radius: 12px; margin: 20px 0px; color: #2d2638;"&gt;
+      <div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-14" aria-controls="snippet-code-14">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-14">&lt;div style="background-color: #f5f2ff; border-width: 1px 1px 1px 6px; border-style: solid; border-color: #ded5f5 #ded5f5 #ded5f5 #7550c8; padding: 20px 24px; border-radius: 12px; margin: 20px 0px; color: #2d2638;"&gt;
     &lt;h4 style="color: #59379c; margin: 0 0 12px; font-size: 18px;"&gt;&lt;span aria-hidden="true"&gt;✦&lt;/span&gt; IgniteAI Prompt&lt;/h4&gt;
     &lt;p style="margin: 0 0 12px; line-height: 1.6;"&gt;Copy and paste the prompt below into IgniteAI to draft your &amp;ldquo;About This Course&amp;rdquo; section. This provides you with a draft of the content that you can adapt to your liking. When complete, highlight and delete this section.&lt;/p&gt;
     &lt;div style="background-color: #ffffff; padding: 16px; border-radius: 8px; border: 1px solid #ded5f5;"&gt;
@@ -511,138 +590,7 @@
 &lt;/div&gt;</code></pre>
     </section>
 
-    <section id="important-info" class="snippet-page">
-      <h2 class="snippet-title">⚠️ Important Information Call Out Box</h2>
- <h2 class="snippet-title">📣 Call Out Boxes</h2>
-
-  <p class="preview-label">Preview 1 - Blue Information Box</p>
-
-  <div class="preview-box">
-
-    <div style="background: #f7fafc; border-left: 6px solid #00406e; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-
-      <p>There are <strong>five questions from each of the eight short stories</strong> (40 multiple choice questions). Additionally, you will be given a question from the play, <em><strong>Trifles</strong></em>.</p>
-
-      <p>You will answer the <em><strong>Trifles</strong></em>&nbsp;question in a <strong>200-word minimum discussion post</strong> using <strong>ONE quote</strong> and a properly formatted <strong>short story citation</strong>.</p>
-
-      <p>You will have <strong>75 minutes</strong> to complete the entire exam.</p>
-
-      <p><strong>Remember:</strong> Drama titles should be <em>italicized</em>.</p>
-
-    </div>
-
-  </div>
-
-  <p class="code-label">Code</p>
-
-  <pre><code>&lt;div style="background: #f7fafc; border-left: 6px solid #00406e; padding: 20px; border-radius: 8px; margin-bottom: 20px;"&gt;
-
-  &lt;p&gt;There are &lt;strong&gt;five questions from each of the eight short stories&lt;/strong&gt; (40 multiple choice questions). Additionally, you will be given a question from the play, &lt;em&gt;&lt;strong&gt;Trifles&lt;/strong&gt;&lt;/em&gt;.&lt;/p&gt;
-
-  &lt;p&gt;You will answer the &lt;em&gt;&lt;strong&gt;Trifles&lt;/strong&gt;&lt;/em&gt;&amp;nbsp;question in a &lt;strong&gt;200-word minimum discussion post&lt;/strong&gt; using &lt;strong&gt;ONE quote&lt;/strong&gt; and a properly formatted &lt;strong&gt;short story citation&lt;/strong&gt;.&lt;/p&gt;
-
-  &lt;p&gt;You will have &lt;strong&gt;75 minutes&lt;/strong&gt; to complete the entire exam.&lt;/p&gt;
-
-  &lt;p&gt;&lt;strong&gt;Remember:&lt;/strong&gt; Drama titles should be &lt;em&gt;italicized&lt;/em&gt;.&lt;/p&gt;
-
-&lt;/div&gt;</code></pre>
-
-  <p class="preview-label">Preview 2 - Gold Recommendation Box</p>
-
-  <div class="preview-box">
-
-    <div style="background: #fff8e6; border-left: 6px solid #f2a900; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-
-      <h3 style="margin-top: 0; color: #00406e;">💡 Recommendation</h3>
-
-      <p>I recommend typing your discussion response in Microsoft Word first and then copying it into the midterm.</p>
-
-      <p>You may have issues with italics or hanging indents when pasting your response. <strong>I will not deduct points for formatting issues related to italics or citation indentation on this exam.</strong></p>
-
-    </div>
-
-  </div>
-
-  <p class="code-label">Code</p>
-
-  <pre><code>&lt;div style="background: #fff8e6; border-left: 6px solid #f2a900; padding: 20px; border-radius: 8px; margin-bottom: 20px;"&gt;
-
-  &lt;h3 style="margin-top: 0; color: #00406e;"&gt;💡 Recommendation&lt;/h3&gt;
-
-  &lt;p&gt;I recommend typing your discussion response in Microsoft Word first and then copying it into the midterm.&lt;/p&gt;
-
-  &lt;p&gt;You may have issues with italics or hanging indents when pasting your response. &lt;strong&gt;I will not deduct points for formatting issues related to italics or citation indentation on this exam.&lt;/strong&gt;&lt;/p&gt;
-
-&lt;/div&gt;</code></pre>
-
-  <p class="preview-label">Preview 3 - Red Academic Integrity Box</p>
-
-  <div class="preview-box">
-
-    <div style="background: #fff1f1; border-left: 6px solid #c62828; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-
-      <h3 style="margin-top: 0; color: #8b1e1e;">⚠ Academic Integrity</h3>
-
-      <p><strong>DO NOT</strong> copy or reword material from the internet. Doing so is considered plagiarism and can result in serious consequences with the college.</p>
-
-      <p><strong>Do NOT use AI-generated writing or AI assistance for the discussion portion of the midterm.</strong></p>
-
-      <p><strong>Think and write for yourself.</strong></p>
-
-    </div>
-
-  </div>
-
-  <p class="code-label">Code</p>
-
-  <pre><code>&lt;div style="background: #fff1f1; border-left: 6px solid #c62828; padding: 20px; border-radius: 8px; margin-bottom: 20px;"&gt;
-
-  &lt;h3 style="margin-top: 0; color: #8b1e1e;"&gt;⚠ Academic Integrity&lt;/h3&gt;
-
-  &lt;p&gt;&lt;strong&gt;DO NOT&lt;/strong&gt; copy or reword material from the internet. Doing so is considered plagiarism and can result in serious consequences with the college.&lt;/p&gt;
-
-  &lt;p&gt;&lt;strong&gt;Do NOT use AI-generated writing or AI assistance for the discussion portion of the midterm.&lt;/strong&gt;&lt;/p&gt;
-
-  &lt;p&gt;&lt;strong&gt;Think and write for yourself.&lt;/strong&gt;&lt;/p&gt;
-
-&lt;/div&gt;</code></pre>
-
-  <p class="preview-label">Preview 4 - Green Grading Information Box</p>
-
-  <div class="preview-box">
-
-    <div style="background: #e8f4ea; border-left: 6px solid #2e7d32; padding: 20px; border-radius: 8px;">
-
-      <h3 style="margin-top: 0; color: #1b5e20;">📋 Grading Information</h3>
-
-      <p>The multiple choice questions are worth <strong>80%</strong> of your midterm grade, while the discussion question is worth the remaining <strong>20%</strong>.</p>
-
-      <p>After you submit the exam, you will immediately see your multiple choice score. I will then manually grade the discussion response and update your overall grade.</p>
-
-      <p><strong>Don't panic if your initial score looks lower than expected!</strong></p>
-
-    </div>
-
-  </div>
-
-  <p class="code-label">Code</p>
-
-  <pre><code>&lt;div style="background: #e8f4ea; border-left: 6px solid #2e7d32; padding: 20px; border-radius: 8px;"&gt;
-
-  &lt;h3 style="margin-top: 0; color: #1b5e20;"&gt;📋 Grading Information&lt;/h3&gt;
-
-  &lt;p&gt;The multiple choice questions are worth &lt;strong&gt;80%&lt;/strong&gt; of your midterm grade, while the discussion question is worth the remaining &lt;strong&gt;20%&lt;/strong&gt;.&lt;/p&gt;
-
-  &lt;p&gt;After you submit the exam, you will immediately see your multiple choice score. I will then manually grade the discussion response and update your overall grade.&lt;/p&gt;
-
-  &lt;p&gt;&lt;strong&gt;Don't panic if your initial score looks lower than expected!&lt;/strong&gt;&lt;/p&gt;
-
-&lt;/div&gt;</code></pre>
-
-
-
-      
-    </section>
+    
 
     <section id="accordion-dropdowns" class="snippet-page">
       <h2 class="snippet-title">▾ Accordion Dropdowns</h2>
@@ -655,28 +603,22 @@
               <p><strong>Enter text here.</strong></p>
             </div>
           </details>
-          <details style="background-color: white; border-radius: 8px; overflow: hidden; border: 1px solid #DDDDDD;">
-            <summary style="font-size: 1.3em; color: #003366; background-color: #e6eef5; padding: 15px; cursor: pointer; border-bottom: 1px solid #DDDDDD;">Dropdown Option 2</summary>
-            <div style="padding: 15px; line-height: 1.5; color: #333333;">
-              <p><strong>Enter text here.</strong></p>
-            </div>
-          </details>
+          
         </div>
       </div>
       <p class="code-label">Code</p>
-      <pre><code>&lt;div style="display: flex; flex-direction: column; gap: 10px;"&gt;
+      <div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-15" aria-controls="snippet-code-15">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-15">&lt;div style="display: flex; flex-direction: column; gap: 10px;"&gt;
     &lt;details style="background-color: white; border-radius: 8px; overflow: hidden; border: 1px solid #DDDDDD;"&gt;
         &lt;summary style="font-size: 1.3em; color: #003366; background-color: #e6eef5; padding: 15px; cursor: pointer; border-bottom: 1px solid #DDDDDD;"&gt;Dropdown Option 1&lt;/summary&gt;
         &lt;div style="padding: 15px; line-height: 1.5; color: #333333;"&gt;
             &lt;p&gt;&lt;strong&gt;Enter text here.&lt;/strong&gt;&lt;/p&gt;
         &lt;/div&gt;
     &lt;/details&gt;
-    &lt;details style="background-color: white; border-radius: 8px; overflow: hidden; border: 1px solid #DDDDDD;"&gt;
-        &lt;summary style="font-size: 1.3em; color: #003366; background-color: #e6eef5; padding: 15px; cursor: pointer; border-bottom: 1px solid #DDDDDD;"&gt;Dropdown Option 2&lt;/summary&gt;
-        &lt;div style="padding: 15px; line-height: 1.5; color: #333333;"&gt;
-            &lt;p&gt;&lt;strong&gt;Enter text here.&lt;/strong&gt;&lt;/p&gt;
-        &lt;/div&gt;
-    &lt;/details&gt;
+    
 &lt;/div&gt;</code></pre>
 
       <p class="preview-label">Preview Style 2</p>
@@ -703,25 +645,15 @@
 
   </details>
 
-  <details style="margin-bottom: 15px; border-radius: 4px; border: 1px solid #005596;">
-
-    <summary style="padding: 15px; background-color: #005596; color: #ffffff; cursor: pointer; list-style: none; display: block;">
-
-      <span style="margin-right: 10px;">►</span> Accordion Dropdown 2
-
-    </summary>
-
-    <div style="padding: 15px; background-color: #f9f9f9; border-top: 1px solid #005596;">
-
-      <p>Type it out</p>
-
-    </div>
-
-  </details>
+  
 
 </div>
 <p class="code-label">Code</p>
-<pre><code>&lt;details style="margin-bottom: 15px; border-radius: 4px; border: 1px solid #005596;"&gt;
+<div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-16" aria-controls="snippet-code-16">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-16">&lt;details style="margin-bottom: 15px; border-radius: 4px; border: 1px solid #005596;"&gt;
     &lt;summary style="padding: 15px; background-color: #005596; color: #ffffff; cursor: pointer; list-style: none; display: block;"&gt;
         &lt;span style="margin-right: 10px;"&gt;►&lt;/span&gt; Accordion Dropdown 1
     &lt;/summary&gt;
@@ -732,14 +664,7 @@
     &lt;/div&gt;
 &lt;/details&gt;
 
-&lt;details style="margin-bottom: 15px; border-radius: 4px; border: 1px solid #005596;"&gt;
-    &lt;summary style="padding: 15px; background-color: #005596; color: #ffffff; cursor: pointer; list-style: none; display: block;"&gt;
-        &lt;span style="margin-right: 10px;"&gt;►&lt;/span&gt; Accordion Dropdown 2
-    &lt;/summary&gt;
-    &lt;div style="padding: 15px; background-color: #f9f9f9; border-top: 1px solid #005596;"&gt;
-        &lt;p&gt;Type it out&lt;/p&gt;
-    &lt;/div&gt;
-&lt;/details&gt;</code></pre>
+</code></pre>
       
     </section>
 
@@ -783,7 +708,11 @@
         </div>
       </div>
       <p class="code-label">Code</p>
-      <pre><code>&lt;div class="enhanceable_content tabs"&gt;
+      <div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-17" aria-controls="snippet-code-17">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-17">&lt;div class="enhanceable_content tabs"&gt;
     &lt;ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap;"&gt;
         &lt;li style="margin: 2px;"&gt;&lt;a style="display: inline-block; padding: 8px 12px; background: #e6f2ff; color: #00406e; border-radius: 6px; text-decoration: none; font-size: 14pt;" href="#tab-1"&gt; 1. Step One &lt;/a&gt;&lt;/li&gt;
         &lt;li style="margin: 2px;"&gt;&lt;a style="display: inline-block; padding: 8px 12px; background: #cce6ff; color: #00406e; border-radius: 6px; text-decoration: none; font-size: 14pt;" href="#tab-2"&gt; 2. Step Two &lt;/a&gt;&lt;/li&gt;
@@ -848,7 +777,11 @@
   </div>
       
    <p class="code-label">Code</p>
-  <pre><code>&lt;details&gt;
+  <div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-18" aria-controls="snippet-code-18">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-18">&lt;details&gt;
     &lt;summary style="cursor: pointer; color: #00406e;"&gt;Learn More&lt;/summary&gt;
     &lt;div style="margin-top: 10px; padding: 16px; border-left: 4px solid #f2a900; background: #f7fafc; border-radius: 8px; color: #17324d;"&gt;
         &lt;strong&gt;Confirmation Bias&lt;/strong&gt;
@@ -907,7 +840,11 @@
 
 <p class="code-label">Code</p>
 
-<pre><code>&lt;details style="display: inline-block; margin-left: 4px;"&gt;
+<div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-19" aria-controls="snippet-code-19">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-19">&lt;details style="display: inline-block; margin-left: 4px;"&gt;
 
     &lt;summary style="display: inline-block; cursor: pointer;"&gt;
 
@@ -998,7 +935,11 @@
 
   </div>
   <p class="code-label">Code</p>
-<pre><code>&lt;div style="font-family: Arial, sans-serif; color: #17324d; line-height: 1.6; border: 1px solid #d7e2ec; border-radius: 14px; padding: 22px; background: #f7fafc;"&gt;
+<div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-20" aria-controls="snippet-code-20">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-20">&lt;div style="font-family: Arial, sans-serif; color: #17324d; line-height: 1.6; border: 1px solid #d7e2ec; border-radius: 14px; padding: 22px; background: #f7fafc;"&gt;
 
 &lt;h2 style="color: #00406e; margin-top: 0;"&gt;Quick Check&lt;/h2&gt;
 
@@ -1089,7 +1030,11 @@
 
   </div>
   <p class="code-label">Code</p>
-<pre><code>&lt;div style="font-family: Arial, sans-serif; color: #17324d; line-height: 1.6; border: 1px solid #d7e2ec; border-radius: 14px; padding: 22px; background: #f7fafc;"&gt;
+<div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-21" aria-controls="snippet-code-21">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-21">&lt;div style="font-family: Arial, sans-serif; color: #17324d; line-height: 1.6; border: 1px solid #d7e2ec; border-radius: 14px; padding: 22px; background: #f7fafc;"&gt;
 
 &lt;h2 style="color: #00406e; margin-top: 0;"&gt;Quick Check&lt;/h2&gt;
 
@@ -1178,7 +1123,11 @@
 
   </div>
   <p class="code-label">Code</p>
-  <pre><code>&lt;div style="font-family: Arial, sans-serif; color: #17324d; line-height: 1.6; border: 1px solid #d7e2ec; border-radius: 14px; padding: 22px; background: #f7fafc;"&gt;
+  <div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-22" aria-controls="snippet-code-22">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-22">&lt;div style="font-family: Arial, sans-serif; color: #17324d; line-height: 1.6; border: 1px solid #d7e2ec; border-radius: 14px; padding: 22px; background: #f7fafc;"&gt;
 
 &lt;h2 style="color: #00406e; margin-top: 0;"&gt;Quick Check&lt;/h2&gt;
 
@@ -1268,7 +1217,11 @@
 
   </div>
   <p class="code-label">Code</p>
-<pre><code>&lt;div style="font-family: Arial, sans-serif; color: #17324d; line-height: 1.6; border: 1px solid #d7e2ec; border-radius: 14px; padding: 22px; background: #f7fafc;"&gt;
+<div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-23" aria-controls="snippet-code-23">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-23">&lt;div style="font-family: Arial, sans-serif; color: #17324d; line-height: 1.6; border: 1px solid #d7e2ec; border-radius: 14px; padding: 22px; background: #f7fafc;"&gt;
 
 &lt;h2 style="color: #00406e; margin-top: 0;"&gt;Quick Check&lt;/h2&gt;
 
@@ -1310,51 +1263,7 @@
 
 </section>
 
-    <section id="template-example" class="snippet-page">
-
-  <h2 class="snippet-title">📄 Template Example</h2>
-
-  <p class="preview-label">Preview</p>
-
-  <div class="preview-box">
-
-    <div style="border-width: 10px 1px 1px; border-style: solid; border-color: #00406e #d7e2ec #d7e2ec; border-radius: 10px; padding: 28px; margin-bottom: 28px; background: #ffffff;">
-      <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>SPC AI Learning Module</strong></p>
-      <h1 style="margin: 0; color: #00406e; font-size: 36px;">How AI Works</h1>
-      <p style="color: #000000; margin-top: 16px; font-size: 18px;">Artificial intelligence models are computer programs that are trained on data to recognize patterns. Unlike traditional computer programs, which follow fixed instructions, AI models can make predictions and decisions. Here we will focus on one type of AI model, called a large language model (LLM).</p>
-    </div>
-
-    <h2 style="color: #ffffff; background: #00406e; text-align: left; padding: 12px 14px; border-radius: 4px;"><strong>How AI Works</strong></h2>
-
-    <div style="border-left: 5px solid #f2a900; padding-left: 18px; margin: 24px 0;">
-      <h3 style="color: #00406e;">What is a Large Language Model?</h3>
-      <p>An LLM focuses on understanding and generating text. LLMs are the engine underneath the hood of chatbots like ChatGPT, Claude, and Gemini.</p>
-      <p>LLMs are trained on enormous amounts of text (books, websites, code, and articles). The model learns to predict the next word in a sentence, billions of times, until it builds a rich statistical map of human language.</p>
-      <p>Think of it less like a database and more like a very well-read collaborator who learned everything by reading and can now converse, write, predict, and create. The key insight is that the model does not look up answers. It generates them, which is both its power and its weakness.</p>
-    </div>
-
-  </div>
-
-  <p class="preview-label">Code</p>
-
-  <div class="code-box">
-<pre><code>&lt;div style="border-width: 10px 1px 1px; border-style: solid; border-color: #00406e #d7e2ec #d7e2ec; border-radius: 10px; padding: 28px; margin-bottom: 28px; background: #ffffff;"&gt;
-    &lt;p style="margin: 0 0 8px 0; font-size: 14px;"&gt;&lt;strong&gt;SPC AI Learning Module&lt;/strong&gt;&lt;/p&gt;
-    &lt;h1 style="margin: 0; color: #00406e; font-size: 36px;"&gt;How AI Works&lt;/h1&gt;
-    &lt;p style="color: #000000; margin-top: 16px; font-size: 18px;"&gt;Artificial intelligence models are computer programs that are trained on data to recognize patterns. Unlike traditional computer programs, which follow fixed instructions, AI models can make predictions and decisions. Here we will focus on one type of AI model, called a large language model (LLM).&lt;/p&gt;
-&lt;/div&gt;
-
-&lt;h2 style="color: #ffffff; background: #00406e; text-align: left; padding: 12px 14px; border-radius: 4px;"&gt;&lt;strong&gt;How AI Works&lt;/strong&gt;&lt;/h2&gt;
-
-&lt;div style="border-left: 5px solid #f2a900; padding-left: 18px; margin: 24px 0;"&gt;
-    &lt;h3 style="color: #00406e;"&gt;What is a Large Language Model?&lt;/h3&gt;
-    &lt;p&gt;An LLM focuses on understanding and generating text. LLMs are the engine underneath the hood of chatbots like ChatGPT, Claude, and Gemini.&lt;/p&gt;
-    &lt;p&gt;LLMs are trained on enormous amounts of text (books, websites, code, and articles). The model learns to predict the next word in a sentence, billions of times, until it builds a rich statistical map of human language.&lt;/p&gt;
-    &lt;p&gt;Think of it less like a database and more like a very well-read collaborator who learned everything by reading and can now converse, write, predict, and create. The key insight is that the model does not look up answers. It generates them, which is both its power and its weakness.&lt;/p&gt;
-&lt;/div&gt;</code></pre>
-  </div>
-
-</section>
+    
 
     <hr class="footer-rule" />
   </main>
@@ -1377,6 +1286,47 @@
 
       document.getElementById(pageId).scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+
+    function copyWithFallback(text) {
+      const focused = document.activeElement;
+      const field = document.createElement('textarea');
+      field.value = text;
+      field.setAttribute('readonly', '');
+      field.style.position = 'fixed';
+      field.style.opacity = '0';
+      field.style.top = '0';
+      document.body.appendChild(field);
+      field.select();
+      let copied = false;
+      try {
+        copied = document.execCommand('copy');
+      } finally {
+        field.remove();
+        if (focused && typeof focused.focus === 'function') focused.focus({ preventScroll: true });
+      }
+      if (!copied) throw new Error('Copy unavailable');
+    }
+
+    document.querySelectorAll('.copy-html-button').forEach(function(button) {
+      button.addEventListener('click', async function() {
+        const code = document.getElementById(button.dataset.copyTarget);
+        const status = button.parentElement.querySelector('.copy-status');
+        button.disabled = true;
+        status.textContent = '';
+        try {
+          try {
+            await navigator.clipboard.writeText(code.textContent);
+          } catch (error) {
+            copyWithFallback(code.textContent);
+          }
+          status.textContent = 'HTML copied!';
+        } catch (error) {
+          status.textContent = 'Unable to copy automatically. Select the code below and copy it manually.';
+        } finally {
+          button.disabled = false;
+        }
+      });
+    });
   </script>
 </body>
 </html>
