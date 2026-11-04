@@ -175,7 +175,7 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
           <li>Accordions, dropdowns, and Clickable Steps make one item per heading you highlight.</li>
           <li>Quick Check uses the first line as the question and the list below it as answers. End the right answer with <code>*</code>.</li>
           <li>Snippets stay applied while you keep editing your text. Use <strong>Undo</strong> or <strong>Remove all</strong> to take them off.</li>
-          <li>You can also click into the Preview and fix wording there. After that, the HTML follows the Preview. Select <strong>Rebuild from Your text</strong> to go back to building it from your text.</li>
+          <li>You can also click into the Preview and fix wording there, or edit the code itself on the <strong>HTML</strong> tab. After that, the page keeps your edits. Select <strong>Rebuild from Your text</strong> to go back to building it from your text.</li>
         </ul>
       </div>
     </div>
@@ -208,14 +208,14 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
         <p class="snip-note" id="snipNote">Click into the Preview to edit wording directly. Highlight text, pick a category and design, then select Apply. <a href="../html-code.html" target="_blank" rel="noopener">See all snippets</a></p>
       </div>
       <div class="manualbar" id="manualBar" role="status" hidden>
-        <p id="manualMsg">You edited the Preview directly. The HTML now follows the Preview, so changes to Your text or the style won't show until you rebuild.</p>
+        <p id="manualMsg">You edited the Preview or HTML directly. The page now keeps those edits, so changes to Your text or the style won't show until you rebuild.</p>
         <button id="rebuildBtn" type="button">Rebuild from Your text</button>
       </div>
       <div id="preview" role="tabpanel" aria-labelledby="tabPreview" aria-label="Page preview, editable" spellcheck="true"></div>
       <div id="codeWrap" role="tabpanel" aria-labelledby="tabCode" hidden>
-        <p class="hint">In Canvas, open the page editor, switch to the HTML editor (&lt;/&gt;), and paste.</p>
+        <p class="hint" id="codeHint">You can edit this HTML directly; the Preview updates as you type. In Canvas, open the page editor, switch to the HTML editor (&lt;/&gt;), and paste.</p>
         <label class="sr-only" for="code">Generated HTML</label>
-        <textarea id="code" readonly spellcheck="false"></textarea>
+        <textarea id="code" spellcheck="false" aria-describedby="codeHint"></textarea>
       </div>
     </section>
   </div>
@@ -734,10 +734,11 @@ This assignment is worth 50 points. Review the rubric attached below before you 
   let manualHtml = null;
   let history = [];
   let lastEdit = 0;
+  let lastGenerated = null;
   const serialize = el => el.innerHTML.replace(/<(hr|br|img)([^>]*?)\s*\/?>/g, '<$1$2 />').replace(/\n{3,}/g, '\n\n');
   function setManual(html) {
     manualHtml = html;
-    code.value = html;
+    if (code.value !== html) code.value = html;
     $('manualBar').hidden = false;
     updateSnipButtons();
     try { localStorage.setItem('t2t-manual', html); } catch (e) {}
@@ -769,6 +770,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
       html = box.innerHTML.replace(/<(hr|br|img)([^>]*?)\s*\/?>/g, '<$1$2 />').replace(/\n{3,}/g, '\n\n');
     }
     code.value = html;
+    lastGenerated = html;
     preview.innerHTML = html || '<p style="color:#5f6f7f">Your formatted page will appear here.</p>';
     preview.contentEditable = html ? 'true' : 'false';
     updateSnipButtons();
@@ -1159,6 +1161,15 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     else if (Date.now() - lastEdit > 1500) history.push(manualHtml);
     lastEdit = Date.now();
     setManual(serialize(preview));
+  });
+  // Editing the HTML view updates the Preview and keeps the edits, like editing the Preview does.
+  code.addEventListener('input', () => {
+    if (manualHtml === null) { history = [lastGenerated !== null ? lastGenerated : code.value]; }
+    else if (Date.now() - lastEdit > 1500) history.push(manualHtml);
+    lastEdit = Date.now();
+    preview.innerHTML = code.value;
+    preview.contentEditable = 'true';
+    setManual(code.value);
   });
   // Paste into the Preview as plain text so outside formatting doesn't sneak into the Canvas HTML.
   preview.addEventListener('paste', e => {
