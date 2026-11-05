@@ -40,23 +40,48 @@
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-ui); line-height: 1.5; }
-header.top { background: linear-gradient(135deg, #00406e, #002d4d); color: #fff; padding: 22px 16px; }
-header.top .inner { max-width: 1400px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: baseline; justify-content: space-between; }
-header.top h1 { margin: 0; font-size: 1.5rem; }
-header.top p { margin: 4px 0 0; color: #dbe7f1; max-width: 70ch; }
+header.top { background: linear-gradient(135deg, #00406e, #002d4d); color: #fff; padding: 16px; }
+header.top .inner { max-width: 1400px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: center; justify-content: space-between; }
+header.top h1 { margin: 0; font-size: 1.4rem; }
+header.top p { margin: 2px 0 0; color: #dbe7f1; max-width: 70ch; font-size: 0.95rem; }
+/* "How it works" strip: the whole job in three steps. */
+.steps { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.9rem; color: #e8f0f7; }
+.steps li { display: flex; align-items: center; gap: 6px; }
+.steps span { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #f2a900; color: #14212e; font-weight: bold; font-size: 0.8rem; }
+/* Main toolbar: style choice on the left, output actions on the right. Pinned on wide screens so Copy HTML is always in reach. */
+.toolbar { background: var(--surface); border-bottom: 1px solid var(--line); padding: 10px 16px; z-index: 30; }
+.toolbar .inner { max-width: 1400px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+.toolbar .group { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.inline-label { font-weight: bold; font-size: 0.9rem; }
+@media (min-width: 901px) { .toolbar { position: sticky; top: 0; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); } }
 main { max-width: 1400px; margin: 0 auto; padding: 16px; display: grid; gap: 16px; }
-.controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: end; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
-.controls label { display: grid; gap: 4px; font-weight: bold; font-size: 0.9rem; }
 select, button, .btn { font: inherit; font-size: 0.95rem; }
 select { padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); min-width: 260px; }
 button, .btn { padding: 8px 14px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; text-decoration: none; }
 button:hover, .btn:hover { border-color: var(--accent); }
 button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: bold; }
+button.primary:hover:not(:disabled) { background: var(--accent-dark); color: #ffffff; }
+button.small { padding: 5px 10px; font-size: 0.85rem; }
+.btn.quiet { border-color: transparent; color: var(--accent); text-decoration: underline; text-underline-offset: 3px; padding-left: 6px; padding-right: 6px; }
+/* Apply style lights up only when the menu holds a style that is not yet applied. */
+#applyStyle.pending { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: bold; box-shadow: 0 0 0 3px rgba(242, 169, 0, 0.6); }
 button:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible, summary:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
 .spacer { flex: 1; }
-.status { color: var(--ok); font-weight: bold; min-height: 1.5em; font-size: 0.9rem; margin: -6px 0; }
-.panes { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-@media (max-width: 900px) { .panes { grid-template-columns: 1fr; } select { min-width: 0; width: 100%; } .controls label { flex: 1 1 100%; } }
+/* Messages appear as a toast at the bottom of the screen, so they are seen wherever you are on the page. */
+.toast { position: fixed; left: 50%; bottom: 20px; transform: translate(-50%, 16px); opacity: 0; pointer-events: none; display: flex; gap: 12px; align-items: center; max-width: min(640px, calc(100vw - 32px)); background: #14212e; color: #ffffff; padding: 10px 12px 10px 16px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25); font-size: 0.92rem; z-index: 50; transition: opacity 0.2s, transform 0.2s; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+.toast button { background: transparent; color: #ffd36b; border-color: #ffd36b; font-weight: bold; padding: 4px 10px; }
+@media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+.saved { font-size: 0.8rem; color: var(--muted); margin-right: auto; }
+.pane-sub { font-size: 0.82rem; color: var(--muted); margin-right: auto; }.panes { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 900px) {
+  .panes { grid-template-columns: 1fr; }
+  select { min-width: 0; flex: 1 1 100%; }
+  .toolbar .group { flex: 1 1 100%; }
+  .inline-label { flex: 1 1 100%; }
+  #source, #code { min-height: 320px; }
+  .steps { font-size: 0.85rem; }
+}
 .pane { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; display: flex; flex-direction: column; min-width: 0; }
 .pane-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--line); }
 .pane-head h2 { margin: 0; font-size: 1.05rem; }
@@ -65,7 +90,6 @@ textarea { width: 100%; border: 0; resize: vertical; padding: 14px; font-family:
 #source { min-height: 560px; flex: 1; }
 .wrapcol { flex: 1; display: flex; flex-direction: column; }
 .wrapcol textarea { flex: 1; }
-#applyStyle.pending { box-shadow: 0 0 0 3px rgba(242, 169, 0, 0.6); }
 #code { min-height: 560px; background: var(--code-bg); }
 [role="tablist"] { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
 [role="tab"] { border: 0; border-radius: 0; padding: 6px 12px; }
@@ -86,7 +110,7 @@ textarea { width: 100%; border: 0; resize: vertical; padding: 14px; font-family:
 .snipbar.stuck .snip-cat { min-height: 34px; padding: 5px 8px; }
 .snip-sentinel { height: 1px; }
 /* On wide screens the pinned bar moves over the Your text column, leaving the Preview clear. */
-.snipbar.side { position: fixed; top: 12px; max-height: calc(100vh - 24px); overflow-y: auto; border: 1px solid var(--line); border-radius: 10px; }
+.snipbar.side { position: fixed; top: calc(var(--tb-h, 0px) + 12px); max-height: calc(100vh - var(--tb-h, 0px) - 24px); overflow-y: auto; border: 1px solid var(--line); border-radius: 10px; }
 .snipbar.side #snipNote { display: block; }
 .snipbar.side .snip-variants { max-height: none; overflow: visible; }
 .snipbar .snip-head { margin: 0; font-size: 0.95rem; color: var(--accent); }
@@ -102,8 +126,13 @@ textarea { width: 100%; border: 0; resize: vertical; padding: 14px; font-family:
 .snip-card[aria-checked="true"] { border: 2px solid #f2a900; padding: 7px; box-shadow: 0 0 0 3px rgba(242, 169, 0, 0.25); }
 .snip-mini { border: 1px solid #d7e2ec; border-radius: 8px; background: #fbfdff; padding: 8px; max-height: 200px; overflow: hidden; pointer-events: none; color: #2d3b45; font-weight: normal; font-family: Arial, sans-serif; zoom: 0.55; }
 .snip-mini .btn { display: inline-block; padding: 8px 14px; border: 1px solid #c7cdd1; border-radius: 3px; background: #f5f5f5; color: #2d3b45; text-decoration: none; }
-.snip-chosen { flex: 1 1 200px; font-size: 0.85rem; color: var(--muted); }
-.snip-chosen strong { color: var(--ink); }
+/* Two readiness checks for applying a snippet: text highlighted, design picked. */
+.snip-steps { list-style: none; margin: 0; padding: 0; flex: 1 1 240px; display: grid; gap: 2px; font-size: 0.85rem; color: var(--muted); }
+.snip-steps li { display: flex; align-items: center; gap: 6px; }
+.snip-steps .dot { display: inline-grid; place-items: center; flex: none; width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--muted); font-size: 0.7rem; font-weight: bold; }
+.snip-steps li.done { color: var(--ink); }
+.snip-steps li.done .dot { background: var(--ok); border-color: var(--ok); color: #ffffff; font-size: 0; }
+.snip-steps li.done .dot::after { content: "✓"; font-size: 0.72rem; }
 .snip-note { margin: 0; font-size: 0.85rem; color: var(--muted); }
 .snip-note a { color: var(--accent); }
 .manualbar { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--line); background: #fff4d6; color: #5a3d00; font-size: 0.88rem; }
@@ -114,6 +143,7 @@ textarea { width: 100%; border: 0; resize: vertical; padding: 14px; font-family:
 #preview .t2t-flash { outline: 3px solid #f2a900; outline-offset: 4px; transition: outline-color 1.2s; }
 details.guide { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 0 16px; }
 details.guide summary { cursor: pointer; padding: 12px 0; font-weight: bold; }
+details.guide .summary-note { font-weight: normal; color: var(--muted); font-size: 0.88rem; margin-left: 6px; }
 details.guide .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 4px 24px; padding-bottom: 12px; }
 details.guide h3 { margin: 8px 0 4px; font-size: 0.98rem; color: var(--accent); }
 details.guide ul { margin: 0; padding-left: 20px; }
@@ -127,13 +157,19 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
   <div class="inner">
     <div>
       <h1>Text to Template</h1>
-      <p>Paste your page text, choose a template style, and copy Canvas-ready HTML. Formatting follows fixed rules in your browser; nothing is sent to AI or a server.</p>
+      <p>Turn plain page text into Canvas-ready HTML. Everything runs in your browser; nothing is sent to AI or a server.</p>
     </div>
+    <ol class="steps" aria-label="How it works">
+      <li><span>1</span> Paste your text</li>
+      <li><span>2</span> Pick a template style</li>
+      <li><span>3</span> Copy HTML into Canvas</li>
+    </ol>
   </div>
 </header>
-<main>
-  <div class="controls">
-    <label for="style">Template style
+<div class="toolbar" id="toolbar">
+  <div class="inner">
+    <div class="group">
+      <label for="style" class="inline-label">Template style</label>
       <select id="style">
         <option value="module-overview">Module Overview and To Do List</option>
         <option value="learning-resources">Learning Resources</option>
@@ -141,19 +177,19 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
         <option value="assignment">Assignment</option>
         <option value="assignment-2">Assignment 2</option>
       </select>
-    </label>
-    <button class="primary" id="applyStyle" type="button">Apply</button>
-    <button id="exampleBtn" type="button">Load example text</button>
-    <button id="clearBtn" type="button">Clear</button>
-    <a class="btn" id="viewTemplate" href="../templates.html#module-overview" target="_blank" rel="noopener">View this template</a>
+      <button id="applyStyle" type="button" title="Rebuild the page in the chosen template style">Apply style</button>
+      <a class="btn quiet" id="viewTemplate" href="../templates.html#module-overview" target="_blank" rel="noopener">View template<span aria-hidden="true"> ↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+    </div>
     <span class="spacer"></span>
-    <button id="downloadBtn" type="button">Download .html</button>
-    <button class="primary" id="copyBtn" type="button">Copy HTML</button>
+    <div class="group">
+      <button id="downloadBtn" type="button">Download .html</button>
+      <button class="primary" id="copyBtn" type="button">Copy HTML</button>
+    </div>
   </div>
-  <p class="status" id="status" role="status" aria-live="polite"></p>
-
+</div>
+<main>
   <details class="guide" id="guide">
-    <summary>How to format your text (open this the first time)</summary>
+    <summary>Formatting guide <span class="summary-note">How lines become headings, lists, links, tables, and snippets</span></summary>
     <div class="cols">
       <div>
         <h3>Title and headings</h3>
@@ -203,10 +239,15 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
           <button type="button" role="tab" id="tabText" aria-selected="true" aria-controls="sourceWrap">Your text</button>
           <button type="button" role="tab" id="tabCode" aria-selected="false" aria-controls="codeWrap">HTML</button>
         </div>
+        <span class="saved" id="savedNote" aria-live="off">Draft saved in this browser</span>
+        <div class="actions">
+          <button class="small" id="exampleBtn" type="button">Load example</button>
+          <button class="small" id="clearBtn" type="button">Clear</button>
+        </div>
       </div>
       <div id="sourceWrap" class="wrapcol" role="tabpanel" aria-labelledby="tabText">
         <label class="sr-only" for="source">Your text</label>
-        <textarea id="source" spellcheck="true" placeholder="Paste or type your page text here…"></textarea>
+        <textarea id="source" spellcheck="true" placeholder="Paste or type your page text here.&#10;&#10;The first line becomes the title banner.&#10;Section names like Module Overview or Directions on their own line become headings.&#10;Start lines with - for bullets or 1. for numbered steps."></textarea>
       </div>
       <div id="codeWrap" class="wrapcol" role="tabpanel" aria-labelledby="tabCode" hidden>
         <p class="hint" id="codeHint">You can edit this HTML directly; the Preview updates as you type. In Canvas, open the page editor, switch to the HTML editor (&lt;/&gt;), and paste.</p>
@@ -216,7 +257,8 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
     </section>
     <section class="pane" aria-labelledby="out-h">
       <div class="pane-head">
-        <h2 id="out-h">Canvas-ready page: Preview</h2>
+        <h2 id="out-h">Preview</h2>
+        <span class="pane-sub">Click to edit wording</span>
       </div>
       <div class="snip-sentinel" id="snipSentinel" aria-hidden="true"></div>
       <div class="snipbar" id="snipbar">
@@ -224,12 +266,15 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
         <div class="snip-cats" id="snipCats" role="group" aria-labelledby="snipHead"><p class="snip-note">Loading the snippet library…</p></div>
         <div class="snip-variants" id="snipVariants" role="radiogroup" aria-label="Snippet design" hidden></div>
         <div class="row">
-          <span class="snip-chosen" id="snipChosen" aria-live="polite">No snippet chosen</span>
-          <button class="primary" id="applySnippet" type="button" disabled>Apply to highlighted text</button>
+          <ul class="snip-steps" aria-live="polite">
+            <li id="stepHighlight"><span class="dot" aria-hidden="true">1</span> <span id="snipHighlighted">Highlight text in the Preview</span></li>
+            <li id="stepDesign"><span class="dot" aria-hidden="true">2</span> <span id="snipChosen">Pick a design above</span></li>
+          </ul>
+          <button class="primary" id="applySnippet" type="button" disabled>Apply snippet</button>
           <button id="undoSnippet" type="button" disabled>Undo</button>
           <button id="clearSnippets" type="button" disabled>Remove all</button>
         </div>
-        <p class="snip-note" id="snipNote">Click into the Preview to edit wording directly. Highlight text, pick a category and design, then select Apply. <a href="../html-code.html" target="_blank" rel="noopener">See all snippets</a></p>
+        <p class="snip-note" id="snipNote">You can also click into the Preview to fix wording directly. <a href="../html-code.html" target="_blank" rel="noopener">See all snippets ↗</a></p>
       </div>
       <div class="manualbar" id="manualBar" role="status" hidden>
         <p id="manualMsg">You edited the Preview or HTML directly. The page now keeps those edits, so changes to Your text won't show until you rebuild or apply a style.</p>
@@ -239,6 +284,7 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
     </section>
   </div>
 </main>
+<div class="toast" id="toast"><span id="status" role="status" aria-live="polite"></span><button type="button" id="toastAction" hidden></button></div>
 
 <script>
 (function () {
@@ -861,12 +907,16 @@ This assignment is worth 50 points. Review the rubric attached below before you 
   // Mark the snippet bar as pinned once the page scrolls past its normal place.
   {
     let ticking = false;
-    const bar = $('snipbar'), sentinel = $('snipSentinel'), leftPane = document.querySelector('.panes > .pane');
+    const bar = $('snipbar'), sentinel = $('snipSentinel'), leftPane = document.querySelector('.panes > .pane'), toolbar = $('toolbar');
     const checkStuck = () => {
       ticking = false;
-      const stuck = sentinel.getBoundingClientRect().top < 0;
+      const wide = window.innerWidth > 900;
+      // On wide screens the main toolbar is pinned too, so the snippet bar sits below it.
+      const tb = wide ? toolbar.offsetHeight : 0;
+      document.documentElement.style.setProperty('--tb-h', tb + 'px');
+      const stuck = sentinel.getBoundingClientRect().top < tb;
       // Side-by-side panes: float the bar over the left column. Stacked (narrow) panes: keep it pinned on top.
-      const side = stuck && window.innerWidth > 900;
+      const side = stuck && wide;
       if (side && !bar.classList.contains('side')) sentinel.style.height = bar.offsetHeight + 'px'; // hold its place so the Preview doesn't jump
       if (!side) sentinel.style.height = '';
       bar.classList.toggle('stuck', stuck);
@@ -878,6 +928,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     };
     window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(checkStuck); } }, { passive: true });
     window.addEventListener('resize', checkStuck);
+    checkStuck();
   }
   let timer = null;
   /* Direct edits in the Preview. Once the Preview is edited, the HTML follows it (manualHtml)
@@ -1035,24 +1086,38 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     if (remember && $('snipbar').classList.contains('stuck') && !$('snipbar').classList.contains('side')) { $('snipVariants').hidden = true; $('snipVariants').dataset.group = ''; $('snipCats').querySelectorAll('.snip-cat').forEach(b => b.setAttribute('aria-expanded', 'false')); }
     const item = library[i];
     $('snipChosen').innerHTML = '';
-    $('snipChosen').append('Chosen: ', Object.assign(document.createElement('strong'), { textContent: item.name }), ` (${item.group.replace(/^\P{L}+/u, '')})`);
+    $('snipChosen').append('Design: ', Object.assign(document.createElement('strong'), { textContent: item.name }), ` (${item.group.replace(/^\P{L}+/u, '')})`);
     $('snipVariants').querySelectorAll('.snip-card').forEach(c => c.setAttribute('aria-checked', String(+c.dataset.index === i)));
     if (remember) { try { localStorage.setItem('t2t-snippet', JSON.stringify({ group: item.group, name: item.name })); } catch (e) {} }
     updateSnipButtons();
   }
 
   function updateSnipButtons() {
-    $('applySnippet').disabled = selected < 0 || !code.value;
+    // Show which of the two things a snippet needs are ready, and only enable Apply when both are.
+    const range = currentRange();
+    const blocks = range ? blocksFromRange(range) : [];
+    $('stepHighlight').classList.toggle('done', blocks.length > 0);
+    $('snipHighlighted').textContent = blocks.length ? `Highlighted: ${blocks.length} ${blocks.length === 1 ? 'block' : 'blocks'} of text` : 'Highlight text in the Preview';
+    $('stepDesign').classList.toggle('done', selected >= 0);
+    $('applySnippet').disabled = selected < 0 || !code.value || !blocks.length;
     $('undoSnippet').disabled = manualHtml !== null ? !history.length : !ops.length;
     $('clearSnippets').disabled = manualHtml !== null || !ops.length;
   }
 
   // Remember the highlight in the Preview, since using the dropdown can clear it.
+  function currentRange() {
+    const sel = window.getSelection();
+    const live = sel && sel.rangeCount && !sel.isCollapsed && preview.contains(sel.getRangeAt(0).commonAncestorContainer) ? sel.getRangeAt(0) : null;
+    const r = live || savedRange;
+    return r && preview.contains(r.commonAncestorContainer) ? r : null;
+  }
   document.addEventListener('selectionchange', () => {
     const sel = window.getSelection();
     if (sel && sel.rangeCount && !sel.isCollapsed && preview.contains(sel.getRangeAt(0).commonAncestorContainer)) {
       savedRange = sel.getRangeAt(0).cloneRange();
     }
+    clearTimeout(updateSnipButtons.t);
+    updateSnipButtons.t = setTimeout(updateSnipButtons, 60);
   });
   preview.addEventListener('mousedown', () => { savedRange = null; });
 
@@ -1441,7 +1506,22 @@ This assignment is worth 50 points. Review the rubric attached below before you 
   preview.addEventListener('click', e => { if (e.target.closest('a')) e.preventDefault(); });
   $('rebuildBtn').addEventListener('click', () => { leaveManual(); run(); say('Rebuilt from Your text. Preview edits were discarded; applied snippets were kept.'); });
   function schedule() { clearTimeout(timer); timer = setTimeout(() => run(true), 150); }
-  function say(msg) { status.textContent = msg; clearTimeout(say.t); say.t = setTimeout(() => { status.textContent = ''; }, 4000); }
+  // Show a message in the toast. An optional action (such as Undo) adds a button and keeps it up longer.
+  function say(msg, action) {
+    const toast = $('toast'), btn = $('toastAction');
+    status.textContent = msg;
+    btn.hidden = !action;
+    btn.onclick = null;
+    if (action) {
+      btn.textContent = action.label;
+      btn.onclick = () => { hideToast(); action.run(); };
+    }
+    toast.classList.add('show');
+    clearTimeout(say.t);
+    say.t = setTimeout(hideToast, action ? 8000 : 4000);
+  }
+  function hideToast() { $('toast').classList.remove('show'); $('toastAction').hidden = true; setTimeout(() => { if (!$('toast').classList.contains('show')) status.textContent = ''; }, 250); }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('toast').classList.contains('show')) hideToast(); });
 
   src.addEventListener('input', schedule);
   src.addEventListener('paste', e => {
@@ -1459,7 +1539,6 @@ This assignment is worth 50 points. Review the rubric attached below before you 
   function markStylePending() {
     const pending = styleSel.value !== appliedStyle;
     $('applyStyle').classList.toggle('pending', pending);
-    $('applyStyle').textContent = pending ? 'Apply style' : 'Apply';
   }
   styleSel.addEventListener('change', () => {
     $('viewTemplate').href = '../templates.html#' + STYLES[styleSel.value].anchor;
@@ -1483,7 +1562,17 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     run();
     say('Example loaded. Edit it or replace it with your own text.');
   });
-  $('clearBtn').addEventListener('click', () => { src.value = ''; ops = []; leaveManual(); run(); src.focus(); });
+  // Clear can be undone from the toast, so a slip doesn't lose a draft.
+  $('clearBtn').addEventListener('click', () => {
+    if (!src.value && manualHtml === null) { src.focus(); return; }
+    const before = { text: src.value, ops: ops.slice(), manual: manualHtml, history: history.slice() };
+    src.value = ''; ops = []; leaveManual(); run(); src.focus();
+    say('Cleared your text.', { label: 'Undo', run: () => {
+      src.value = before.text; ops = before.ops; run();
+      if (before.manual !== null) { preview.innerHTML = before.manual; preview.contentEditable = 'true'; history = before.history; setManual(before.manual); }
+      say('Restored your text.');
+    } });
+  });
 
   // Left side: Your text and HTML share one pane, so the Preview stays visible beside either.
   function selectTab(which) {
@@ -1532,7 +1621,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
   appliedStyle = styleSel.value;
   $('viewTemplate').href = '../templates.html#' + STYLES[styleSel.value].anchor;
   src.value = saved || EXAMPLES[STYLES[styleSel.value].family];
-  try { if (!localStorage.getItem('t2t-seen')) { $('guide').open = true; localStorage.setItem('t2t-seen', '1'); } } catch (e) { $('guide').open = true; }
+  try { localStorage.setItem('t2t-probe', '1'); localStorage.removeItem('t2t-probe'); } catch (e) { $('savedNote').textContent = 'Drafts are not saved in this browser'; }
   run();
   try {
     const m = saved && localStorage.getItem('t2t-manual');
