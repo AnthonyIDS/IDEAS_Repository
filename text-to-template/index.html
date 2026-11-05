@@ -73,6 +73,10 @@ textarea { width: 100%; border: 0; resize: vertical; padding: 14px; font-family:
 #preview { background: #ffffff; color: #2d3b45; padding: 20px 24px; min-height: 560px; border-radius: 0 0 10px 10px; font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.5; overflow-wrap: anywhere; }
 #preview a { color: #0770a3; }
 #preview a.btn { display: inline-block; padding: 8px 14px; background: #f5f5f5; border: 1px solid #c7cdd1; border-radius: 4px; color: #2d3b45; text-decoration: none; }
+/* Approximates Canvas table styling, as on the Tables page of html-code.html. */
+#preview .ic-Table th, #preview .ic-Table td, .snip-mini .ic-Table th, .snip-mini .ic-Table td { padding: 8px 10px; text-align: left; }
+#preview .ic-Table caption, .snip-mini .ic-Table caption { padding: 0 0 12px; text-align: left; }
+#preview .ic-Table--hover-row tbody tr:hover { background-color: #e6eef5; }
 #preview ::selection { background: #ffe08a; color: #14212e; }
 .snipbar { padding: 10px 14px; border-bottom: 1px solid var(--line); display: grid; gap: 6px; background: var(--accent-soft); position: sticky; top: 0; z-index: 20; }
 /* While the snippet bar is pinned to the top of the screen, it gets a shadow and drops the help line to save space. */
@@ -175,7 +179,8 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
           <li>Web addresses become links that open in a new tab. Use <code>[Read: Article Title](https://…)</code> for descriptive link text.</li>
           <li>A YouTube link alone on a line becomes a responsive video with a Watch link below it.</li>
           <li><code>**bold**</code> and <code>*italic*</code> work. <code>---</code> adds a divider.</li>
-          <li>Pasting from Word or Google Docs keeps headings, bold, lists, and links.</li>
+          <li>Pasting from Word or Google Docs keeps headings, bold, lists, links, and tables.</li>
+          <li>Tables: rows with cells separated by tabs (copied from Excel or Sheets), <code>| a | b |</code>, or two or more <code>a | b</code> lines become a table in the Tables design. The first row is the header. A <code>Table 1: …</code> or <code>Caption: …</code> line just above becomes the caption.</li>
         </ul>
       </div>
       <div>
@@ -249,6 +254,9 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
   const BOX_TIP = 'background: #f7fafc; border-left: 6px solid #f2a900; padding: 18px; border-radius: 10px; margin: 18px 0;';
   const BOX_REMEMBER = 'background: #e8f0f7; border-left: 6px solid #00406e; padding: 20px; border-radius: 12px; margin-top: 22px;';
   const BOX_AI = 'background-color: #fff5f5; border-width: 5px 1px 1px; border-style: solid; border-color: #b42332 #edc6c6 #edc6c6; border-radius: 12px; padding: 24px; margin: 20px 0px; font-family: Arial, sans-serif; color: #27343b; line-height: 1.7;';
+  // Table design from the Tables page of html-code.html ("Table with Hover and Dark Border").
+  const TABLE_ATTRS = 'class="ic-Table ic-Table--hover-row" style="border-collapse: collapse; width: 100%; border: 1px solid #000000;"';
+  const CELL_STYLE = 'border: 1px solid #000000;';
   const VIDEO_WRAP = 'position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;';
   const VIDEO_FRAME = 'position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; border: 0px none currentcolor;';
 
@@ -396,12 +404,48 @@ This assignment is worth 50 points. Review the rubric attached below before you 
   }
 
   /* ---------- Step 1: lines into tokens ---------- */
+  function tableCells(t) {
+    if (/^\|.*\|$/.test(t) && t.length > 2) {
+      const cells = t.slice(1, -1).split('|').map(c => c.trim());
+      if (cells.every(c => /^:?-{2,}:?$/.test(c))) return 'sep';
+      return cells.length >= 2 ? cells : null;
+    }
+    if (t.includes('\t')) {
+      const cells = t.split('\t').map(c => c.trim());
+      // "•<tab>Item" and "1.<tab>Item" are list lines from Word, not table rows.
+      if (/^([-*•·▪◦‣–—o§]|\d{1,3}[.)]|[a-zA-Z][.)])$/.test(cells[0])) return null;
+      return cells.length >= 2 ? cells : null;
+    }
+    // "Apples | Red" without outer bars counts only when two or more such lines run together (checked later).
+    if (/\S\s\|\s\S/.test(t)) {
+      const cells = t.split(/\s\|\s/).map(c => c.trim());
+      cells.loose = true;
+      return cells;
+    }
+    return null;
+  }
   function tokenize(text) {
     const tokens = [];
     text.replace(/\r\n?/g, '\n').split('\n').forEach(raw => {
       const line = raw.replace(/ /g, ' ').replace(/\s+$/, '');
       const t = line.trim();
       if (!t) { tokens.push({ type: 'blank' }); return; }
+      // Table rows: "| a | b |" lines, or cells separated by tabs (as pasted from Word, Excel or Sheets).
+      const cells = tableCells(t);
+      if (cells) {
+        const last = tokens[tokens.length - 1];
+        if (cells === 'sep') { if (last && last.type === 'table') last.header = true; return; }
+        if (last && last.type === 'table') { last.rows.push(cells); last.raw.push(t); return; }
+        const tok = { type: 'table', rows: [cells], raw: [t], header: true, caption: '', loose: !!cells.loose };
+        // A "Table 1: ..." or "Caption: ..." line right above becomes the table's caption.
+        if (last && last.type === 'p' && /^(\*\*)?(table\s*\d*|caption)\b\s*[:.\-–]/i.test(last.text)) {
+          tokens.pop();
+          tok.captionLine = last.text;
+          tok.caption = last.text.replace(/^(\*\*)?caption(\*\*)?\s*[:.\-–]\s*(\*\*)?/i, '');
+        }
+        tokens.push(tok);
+        return;
+      }
       if (/^([-*_])(\s*\1){2,}$/.test(t)) { tokens.push({ type: 'hr' }); return; }
       let m = t.match(/^(#{1,4})\s+(.*)$/);
       if (m) { tokens.push({ type: 'heading', level: Math.min(m[1].length, 3), text: m[2].replace(/^\*\*(.*)\*\*$/, '$1'), forced: true }); return; }
@@ -413,7 +457,10 @@ This assignment is worth 50 points. Review the rubric attached below before you 
       if (/^https?:\/\/\S+$/.test(t) && youtubeId(t)) { tokens.push({ type: 'video', url: t, id: youtubeId(t) }); return; }
       tokens.push({ type: 'p', text: t });
     });
-    return tokens;
+    // A lone "a | b" line is just a sentence with a bar in it.
+    return tokens.flatMap(tok => (tok.type === 'table' && tok.loose && tok.rows.length < 2)
+      ? [...(tok.captionLine ? [{ type: 'p', text: tok.captionLine }] : []), ...tok.raw.map(r => ({ type: 'p', text: r }))]
+      : [tok]);
   }
 
   /* ---------- Step 2: decide which lines are headings ---------- */
@@ -509,6 +556,28 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     ].join('\n');
   }
 
+  function renderTable(tok, pad) {
+    const cols = Math.max(...tok.rows.map(r => r.length));
+    const fillRow = r => r.concat(Array(cols - r.length).fill(''));
+    const head = tok.header ? fillRow(tok.rows[0]) : null;
+    const body = (tok.header ? tok.rows.slice(1) : tok.rows).map(fillRow);
+    const lines = [`${pad}<table ${TABLE_ATTRS}>`];
+    if (tok.caption) lines.push(`${pad}    <caption>${inline(tok.caption)}</caption>`);
+    if (head) {
+      lines.push(`${pad}    <thead>`, `${pad}        <tr>`);
+      head.forEach(c => lines.push(`${pad}            <th style="${CELL_STYLE}" scope="col">${inline(c.replace(/^\*\*(.*)\*\*$/, '$1'))}</th>`));
+      lines.push(`${pad}        </tr>`, `${pad}    </thead>`);
+    }
+    lines.push(`${pad}    <tbody>`);
+    body.forEach(r => {
+      lines.push(`${pad}        <tr>`);
+      r.forEach(c => lines.push(`${pad}            <td style="${CELL_STYLE}">${inline(c)}</td>`));
+      lines.push(`${pad}        </tr>`);
+    });
+    lines.push(`${pad}    </tbody>`, `${pad}</table>`);
+    return lines.join('\n');
+  }
+
   function renderCallout(tok, pad) {
     const style = tok.tone === 'remember' ? BOX_REMEMBER : BOX_TIP;
     return [
@@ -545,6 +614,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
       } else if (b.type === 'video') out.push(renderVideo(b, pad));
       else if (b.type === 'callout') out.push(renderCallout(b, pad));
       else if (b.type === 'hr') out.push(`${pad}${HR}`);
+      else if (b.type === 'table') out.push(renderTable(b, pad));
       i++;
     }
     return out.join('\n');
@@ -748,6 +818,19 @@ This assignment is worth 50 points. Review the rubric attached below before you 
         return;
       }
       if (tag === 'HR') { flush(); lines.push('---'); return; }
+      if (tag === 'TABLE') {
+        flush();
+        const cap = node.querySelector('caption');
+        if (cap && cap.textContent.trim()) lines.push('Caption: ' + cap.textContent.replace(/\s+/g, ' ').trim());
+        const rows = Array.from(node.querySelectorAll('tr')).filter(tr => tr.closest('table') === node);
+        const cellText = c => Array.from(c.childNodes).map(inlineText).join(' ').replace(/\s+/g, ' ').replace(/\|/g, '/').trim();
+        const grid = rows.map(tr => Array.from(tr.children).filter(c => /^T[HD]$/.test(c.tagName)).map(cellText)).filter(r => r.length);
+        if (grid.length && Math.max(...grid.map(r => r.length)) >= 2) {
+          grid.forEach((r, i) => { lines.push('| ' + r.join(' | ') + ' |'); if (i === 0) lines.push('|' + r.map(() => ' --- ').join('|') + '|'); });
+        } else grid.forEach(r => r.forEach(c => { if (c) lines.push(c); }));
+        lines.push('');
+        return;
+      }
       if (/^(P|DIV|LI|TR|BLOCKQUOTE|SECTION|ARTICLE|TABLE|TBODY)$/.test(tag)) {
         flush();
         if (Array.from(node.children).some(c => /^(P|DIV|UL|OL|H[1-6]|TABLE|TR|TBODY|BLOCKQUOTE|HR)$/.test(c.tagName))) {
@@ -1109,6 +1192,65 @@ This assignment is worth 50 points. Review the rubric attached below before you 
       // No link anywhere: the first block becomes a button that still needs its address.
       const label = clean(blocks[0].textContent);
       return { nodes: [makeButton(root.querySelector('a').getAttribute('href'), label), ...blocks.slice(1)], note: 'No link was in the highlighted text, so the button still goes to ' + root.querySelector('a').getAttribute('href') + '. Add the address in the HTML tab, or highlight text that has a link.' };
+    }
+
+    // Tables: each highlighted line (or list item, or existing table row) becomes a row in the snippet's table design.
+    if (root.tagName === 'TABLE') {
+      const thTpl = root.querySelector('th'), tdTpl = root.querySelector('td');
+      let caption = '';
+      let labelRowsFirst = false; // "Label: value" lines have no header row of their own
+      const rows = []; // each row: array of cell HTML strings
+      const split = text => {
+        if (text.includes('\t')) return text.split('\t').map(c => esc(c.trim()));
+        if (/\s\|\s/.test(text) || /^\|.*\|$/.test(text)) return text.replace(/^\||\|$/g, '').split('|').map(c => esc(c.trim()));
+        return null;
+      };
+      blocks.forEach((bk, i) => {
+        if (bk.tagName === 'TABLE') {
+          const cap = bk.querySelector('caption');
+          if (cap && !caption) caption = cap.innerHTML.trim();
+          bk.querySelectorAll('tr').forEach(tr => rows.push(Array.from(tr.children).filter(c => /^T[HD]$/.test(c.tagName)).map(c => c.innerHTML.trim())));
+          return;
+        }
+        if (/^(UL|OL)$/.test(bk.tagName)) {
+          Array.from(bk.children).forEach(li => { const t = li.textContent; rows.push(split(t) || [li.innerHTML.trim()]); });
+          return;
+        }
+        if (i === 0 && isHeading(bk) && blocks.length > 1) { caption = esc(clean(bk.textContent)); return; }
+        const explicit = split(bk.textContent);
+        if (!explicit && rows.length === 0) labelRowsFirst = true;
+        rows.push(explicit || splitLabel(bk) || [bk.innerHTML.trim()]);
+      });
+      if (!rows.length) return null;
+      const cols = Math.max(...rows.map(r => r.length));
+      // One-column rows ending in "Label: value" become two columns.
+      function splitLabel(bk) {
+        const m = clean(bk.textContent).match(/^([^:]{1,40}):\s+(.+)$/);
+        return m ? [esc(m[1]), esc(m[2])] : null;
+      }
+      const cell = (tpl, tag, htmlText) => {
+        const c = tpl ? tpl.cloneNode(false) : document.createElement(tag);
+        c.innerHTML = htmlText;
+        return c;
+      };
+      const table = root.cloneNode(false);
+      const nl = d => document.createTextNode('\n' + '    '.repeat(d));
+      if (caption) { const cap = root.querySelector('caption') ? root.querySelector('caption').cloneNode(false) : document.createElement('caption'); cap.innerHTML = caption; table.append(nl(1), cap); }
+      const makeSection = (tag, list, cellTag, tpl) => {
+        const sec = document.createElement(tag);
+        list.forEach(r => {
+          const tr = document.createElement('tr');
+          r.concat(Array(cols - r.length).fill('')).forEach(h => tr.append(nl(3), cell(tpl, cellTag, h)));
+          tr.append(nl(2));
+          sec.append(nl(2), tr);
+        });
+        sec.append(nl(1));
+        return sec;
+      };
+      const hasHead = !!root.querySelector('thead') && rows.length > 1 && !labelRowsFirst;
+      if (hasHead) table.append(nl(1), makeSection('thead', rows.slice(0, 1), 'th', thTpl));
+      table.append(nl(1), makeSection('tbody', hasHead ? rows.slice(1) : rows, 'td', tdTpl), nl(0));
+      return { nodes: [table], note: cols < 2 ? 'Tip: separate columns with a tab or " | " in your text to get more than one column.' : '' };
     }
 
     // Clickable Steps: one tab per heading in the selection.
