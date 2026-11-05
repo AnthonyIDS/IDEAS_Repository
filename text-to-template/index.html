@@ -74,7 +74,13 @@ textarea { width: 100%; border: 0; resize: vertical; padding: 14px; font-family:
 #preview a { color: #0770a3; }
 #preview a.btn { display: inline-block; padding: 8px 14px; background: #f5f5f5; border: 1px solid #c7cdd1; border-radius: 4px; color: #2d3b45; text-decoration: none; }
 #preview ::selection { background: #ffe08a; color: #14212e; }
-.snipbar { padding: 10px 14px; border-bottom: 1px solid var(--line); display: grid; gap: 6px; background: var(--accent-soft); }
+.snipbar { padding: 10px 14px; border-bottom: 1px solid var(--line); display: grid; gap: 6px; background: var(--accent-soft); position: sticky; top: 0; z-index: 20; }
+/* While the snippet bar is pinned to the top of the screen, it gets a shadow and drops the help line to save space. */
+.snipbar.stuck { box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18); border-radius: 0; }
+.snipbar.stuck #snipNote { display: none; }
+.snipbar.stuck .snip-variants { max-height: 34vh; }
+.snipbar.stuck .snip-cat { min-height: 34px; padding: 5px 8px; }
+.snip-sentinel { height: 1px; }
 .snipbar .snip-head { margin: 0; font-size: 0.95rem; color: var(--accent); }
 .snipbar .row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .snipbar button:disabled { opacity: 0.55; cursor: not-allowed; }
@@ -203,6 +209,7 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
       <div class="pane-head">
         <h2 id="out-h">Canvas-ready page: Preview</h2>
       </div>
+      <div class="snip-sentinel" id="snipSentinel" aria-hidden="true"></div>
       <div class="snipbar" id="snipbar">
         <h3 class="snip-head" id="snipHead">Reformat highlighted text with a snippet</h3>
         <div class="snip-cats" id="snipCats" role="group" aria-labelledby="snipHead"><p class="snip-note">Loading the snippet library…</p></div>
@@ -764,6 +771,13 @@ This assignment is worth 50 points. Review the rubric attached below before you 
   }
 
   /* ---------- UI ---------- */
+  // Mark the snippet bar as pinned once the page scrolls past its normal place.
+  {
+    let ticking = false;
+    const checkStuck = () => { ticking = false; $('snipbar').classList.toggle('stuck', $('snipSentinel').getBoundingClientRect().top < 0); };
+    window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(checkStuck); } }, { passive: true });
+    window.addEventListener('resize', checkStuck);
+  }
   let timer = null;
   /* Direct edits in the Preview. Once the Preview is edited, the HTML follows it (manualHtml)
      until the user rebuilds from their text. history holds snapshots for Undo. */
@@ -916,6 +930,8 @@ This assignment is worth 50 points. Review the rubric attached below before you 
   }
   function chooseSnippet(i, remember) {
     selected = i;
+    // When the bar is pinned over a long page, fold the design cards away once one is picked.
+    if (remember && $('snipbar').classList.contains('stuck')) { $('snipVariants').hidden = true; $('snipVariants').dataset.group = ''; $('snipCats').querySelectorAll('.snip-cat').forEach(b => b.setAttribute('aria-expanded', 'false')); }
     const item = library[i];
     $('snipChosen').innerHTML = '';
     $('snipChosen').append('Chosen: ', Object.assign(document.createElement('strong'), { textContent: item.name }), ` (${item.group.replace(/^\P{L}+/u, '')})`);
