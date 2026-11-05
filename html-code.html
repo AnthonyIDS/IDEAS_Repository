@@ -218,6 +218,19 @@
     }
     .copy-html-button:disabled { opacity: 0.7; cursor: wait; }
     .copy-status { font-size: 14px; }
+
+    #tables .preview-box .ic-Table th,
+    #tables .preview-box .ic-Table td {
+      padding: 8px 10px;
+      text-align: left;
+    }
+    #tables .preview-box .ic-Table caption {
+      padding: 0 0 12px;
+      text-align: left;
+    }
+    #tables .preview-box .ic-Table--hover-row tbody tr:hover {
+      background-color: #e6eef5;
+    }
   </style>
 </head>
 
@@ -238,6 +251,7 @@
       <button class="nav-button" type="button" onclick="showPage('chunking-information', this)">Chunking Information</button>
       <button class="nav-button" type="button" onclick="showPage('button', this)">🔗 Button</button>
       <button class="nav-button" type="button" onclick="showPage('student-example', this)">👩‍🎓 Student Example Call Out Box</button>
+      <button class="nav-button" type="button" onclick="showPage('tables', this)">Tables</button>
       <button class="nav-button" type="button" onclick="showPage('ai-callout', this)">💡 AI Information Call Out Box</button>
       <button class="nav-button" type="button" onclick="showPage('accordion-dropdowns', this)">▾ Accordion Dropdowns</button>
       <button class="nav-button" type="button" onclick="showPage('clickable-steps', this)">🧭 Clickable Steps</button>
@@ -503,6 +517,106 @@
   </div>
       
     </section>
+
+    <section id="tables" class="snippet-page">
+      <h2 class="snippet-title">Tables</h2>
+      <p class="preview-label">Table with Hover and Dark Border</p>
+      <div class="preview-box" style="overflow-x: auto;">
+<table class="ic-Table ic-Table--hover-row" style="border-collapse: collapse; width: 100%; border: 1px solid #000000;">
+    <caption>Table with Hover and <strong>Dark </strong>Border - Caption</caption>
+    <thead>
+        <tr>
+            <th style="border: 1px solid #000000;" scope="col">THeader 1</th>
+            <th style="border: 1px solid #000000;" scope="col">THeader 2</th>
+            <th style="border: 1px solid #000000;" scope="col">THeader 3</th>
+            <th style="border: 1px solid #000000;" scope="col">THeader 4</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="border: 1px solid #000000;">row 2 -1</td>
+            <td style="border: 1px solid #000000;">row 2 -2</td>
+            <td style="border: 1px solid #000000;">row 2 -3</td>
+            <td style="border: 1px solid #000000;">row 2 -4</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #000000;">row 3 -1</td>
+            <td style="border: 1px solid #000000;">row 3 -2</td>
+            <td style="border: 1px solid #000000;">row 3 -3</td>
+            <td style="border: 1px solid #000000;">row 3 -4</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #000000;">row 4 -1</td>
+            <td style="border: 1px solid #000000;">row 4 -2</td>
+            <td style="border: 1px solid #000000;">row 4 -3</td>
+            <td style="border: 1px solid #000000;">row 4 -4</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #000000;">row 5 -1</td>
+            <td style="border: 1px solid #000000;">row 5 -2</td>
+            <td style="border: 1px solid #000000;">row 5 -3</td>
+            <td style="border: 1px solid #000000;">row 5 -4</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #000000;">row 6 -1</td>
+            <td style="border: 1px solid #000000;">row 6 -2</td>
+            <td style="border: 1px solid #000000;">row 6 -3</td>
+            <td style="border: 1px solid #000000;">row 6 -4</td>
+        </tr>
+    </tbody>
+</table>
+      </div>
+      <p>The preview approximates Canvas table styling; hover styling in Canvas follows your course theme.</p>
+      <p class="code-label">HTML Code</p>
+      <div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-table-dark" aria-controls="snippet-code-table-dark">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-table-dark">&lt;table class="ic-Table ic-Table--hover-row" style="border-collapse: collapse; width: 100%; border: 1px solid #000000;"&gt;
+    &lt;caption&gt;Table with Hover and &lt;strong&gt;Dark &lt;/strong&gt;Border - Caption&lt;/caption&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th style="border: 1px solid #000000;" scope="col"&gt;THeader 1&lt;/th&gt;
+            &lt;th style="border: 1px solid #000000;" scope="col"&gt;THeader 2&lt;/th&gt;
+            &lt;th style="border: 1px solid #000000;" scope="col"&gt;THeader 3&lt;/th&gt;
+            &lt;th style="border: 1px solid #000000;" scope="col"&gt;THeader 4&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;td style="border: 1px solid #000000;"&gt;row 2 -1&lt;/td&gt;
+            &lt;td style="border: 1px solid #000000;"&gt;row 2 -2&lt;/td&gt;
+            &lt;td style="border: 1px solid #000000;"&gt;row 2 -3&lt;/td&gt;
+            &lt;td style="border: 1px solid #000000;"&gt;row 2 -4&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td style="border: 1px solid #000000;"&gt;row 3 -1&lt;/td&gt;
+            &lt;td style="border: 1px solid #000000;"&gt;row 3 -2&lt;/td&gt;
+            &lt;td style="border: 1px solid #000000;"&gt;row 3 -3&lt;/td&gt;
+            &lt;td style="border: 1px solid #000000;"&gt;row 3 -4&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td style="border: 1px solid #000000;"&gt;row 4 -1&lt;/td&gt;
+            &lt;td style="border: 1px solid #000000;"&gt;row 4 -2&lt;/td&gt;
+            &lt;td style="border: 1px solid #000000;"&gt;row 4 -3&lt;/td&gt;
+            &lt;td style="border: 1px solid #000000;"&gt;row 4 -4&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td style="border: 1px solid #000000;"&gt;row 5 -1&lt;/td&gt;
+            &lt;td style="border: 1px solid #000000;"&gt;row 5 -2&lt;/td&gt;
+            &lt;td style="border: 1px solid #000000;"&gt;row 5 -3&lt;/td&gt;
+            &lt;td style="border: 1px solid #000000;"&gt;row 5 -4&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td style="border: 1px solid #000000;"&gt;row 6 -1&lt;/td&gt;
+            &lt;td style="border: 1px solid #000000;"&gt;row 6 -2&lt;/td&gt;
+            &lt;td style="border: 1px solid #000000;"&gt;row 6 -3&lt;/td&gt;
+            &lt;td style="border: 1px solid #000000;"&gt;row 6 -4&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+    </section>
+
 
     <section id="ai-callout" class="snippet-page">
       <h2 class="snippet-title">💡 AI Information Call Out Box</h2>
