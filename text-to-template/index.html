@@ -224,7 +224,7 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
         <ul>
           <li>Highlight text in the Preview, pick a snippet category and design, and select <strong>Apply</strong>. The snippet wraps or restyles the whole paragraphs, lists, and headings you touched.</li>
           <li>Accordions, dropdowns, and Clickable Steps make one item per heading you highlight.</li>
-          <li>Quick Check uses the first line as the question and the list below it as answers. End the right answer with <code>*</code>.</li>
+          <li>Quick Check uses the first line as the question and the list below it as answers. End the right answer with <code>*</code> to mark it correct; otherwise the design you pick decides (for example, "Answer B Correct" makes the second answer green).</li>
           <li>Snippets stay applied while you keep editing your text. Use <strong>Undo</strong> or <strong>Remove all</strong> to take them off.</li>
           <li>You can also click into the Preview and fix wording there, or edit the code itself on the <strong>HTML</strong> tab next to Your text. After that, the page keeps your edits. Select <strong>Rebuild from Your text</strong> to go back to building it from your text.</li>
         </ul>
@@ -1358,9 +1358,14 @@ This assignment is worth 50 points. Review the rubric attached below before you 
         if (question && qText) { setText(question, qText); }
         const allDetails = Array.from(root.querySelectorAll('details'));
         const anchor = allDetails[0];
+        // The right answer is the one ending in * in your text. Without one, follow the chosen design
+        // ("Answer B Correct" marks the second answer), so one answer always gets the green feedback.
+        const marked = choices.some(li => /\*$|\(correct\)$/i.test(clean(li.textContent)));
+        const tplIndex = Math.max(0, allDetails.findIndex(d => /correct!/i.test(d.textContent)));
+        const fallback = Math.min(tplIndex, choices.length - 1);
         choices.forEach((li, i) => {
           let t = clean(li.textContent);
-          const right = /\*$|\(correct\)$/i.test(t);
+          const right = marked ? /\*$|\(correct\)$/i.test(t) : i === fallback;
           t = t.replace(/\s*(\*|\(correct\))$/i, '');
           const d = (right ? tplRight : tplWrong).cloneNode(true);
           d.querySelector('summary').textContent = `${String.fromCharCode(65 + i)}. ${t}`;
@@ -1372,7 +1377,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
           anchor.parentNode.insertBefore(document.createTextNode('\n'), anchor);
         });
         allDetails.forEach(d => d.remove());
-        return { nodes: [root], note: choices.some(li => /\*$|\(correct\)$/i.test(clean(li.textContent))) ? '' : 'Tip: end the right answer with * in your text to mark it correct.' };
+        return { nodes: [root], note: marked ? '' : `Answer ${String.fromCharCode(65 + fallback)} is marked correct, as in this design. To pick another, end the right answer with * in your text.` };
       }
     }
 
