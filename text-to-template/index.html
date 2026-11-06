@@ -231,7 +231,7 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
           <li>True / False Challenge makes one statement per line. End each with <code>(True)</code> or <code>(False)</code>; any words after it become the feedback, as in <code>AI can be wrong. (True) Always verify.</code></li>
           <li>Flashcards make one card per line written as <code>Term: definition</code>, or one per heading with its answer below. A heading above the lines titles the set.</li>
           <li>When you open a category, a short tip under the designs shows the format it expects.</li>
-          <li>Snippets stay applied while you keep editing your text. Use <strong>Undo</strong> or <strong>Remove all</strong> to take them off.</li>
+          <li>Snippets stay applied while you keep editing your text. To take one off, click inside it in the Preview and select <strong>Make basic text</strong>; its words go back to plain formatting. <strong>Undo</strong> and <strong>Remove all</strong> also take snippets off.</li>
           <li>You can also click into the Preview and fix wording there, or edit the code itself on the <strong>HTML</strong> tab next to Your text. After that, the page keeps your edits. Select <strong>Rebuild from Your text</strong> to go back to building it from your text.</li>
         </ul>
       </div>
@@ -279,6 +279,7 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
           <button class="primary" id="applySnippet" type="button" disabled>Apply snippet</button>
           <button id="undoSnippet" type="button" disabled>Undo</button>
           <button id="clearSnippets" type="button" disabled>Remove all</button>
+          <button id="unsnip" type="button" disabled title="Click or highlight inside a snippet in the Preview, then select this to turn it back into plain text">Make basic text</button>
         </div>
         <p class="snip-tip" id="snipTip" aria-live="polite" hidden></p>
         <p class="snip-note" id="snipNote">You can also click into the Preview to fix wording directly. <a href="../html-code.html" target="_blank" rel="noopener">See all snippets ↗</a></p>
@@ -970,7 +971,9 @@ This assignment is worth 50 points. Review the rubric attached below before you 
   let history = [];
   let lastEdit = 0;
   let lastGenerated = null;
-  const serialize = el => el.innerHTML.replace(/<(hr|br|img)([^>]*?)\s*\/?>/g, '<$1$2 />').replace(/\n{3,}/g, '\n\n');
+  // Applied snippets carry a data-t2t-snip marker in the Preview only, so "Make basic text" can find them. It never reaches the HTML.
+  const unmark = html => html.replace(/ data-t2t-snip="[^"]*"/g, '');
+  const serialize = el => unmark(el.innerHTML).replace(/<(hr|br|img)([^>]*?)\s*\/?>/g, '<$1$2 />').replace(/\n{3,}/g, '\n\n');
   function setManual(html) {
     manualHtml = html;
     if (code.value !== html) code.value = html;
@@ -1004,9 +1007,10 @@ This assignment is worth 50 points. Review the rubric attached below before you 
       }
       html = box.innerHTML.replace(/<(hr|br|img)([^>]*?)\s*\/?>/g, '<$1$2 />').replace(/\n{3,}/g, '\n\n');
     }
+    preview.innerHTML = html || '<p style="color:#5f6f7f">Your formatted page will appear here.</p>';
+    html = unmark(html);
     code.value = html;
     lastGenerated = html;
-    preview.innerHTML = html || '<p style="color:#5f6f7f">Your formatted page will appear here.</p>';
     preview.contentEditable = html ? 'true' : 'false';
     updateSnipButtons();
     try {
@@ -1019,6 +1023,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
   let ops = [];
   let library = [];
   let savedRange = null;
+  let lastCaret = null; // where the cursor last was in the Preview, for Make basic text
   let selected = -1;
   const BLOCK = 'p,h1,h2,h3,h4,h5,h6,ul,ol,table,details,blockquote,hr,pre';
   const clean = s => (s || '').replace(/ /g, ' ').replace(/\s+/g, ' ').trim();
@@ -1162,6 +1167,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     $('applySnippet').disabled = selected < 0 || !code.value || !blocks.length;
     $('undoSnippet').disabled = manualHtml !== null ? !history.length : !ops.length;
     $('clearSnippets').disabled = manualHtml !== null || !ops.length;
+    $('unsnip').disabled = !snippetAt();
   }
 
   // Remember the highlight in the Preview, since using the dropdown can clear it.
@@ -1176,6 +1182,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     if (sel && sel.rangeCount && !sel.isCollapsed && preview.contains(sel.getRangeAt(0).commonAncestorContainer)) {
       savedRange = sel.getRangeAt(0).cloneRange();
     }
+    if (sel && sel.rangeCount && preview.contains(sel.anchorNode)) lastCaret = sel.anchorNode;
     clearTimeout(updateSnipButtons.t);
     updateSnipButtons.t = setTimeout(updateSnipButtons, 60);
   });
@@ -1456,8 +1463,10 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     }
 
     // Flashcards: "Term: definition" lines (or a heading per card with its answer below) become cards.
-    if (summaries.some(s => /^Card\s+\d+\s*:/i.test(s))) {
+    if (summaries.some(s => /^Card\s+\d+\b/i.test(s))) {
       const tpls = Array.from(root.querySelectorAll('details'));
+      // Classic cards read "Card 1: Question"; designs like Field Notes put "Card 1" and the question in separate parts.
+      const rich = !!tpls[0].querySelector('summary strong');
       const heads = blocks.filter(isHeading);
       const pair = line => {
         const m = line.match(/^(.{1,160}?)\s*(?:\t|\s\|\s|:\s|\s[-–—]\s)\s*(.+)$/) || line.match(/^(.{1,160}?\?)\s+(.+)$/);
@@ -1484,17 +1493,32 @@ This assignment is worth 50 points. Review the rubric attached below before you 
       if (cards.length) {
         let missing = 0;
         const made = cards.map((c, i) => {
-          const d = (i === cards.length - 1 ? tpls[tpls.length - 1] : tpls[0]).cloneNode(true);
-          d.querySelector('summary').textContent = `Card ${i + 1}: ${c.term}`;
+          // Classic: the last card has no bottom margin. Rich designs: the first card has no top margin.
+          const tpl = rich ? tpls[Math.min(i, 1, tpls.length - 1)] : (i === cards.length - 1 ? tpls[tpls.length - 1] : tpls[0]);
+          const d = tpl.cloneNode(true);
+          const summary = d.querySelector('summary');
+          if (rich) {
+            const tag = summary.querySelector('span'), q = summary.querySelector('strong');
+            if (tag) tag.textContent = `Card ${i + 1}`;
+            q.textContent = c.term;
+          } else summary.textContent = `Card ${i + 1}: ${c.term}`;
           const body = d.querySelector('div');
-          if (c.body && c.body.length) fill(body, c.body);
+          // Keep a short "Answer" label line if the design has one; the answer goes after it in the design's style.
+          const ps = Array.from(body.children).filter(n => n.tagName === 'P');
+          const label = ps.length > 1 && isHeading(ps[0]) && clean(ps[0].textContent).length < 20 ? ps[0] : null;
+          const ansTpl = label ? ps[1] : null;
+          let answer;
+          if (c.body && c.body.length) answer = c.body;
           else {
             if (!c.def) missing++;
-            fill(body, [Object.assign(document.createElement('p'), { textContent: c.def || '[Add the answer.]' })]);
+            const p = ansTpl ? ansTpl.cloneNode(false) : document.createElement('p');
+            p.textContent = c.def || '[Add the answer.]';
+            answer = [p];
           }
+          fill(body, label ? [label, ...answer] : answer);
           return d;
         });
-        if (deckTitle) setText(deckTitle, title ? (/flashcard/i.test(title) ? title : 'Flashcards: ' + title) : 'Flashcards');
+        if (deckTitle) setText(deckTitle, rich ? (title || 'Flashcards') : title ? (/flashcard/i.test(title) ? title : 'Flashcards: ' + title) : 'Flashcards');
         const parent = tpls[0].parentNode;
         made.forEach(d => { parent.insertBefore(d, tpls[0]); parent.insertBefore(document.createTextNode('\n'), tpls[0]); });
         tpls.forEach(d => d.remove());
@@ -1588,6 +1612,79 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     return { nodes: [root] };
   }
 
+  /* ---------- Make basic text: take a snippet off and put its words back as plain text ---------- */
+  // The snippet under the cursor or highlight in the Preview: a marked one, or (for edited pages) the
+  // nearest snippet-like box such as a quiz, dropdown, table, step tabs, or styled box.
+  function snippetAt() {
+    const sel = window.getSelection();
+    let node = sel && sel.rangeCount && preview.contains(sel.anchorNode) ? sel.anchorNode : (savedRange ? savedRange.startContainer : lastCaret);
+    if (!node || !preview.contains(node)) return null;
+    const el = node.nodeType === 1 ? node : node.parentElement;
+    const marked = el.closest('[data-t2t-snip]');
+    if (marked && preview.contains(marked)) return marked;
+    if (manualHtml === null) return null;
+    // Edited pages lose the markers: use the outermost snippet-like element below the template's own boxes.
+    let found = null;
+    for (let n = el; n && n !== preview; n = n.parentElement) {
+      if (n.matches('details, table, .tabs, div[style]') && !(n.parentElement === preview && n.matches('div[style]') && /6px/.test(n.getAttribute('style') || '') && !n.querySelector('details'))) found = n;
+    }
+    return found;
+  }
+  // Plain blocks from a snippet: headings and paragraphs as <p>, lists as plain lists, table rows as "a | b" lines.
+  function basicBlocks(el) {
+    const out = [];
+    const strip = n => { n.querySelectorAll('[style],[class],[id],[title]').forEach(x => { x.removeAttribute('style'); x.removeAttribute('class'); x.removeAttribute('id'); x.removeAttribute('title'); }); return n; };
+    const para = html => { const p = document.createElement('p'); p.innerHTML = html; strip(p); return p; };
+    const walk = n => {
+      if (n.nodeType !== 1) { if (n.nodeType === 3 && clean(n.nodeValue)) out.push(para(esc(clean(n.nodeValue)))); return; }
+      const tag = n.tagName;
+      if (tag === 'HR' || tag === 'IFRAME' || tag === 'SCRIPT') return;
+      if (tag === 'UL' || tag === 'OL') {
+        // The tab list of Clickable Steps only repeats the step names.
+        if (n.parentElement && n.parentElement.classList.contains('tabs')) return;
+        const l = document.createElement(tag);
+        Array.from(n.children).forEach(li => { if (li.tagName === 'LI' && clean(li.textContent)) { const c = strip(li.cloneNode(true)); c.removeAttribute('style'); l.appendChild(document.createTextNode('\n    ')); l.appendChild(c); } });
+        l.appendChild(document.createTextNode('\n'));
+        if (l.children.length) out.push(l);
+        return;
+      }
+      if (tag === 'TABLE') {
+        const cap = n.querySelector('caption');
+        if (cap && clean(cap.textContent)) out.push(para(cap.innerHTML.trim()));
+        n.querySelectorAll('tr').forEach(tr => { const cells = Array.from(tr.children).filter(c => /^T[HD]$/.test(c.tagName)).map(c => c.innerHTML.trim()); if (cells.some(c => clean(c))) out.push(para(cells.join(' | '))); });
+        return;
+      }
+      if (tag === 'P' && n.querySelector('a.btn')) { const a = n.querySelector('a'); out.push(para(`<a href="${esc(a.getAttribute('href') || '')}" target="_blank" rel="noopener">${esc(clean(a.textContent))}</a>`)); return; }
+      const hasBlocks = Array.from(n.children).some(c => /^(P|DIV|UL|OL|H[1-6]|TABLE|DETAILS|SUMMARY|SECTION|BLOCKQUOTE)$/.test(c.tagName));
+      if (hasBlocks || tag === 'DETAILS') { Array.from(n.childNodes).forEach(walk); return; }
+      if (clean(n.textContent)) out.push(para(n.innerHTML.replace(/<span[^>]*aria-hidden="true"[^>]*>[\s\S]*?<\/span>/g, '').trim()));
+    };
+    walk(el);
+    return out;
+  }
+  $('unsnip').addEventListener('click', () => {
+    const el = snippetAt();
+    if (!el) { say('Click or highlight inside a snippet in the Preview first.'); return; }
+    const id = el.getAttribute('data-t2t-snip');
+    const at = id && manualHtml === null ? ops.findIndex(o => o.id === id) : -1;
+    if (at >= 0) {
+      // Built from Your text: dropping the snippet rebuilds that part exactly as it was before.
+      const [op] = ops.splice(at, 1);
+      savedRange = null; lastCaret = null;
+      run();
+      say(`Removed “${op.name}”. That text is back to plain formatting.`, { label: 'Undo', run: () => { ops.splice(at, 0, op); run(); say(`Put “${op.name}” back.`); } });
+      return;
+    }
+    // Edited page: replace the snippet with its words as plain paragraphs and lists.
+    history.push(manualHtml !== null ? manualHtml : code.value);
+    const parent = el.parentNode;
+    basicBlocks(el).forEach(b => { parent.insertBefore(b, el); parent.insertBefore(document.createTextNode('\n'), el); });
+    parent.removeChild(el);
+    savedRange = null; lastCaret = null;
+    setManual(serialize(preview));
+    say('Turned the snippet into plain text. Undo brings it back.');
+  });
+
   function applyOp(root, op) {
     const blocks = findBlocks(root, op.key);
     if (!blocks) return false;
@@ -1598,7 +1695,8 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     const built = buildSnippet(op.html, blocks.slice());
     if (!built) { parent.removeChild(marker); return false; }
     if (!built.keep) blocks.forEach(b => { if (b.parentNode === parent) parent.removeChild(b); });
-    built.nodes.forEach(n => { parent.insertBefore(n, marker); parent.insertBefore(document.createTextNode('\n'), marker); });
+    if (!op.id) op.id = Math.random().toString(36).slice(2, 8);
+    built.nodes.forEach(n => { if (n.nodeType === 1) n.setAttribute('data-t2t-snip', op.id); parent.insertBefore(n, marker); parent.insertBefore(document.createTextNode('\n'), marker); });
     parent.removeChild(marker);
     op.note = built.note || '';
     return true;
