@@ -231,7 +231,23 @@
     #tables .preview-box .ic-Table--hover-row tbody tr:hover {
       background-color: #e6eef5;
     }
-  </style>
+  
+    /* Darken the reference website while preserving self-contained, readable
+       Canvas snippet cards, which declare their own foreground/background. */
+    @media (prefers-color-scheme: dark) {
+      :root { --text: #e5edf5; --border: #45576b; --background: #14202d; --white: #202f40; --spc-blue: #90c9ff; --spc-blue-dark: #c1e1ff; }
+      body { background: linear-gradient(180deg, #101a26 0%, #172636 100%); }
+      .intro-card, .snippet-page { background: #202f40; color: #e5edf5; }
+      .nav-button { background: #26394b; border-color: #536b80; color: #e5edf5; }
+      .nav-button:hover, .nav-button:focus { background: #324b62; border-color: #90c9ff; }
+      .nav-button.active { background: #00406e; color: #ffffff; border-color: #90c9ff; }
+      .preview-box { background: #ffffff; border-color: #607286; color: #17324d; color-scheme: light; }
+      .copy-html-button { background: #00406e; color: #ffffff; border-color: #90c9ff; }
+      .copy-html-button:hover { background: #00568e; }
+      .hero { color: #ffffff; }
+      .footer-rule { border-color: #90c9ff; }
+    }
+</style>
 </head>
 
 <body>
@@ -245,6 +261,7 @@
       <p><strong>How to use this page:</strong> Select one of the H2-style buttons below. The selected section will display as its own page area with a live preview and copy-ready Canvas HTML code.</p>
     </section>
 
+    <p><strong>Light and dark mode:</strong> The preview cards and copy-ready Canvas snippets use explicit, contrasting text and background colors so they remain readable in either theme. They intentionally preserve their card colors rather than relying on Canvas to switch them.</p>
     <section class="button-grid" aria-label="Canvas design snippet navigation">
       <button class="nav-button active" type="button" onclick="showPage('page-headers', this)">🔷 Page Headers</button>
       <button class="nav-button" type="button" onclick="showPage('horizontal-lines', this)">➖ Horizontal Lines</button>
@@ -278,7 +295,7 @@
 
   <div class="preview-box">
 
-    <h2 style="color: #00406e;">Directions</h2>
+    <h2 style="color: #00406e; background-color: #ffffff;">Directions</h2>
 
   </div>
 
@@ -290,7 +307,7 @@
         <button class="copy-html-button" type="button" data-copy-target="snippet-code-2" aria-controls="snippet-code-2">Copy HTML</button>
         <span class="copy-status" role="status" aria-live="polite"></span>
       </div>
-      <pre><code id="snippet-code-2">&lt;h2 style="color: #00406e;"&gt;Directions&lt;/h2&gt;</code></pre>
+      <pre><code id="snippet-code-2">&lt;h2 style="color: #00406e; background-color: #ffffff;"&gt;Directions&lt;/h2&gt;</code></pre>
 
   </div>
 
@@ -307,14 +324,14 @@
 
       <p class="preview-label" style="margin-top: 24px;">H3 Bold with Blue Font</p>
       <div class="preview-box">
-        <h3 style="color: #00406e;"><strong>To Do List</strong></h3>
+        <h3 style="color: #00406e; background-color: #ffffff;"><strong>To Do List</strong></h3>
       </div>
       <p class="code-label">Code</p>
       <div class="copy-controls">
         <button class="copy-html-button" type="button" data-copy-target="snippet-code-3" aria-controls="snippet-code-3">Copy HTML</button>
         <span class="copy-status" role="status" aria-live="polite"></span>
       </div>
-      <pre><code id="snippet-code-3">&lt;h3 style="color: #00406e;"&gt;&lt;strong&gt;To Do List&lt;/strong&gt;&lt;/h3&gt;</code></pre>
+      <pre><code id="snippet-code-3">&lt;h3 style="color: #00406e; background-color: #ffffff;"&gt;&lt;strong&gt;To Do List&lt;/strong&gt;&lt;/h3&gt;</code></pre>
     </section>
 
     <section id="button" class="snippet-page">
@@ -362,7 +379,7 @@
       <h2 class="snippet-title">Chunking Information</h2>
       <p class="preview-label" style="margin-top: 24px;">Light Blue Box</p>
       <div class="preview-box">
-<div style="border-radius: 8px; padding: 18px 22px; margin: 16px 0px; background-color: #f7f9fb; border: 1px solid #d7e2ec;">
+<div style="border-radius: 8px; padding: 18px 22px; margin: 16px 0px; background-color: #f7f9fb; border: 1px solid #d7e2ec; color: #17324d;">
     <h3 style="color: #00406e; margin-top: 0;">Section One:&nbsp;</h3>
     <p>Review: Module 2 Learning Resources: Plate Boundaries&nbsp;</p>
     <p>Watch: Constructing a Concept Sketch&nbsp;</p>
@@ -374,7 +391,7 @@
         <button class="copy-html-button" type="button" data-copy-target="snippet-code-chunking-blue" aria-controls="snippet-code-chunking-blue">Copy HTML</button>
         <span class="copy-status" role="status" aria-live="polite"></span>
       </div>
-      <pre><code id="snippet-code-chunking-blue">&lt;div style="border-radius: 8px; padding: 18px 22px; margin: 16px 0px; background-color: #f7f9fb; border: 1px solid #d7e2ec;"&gt;
+      <pre><code id="snippet-code-chunking-blue">&lt;div style="border-radius: 8px; padding: 18px 22px; margin: 16px 0px; background-color: #f7f9fb; border: 1px solid #d7e2ec; color: #17324d;"&gt;
     &lt;h3 style="color: #00406e; margin-top: 0;"&gt;Section One:&amp;nbsp;&lt;/h3&gt;
     &lt;p&gt;Review: Module 2 Learning Resources: Plate Boundaries&amp;nbsp;&lt;/p&gt;
     &lt;p&gt;Watch: Constructing a Concept Sketch&amp;nbsp;&lt;/p&gt;
@@ -383,7 +400,7 @@
 
       <p class="preview-label" style="margin-top: 24px;">Gold Vertical Bar</p>
       <div class="preview-box">
-<div style="border-left: 5px solid #f2a900; padding-left: 18px; margin: 24px 0;">
+<div style="border-left: 5px solid #f2a900; padding: 12px 18px; margin: 24px 0; background-color: #ffffff; color: #17324d;">
     <h3 style="color: #00406e;">Answer: What is a Large Language Model?</h3>
     <p>An LLM focuses on understanding and generating text. LLMs are the engine underneath the hood of chatbots like ChatGPT, Claude, and Gemini.</p>
     <p>LLMs are trained on enormous amounts of text (books, websites, code, and articles). The model learns to predict the next word in a sentence, billions of times, until it builds a rich statistical map of human language.</p>
@@ -395,7 +412,7 @@
         <button class="copy-html-button" type="button" data-copy-target="snippet-code-chunking-gold" aria-controls="snippet-code-chunking-gold">Copy HTML</button>
         <span class="copy-status" role="status" aria-live="polite"></span>
       </div>
-      <pre><code id="snippet-code-chunking-gold">&lt;div style="border-left: 5px solid #f2a900; padding-left: 18px; margin: 24px 0;"&gt;
+      <pre><code id="snippet-code-chunking-gold">&lt;div style="border-left: 5px solid #f2a900; padding: 12px 18px; margin: 24px 0; background-color: #ffffff; color: #17324d;"&gt;
     &lt;h3 style="color: #00406e;"&gt;Answer: What is a Large Language Model?&lt;/h3&gt;
     &lt;p&gt;An LLM focuses on understanding and generating text. LLMs are the engine underneath the hood of chatbots like ChatGPT, Claude, and Gemini.&lt;/p&gt;
     &lt;p&gt;LLMs are trained on enormous amounts of text (books, websites, code, and articles). The model learns to predict the next word in a sentence, billions of times, until it builds a rich statistical map of human language.&lt;/p&gt;
@@ -407,7 +424,7 @@
       <h2 class="snippet-title">👩‍🎓 Student Example Call Out Box</h2>
       <p class="preview-label">Blue Call Out Box</p>
       <div class="preview-box">
-        <div style="background: #e8f0f7; border-left: 6px solid #003366; padding: 20px; border-radius: 8px;">
+        <div style="background: #e8f0f7; border-left: 6px solid #003366; padding: 20px; border-radius: 8px; color: #17324d;">
           <h4 style="color: #003366;">Student Example:</h4>
           <p><strong>Example:</strong> Sample content here.</p>
         </div>
@@ -417,7 +434,7 @@
         <button class="copy-html-button" type="button" data-copy-target="snippet-code-7" aria-controls="snippet-code-7">Copy HTML</button>
         <span class="copy-status" role="status" aria-live="polite"></span>
       </div>
-      <pre><code id="snippet-code-7">&lt;div style="background: #e8f0f7; border-left: 6px solid #003366; padding: 20px; border-radius: 8px;"&gt;
+      <pre><code id="snippet-code-7">&lt;div style="background: #e8f0f7; border-left: 6px solid #003366; padding: 20px; border-radius: 8px; color: #17324d;"&gt;
 &lt;h4 style="color: #003366;"&gt;Student Example:&lt;/h4&gt;
 &lt;p&gt;&lt;strong&gt;Example:&lt;/strong&gt; Sample content here.&lt;/p&gt;
 &lt;/div&gt;</code></pre>
@@ -428,7 +445,7 @@
 
 <div class="preview-box">
 
-    <div style="background: #fdf0f0; border-left: 6px solid #8b1e1e; padding: 20px; border-radius: 8px;">
+    <div style="background: #fdf0f0; border-left: 6px solid #8b1e1e; padding: 20px; border-radius: 8px; color: #17324d;">
 
         <p><strong>Important:</strong></p>
 
@@ -444,7 +461,7 @@
         <button class="copy-html-button" type="button" data-copy-target="snippet-code-8" aria-controls="snippet-code-8">Copy HTML</button>
         <span class="copy-status" role="status" aria-live="polite"></span>
       </div>
-      <pre><code id="snippet-code-8">&lt;div style="background: #fdf0f0; border-left: 6px solid #8b1e1e; padding: 20px; border-radius: 8px;"&gt;
+      <pre><code id="snippet-code-8">&lt;div style="background: #fdf0f0; border-left: 6px solid #8b1e1e; padding: 20px; border-radius: 8px; color: #17324d;"&gt;
 
     &lt;p&gt;&lt;strong&gt;Important:&lt;/strong&gt;&lt;/p&gt;
 
@@ -456,7 +473,7 @@
 
   <div class="preview-box">
 
-    <div style="background: #fff8e6; border-left: 6px solid #f2a900; padding: 20px; border-radius: 8px;">
+    <div style="background: #fff8e6; border-left: 6px solid #f2a900; padding: 20px; border-radius: 8px; color: #17324d;">
 
       <h4 style="color: #00406e;"><strong>Good Example:</strong></h4>
 
@@ -490,7 +507,7 @@
         <button class="copy-html-button" type="button" data-copy-target="snippet-code-9" aria-controls="snippet-code-9">Copy HTML</button>
         <span class="copy-status" role="status" aria-live="polite"></span>
       </div>
-      <pre><code id="snippet-code-9">&lt;div style="background: #fff8e6; border-left: 6px solid #f2a900; padding: 20px; border-radius: 8px;" title="embedded content"&gt;
+      <pre><code id="snippet-code-9">&lt;div style="background: #fff8e6; border-left: 6px solid #f2a900; padding: 20px; border-radius: 8px; color: #17324d;" title="embedded content"&gt;
 
     &lt;h4 style="color: #00406e;"&gt;&lt;strong&gt;Good Example:&lt;/strong&gt;&lt;/h4&gt;
 
@@ -629,7 +646,7 @@
     <p style="margin: 0 0 16px;"><strong style="color: #851b28;">Why this policy applies:</strong><br />[Explain why students need to complete this assignment without AI. Connect the decision to the independent thinking, foundational skills, or learning outcomes being assessed.]</p>
     <p style="margin: 0 0 16px;"><strong style="color: #851b28;">Independent work expectations:</strong><br />[Describe the work students must complete on their own and clarify which AI features or tools fall under this restriction, including AI features built into other software.]</p>
     <p style="margin: 0 0 16px;"><strong style="color: #851b28;">Available support:</strong><br />[List non-AI resources students may use, such as course materials, instructor feedback, tutoring, or the writing center.]</p>
-    <div style="background-color: #ffffff; border: 1px solid #edc6c6; border-radius: 8px; padding: 14px 16px;">
+    <div style="background-color: #ffffff; border: 1px solid #edc6c6; border-radius: 8px; padding: 14px 16px; color: #17324d;">
         <p style="margin: 0;"><strong>Before you begin:</strong> If you are unsure whether a tool includes AI or falls under this policy, ask your instructor before using it.</p>
     </div>
 </div>
@@ -646,7 +663,7 @@
     &lt;p style="margin: 0 0 16px;"&gt;&lt;strong style="color: #851b28;"&gt;Why this policy applies:&lt;/strong&gt;&lt;br /&gt;[Explain why students need to complete this assignment without AI. Connect the decision to the independent thinking, foundational skills, or learning outcomes being assessed.]&lt;/p&gt;
     &lt;p style="margin: 0 0 16px;"&gt;&lt;strong style="color: #851b28;"&gt;Independent work expectations:&lt;/strong&gt;&lt;br /&gt;[Describe the work students must complete on their own and clarify which AI features or tools fall under this restriction, including AI features built into other software.]&lt;/p&gt;
     &lt;p style="margin: 0 0 16px;"&gt;&lt;strong style="color: #851b28;"&gt;Available support:&lt;/strong&gt;&lt;br /&gt;[List non-AI resources students may use, such as course materials, instructor feedback, tutoring, or the writing center.]&lt;/p&gt;
-    &lt;div style="background-color: #ffffff; border: 1px solid #edc6c6; border-radius: 8px; padding: 14px 16px;"&gt;
+    &lt;div style="background-color: #ffffff; border: 1px solid #edc6c6; border-radius: 8px; padding: 14px 16px; color: #17324d;"&gt;
         &lt;p style="margin: 0;"&gt;&lt;strong&gt;Before you begin:&lt;/strong&gt; If you are unsure whether a tool includes AI or falls under this policy, ask your instructor before using it.&lt;/p&gt;
     &lt;/div&gt;
 &lt;/div&gt;</code></pre>
@@ -660,7 +677,7 @@
     <p style="margin: 0 0 16px;"><strong style="color: #705000;">Why this policy applies:</strong><br />[Explain why limited AI support is appropriate for this assignment and which skills students still need to demonstrate independently.]</p>
     <p style="margin: 0 0 16px;"><strong style="color: #705000;">AI boundaries:</strong><br />[Specify the stages or tasks where AI may be used, such as brainstorming or feedback, and identify the work students must complete independently. Be explicit about whether AI-generated content may appear in the submission.]</p>
     <p style="margin: 0 0 16px;"><strong style="color: #705000;">Disclosure requirements:</strong><br />[Explain how students should identify the AI tools used, describe the specific assistance received, and provide prompts or outputs if required. State what students should report if they did not use AI.]</p>
-    <div style="background-color: #ffffff; border: 1px solid #ead9a0; border-radius: 8px; padding: 14px 16px;">
+    <div style="background-color: #ffffff; border: 1px solid #ead9a0; border-radius: 8px; padding: 14px 16px; color: #17324d;">
         <p style="margin: 0;"><strong>Before you begin:</strong> If a use of AI is not clearly covered by these boundaries, ask your instructor before using it.</p>
     </div>
 </div>
@@ -677,7 +694,7 @@
     &lt;p style="margin: 0 0 16px;"&gt;&lt;strong style="color: #705000;"&gt;Why this policy applies:&lt;/strong&gt;&lt;br /&gt;[Explain why limited AI support is appropriate for this assignment and which skills students still need to demonstrate independently.]&lt;/p&gt;
     &lt;p style="margin: 0 0 16px;"&gt;&lt;strong style="color: #705000;"&gt;AI boundaries:&lt;/strong&gt;&lt;br /&gt;[Specify the stages or tasks where AI may be used, such as brainstorming or feedback, and identify the work students must complete independently. Be explicit about whether AI-generated content may appear in the submission.]&lt;/p&gt;
     &lt;p style="margin: 0 0 16px;"&gt;&lt;strong style="color: #705000;"&gt;Disclosure requirements:&lt;/strong&gt;&lt;br /&gt;[Explain how students should identify the AI tools used, describe the specific assistance received, and provide prompts or outputs if required. State what students should report if they did not use AI.]&lt;/p&gt;
-    &lt;div style="background-color: #ffffff; border: 1px solid #ead9a0; border-radius: 8px; padding: 14px 16px;"&gt;
+    &lt;div style="background-color: #ffffff; border: 1px solid #ead9a0; border-radius: 8px; padding: 14px 16px; color: #17324d;"&gt;
         &lt;p style="margin: 0;"&gt;&lt;strong&gt;Before you begin:&lt;/strong&gt; If a use of AI is not clearly covered by these boundaries, ask your instructor before using it.&lt;/p&gt;
     &lt;/div&gt;
 &lt;/div&gt;</code></pre>
@@ -691,7 +708,7 @@
     <p style="margin: 0 0 16px;"><strong style="color: #155c3b;">Why this policy applies:</strong><br />[Explain how using AI supports this assignment's learning goals, such as evaluating outputs, refining ideas, or applying disciplinary judgment.]</p>
     <p style="margin: 0 0 16px;"><strong style="color: #155c3b;">Responsible AI use:</strong><br />Review and verify AI outputs, check any sources or citations, and ensure you can explain your submitted work. [Add any assignment-specific expectations for evaluating, adapting, or documenting AI-assisted work.]</p>
     <p style="margin: 0 0 16px;"><strong style="color: #155c3b;">Disclosure requirements:</strong><br />[Explain how students should acknowledge the AI tools used and their contribution, including any required prompts, outputs, or reflection. State what students should report if they did not use AI.]</p>
-    <div style="background-color: #ffffff; border: 1px solid #bedfcd; border-radius: 8px; padding: 14px 16px;">
+    <div style="background-color: #ffffff; border: 1px solid #bedfcd; border-radius: 8px; padding: 14px 16px; color: #17324d;">
         <p style="margin: 0;"><strong>Before you begin:</strong> AI use is acceptable, but it is not required unless the assignment instructions say otherwise. Ask your instructor if you need clarification about expectations.</p>
     </div>
 </div>
@@ -708,7 +725,7 @@
     &lt;p style="margin: 0 0 16px;"&gt;&lt;strong style="color: #155c3b;"&gt;Why this policy applies:&lt;/strong&gt;&lt;br /&gt;[Explain how using AI supports this assignment's learning goals, such as evaluating outputs, refining ideas, or applying disciplinary judgment.]&lt;/p&gt;
     &lt;p style="margin: 0 0 16px;"&gt;&lt;strong style="color: #155c3b;"&gt;Responsible AI use:&lt;/strong&gt;&lt;br /&gt;Review and verify AI outputs, check any sources or citations, and ensure you can explain your submitted work. [Add any assignment-specific expectations for evaluating, adapting, or documenting AI-assisted work.]&lt;/p&gt;
     &lt;p style="margin: 0 0 16px;"&gt;&lt;strong style="color: #155c3b;"&gt;Disclosure requirements:&lt;/strong&gt;&lt;br /&gt;[Explain how students should acknowledge the AI tools used and their contribution, including any required prompts, outputs, or reflection. State what students should report if they did not use AI.]&lt;/p&gt;
-    &lt;div style="background-color: #ffffff; border: 1px solid #bedfcd; border-radius: 8px; padding: 14px 16px;"&gt;
+    &lt;div style="background-color: #ffffff; border: 1px solid #bedfcd; border-radius: 8px; padding: 14px 16px; color: #17324d;"&gt;
         &lt;p style="margin: 0;"&gt;&lt;strong&gt;Before you begin:&lt;/strong&gt; AI use is acceptable, but it is not required unless the assignment instructions say otherwise. Ask your instructor if you need clarification about expectations.&lt;/p&gt;
     &lt;/div&gt;
 &lt;/div&gt;</code></pre>
@@ -741,7 +758,7 @@
         <div style="background-color: #f5f2ff; border-width: 1px 1px 1px 6px; border-style: solid; border-color: #ded5f5 #ded5f5 #ded5f5 #7550c8; padding: 20px 24px; border-radius: 12px; margin: 20px 0px; color: #2d2638;">
           <h4 style="color: #59379c; margin: 0 0 12px; font-size: 18px;"><span aria-hidden="true">✦</span> IgniteAI Prompt</h4>
           <p style="margin: 0 0 12px; line-height: 1.6;">Copy and paste the prompt below into IgniteAI to draft your &ldquo;About This Course&rdquo; section. This provides you with a draft of the content that you can adapt to your liking. When complete, highlight and delete this section.</p>
-          <div style="background-color: #ffffff; padding: 16px; border-radius: 8px; border: 1px solid #ded5f5;">
+          <div style="background-color: #ffffff; padding: 16px; border-radius: 8px; border: 1px solid #ded5f5; color: #17324d;">
             <p style="margin: 0; line-height: 1.6;"><strong>Prompt: </strong>Paste prompt here</p>
           </div>
         </div>
@@ -755,7 +772,7 @@
       <pre><code id="snippet-code-14">&lt;div style="background-color: #f5f2ff; border-width: 1px 1px 1px 6px; border-style: solid; border-color: #ded5f5 #ded5f5 #ded5f5 #7550c8; padding: 20px 24px; border-radius: 12px; margin: 20px 0px; color: #2d2638;"&gt;
     &lt;h4 style="color: #59379c; margin: 0 0 12px; font-size: 18px;"&gt;&lt;span aria-hidden="true"&gt;✦&lt;/span&gt; IgniteAI Prompt&lt;/h4&gt;
     &lt;p style="margin: 0 0 12px; line-height: 1.6;"&gt;Copy and paste the prompt below into IgniteAI to draft your &amp;ldquo;About This Course&amp;rdquo; section. This provides you with a draft of the content that you can adapt to your liking. When complete, highlight and delete this section.&lt;/p&gt;
-    &lt;div style="background-color: #ffffff; padding: 16px; border-radius: 8px; border: 1px solid #ded5f5;"&gt;
+    &lt;div style="background-color: #ffffff; padding: 16px; border-radius: 8px; border: 1px solid #ded5f5; color: #17324d;"&gt;
         &lt;p style="margin: 0; line-height: 1.6;"&gt;&lt;strong&gt;Prompt: &lt;/strong&gt;Paste prompt here&lt;/p&gt;
     &lt;/div&gt;
 &lt;/div&gt;</code></pre>
@@ -768,7 +785,7 @@
       <p class="preview-label">Preview Style 1</p>
       <div class="preview-box">
         <div style="display: flex; flex-direction: column; gap: 10px;">
-          <details style="background-color: white; border-radius: 8px; overflow: hidden; border: 1px solid #DDDDDD;">
+          <details style="background-color: white; border-radius: 8px; overflow: hidden; border: 1px solid #DDDDDD; color: #17324d;">
             <summary style="font-size: 1.3em; color: #003366; background-color: #e6eef5; padding: 15px; cursor: pointer; border-bottom: 1px solid #DDDDDD;">Dropdown Option 1</summary>
             <div style="padding: 15px; line-height: 1.5; color: #333333;">
               <p><strong>Enter text here.</strong></p>
@@ -783,7 +800,7 @@
         <span class="copy-status" role="status" aria-live="polite"></span>
       </div>
       <pre><code id="snippet-code-15">&lt;div style="display: flex; flex-direction: column; gap: 10px;"&gt;
-    &lt;details style="background-color: white; border-radius: 8px; overflow: hidden; border: 1px solid #DDDDDD;"&gt;
+    &lt;details style="background-color: white; border-radius: 8px; overflow: hidden; border: 1px solid #DDDDDD; color: #17324d;"&gt;
         &lt;summary style="font-size: 1.3em; color: #003366; background-color: #e6eef5; padding: 15px; cursor: pointer; border-bottom: 1px solid #DDDDDD;"&gt;Dropdown Option 1&lt;/summary&gt;
         &lt;div style="padding: 15px; line-height: 1.5; color: #333333;"&gt;
             &lt;p&gt;&lt;strong&gt;Enter text here.&lt;/strong&gt;&lt;/p&gt;
@@ -804,7 +821,7 @@
 
     </summary>
 
-    <div style="padding: 15px; background-color: #f9f9f9; border-top: 1px solid #005596;">
+    <div style="padding: 15px; background-color: #f9f9f9; border-top: 1px solid #005596; color: #17324d;">
 
       <ul>
 
@@ -828,7 +845,7 @@
     &lt;summary style="padding: 15px; background-color: #005596; color: #ffffff; cursor: pointer; list-style: none; display: block;"&gt;
         &lt;span style="margin-right: 10px;"&gt;►&lt;/span&gt; Accordion Dropdown 1
     &lt;/summary&gt;
-    &lt;div style="padding: 15px; background-color: #f9f9f9; border-top: 1px solid #005596;"&gt;
+    &lt;div style="padding: 15px; background-color: #f9f9f9; border-top: 1px solid #005596; color: #17324d;"&gt;
         &lt;ul&gt;
             &lt;li&gt;&lt;strong&gt;List it out&lt;/strong&gt;&lt;/li&gt;
         &lt;/ul&gt;
@@ -1074,7 +1091,7 @@
 
         <summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;">A. AI may reflect patterns or gaps in its training data</summary>
 
-        <div style="margin-top: 8px; padding: 14px; background: #e8f6ee; border-left: 5px solid #116149; border-radius: 8px;"><strong>Correct!</strong> AI can reflect bias from the data it was trained on.</div>
+        <div style="margin-top: 8px; padding: 14px; background: #e8f6ee; border-left: 5px solid #116149; border-radius: 8px; color: #17324d;"><strong>Correct!</strong> AI can reflect bias from the data it was trained on.</div>
 
       </details>
 
@@ -1082,7 +1099,7 @@
 
         <summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;">B. AI is always neutral</summary>
 
-        <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"><strong>Not quite.</strong> AI can reflect bias from its training data.</div>
+        <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px; color: #17324d;"><strong>Not quite.</strong> AI can reflect bias from its training data.</div>
 
       </details>
 
@@ -1090,7 +1107,7 @@
 
         <summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;">C. AI only uses current information</summary>
 
-        <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"><strong>Not quite.</strong> AI may not always have current information.</div>
+        <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px; color: #17324d;"><strong>Not quite.</strong> AI may not always have current information.</div>
 
       </details>
 
@@ -1098,7 +1115,7 @@
 
         <summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;">D. AI replaces the need for human judgment</summary>
 
-        <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"><strong>Not quite.</strong> Human judgment is still important when using AI.</div>
+        <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px; color: #17324d;"><strong>Not quite.</strong> Human judgment is still important when using AI.</div>
 
       </details>
 
@@ -1120,7 +1137,7 @@
 
 &lt;summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;"&gt;A. AI may reflect patterns or gaps in its training data&lt;/summary&gt;
 
-&lt;div style="margin-top: 8px; padding: 14px; background: #e8f6ee; border-left: 5px solid #116149; border-radius: 8px;"&gt;&lt;strong&gt;Correct!&lt;/strong&gt; AI can reflect bias from the data it was trained on.&lt;/div&gt;
+&lt;div style="margin-top: 8px; padding: 14px; background: #e8f6ee; border-left: 5px solid #116149; border-radius: 8px; color: #17324d;"&gt;&lt;strong&gt;Correct!&lt;/strong&gt; AI can reflect bias from the data it was trained on.&lt;/div&gt;
 
 &lt;/details&gt;
 
@@ -1128,7 +1145,7 @@
 
 &lt;summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;"&gt;B. AI is always neutral&lt;/summary&gt;
 
-&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; AI can reflect bias from its training data.&lt;/div&gt;
+&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px; color: #17324d;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; AI can reflect bias from its training data.&lt;/div&gt;
 
 &lt;/details&gt;
 
@@ -1136,7 +1153,7 @@
 
 &lt;summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;"&gt;C. AI only uses current information&lt;/summary&gt;
 
-&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; AI may not always have current information.&lt;/div&gt;
+&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px; color: #17324d;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; AI may not always have current information.&lt;/div&gt;
 
 &lt;/details&gt;
 
@@ -1144,7 +1161,7 @@
 
 &lt;summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;"&gt;D. AI replaces the need for human judgment&lt;/summary&gt;
 
-&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; Human judgment is still important when using AI.&lt;/div&gt;
+&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px; color: #17324d;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; Human judgment is still important when using AI.&lt;/div&gt;
 
 &lt;/details&gt;
 
@@ -1169,7 +1186,7 @@
 
         <summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;">A. By memorizing a database of facts</summary>
 
-        <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"><strong>Not quite.</strong> LLMs do not simply memorize facts.</div>
+        <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px; color: #17324d;"><strong>Not quite.</strong> LLMs do not simply memorize facts.</div>
 
       </details>
 
@@ -1177,7 +1194,7 @@
 
         <summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;">B. By predicting the next word in text</summary>
 
-        <div style="margin-top: 8px; padding: 14px; background: #e8f6ee; border-left: 5px solid #116149; border-radius: 8px;"><strong>Correct!</strong> Large Language Models learn by predicting the next word or token in a sequence of text.</div>
+        <div style="margin-top: 8px; padding: 14px; background: #e8f6ee; border-left: 5px solid #116149; border-radius: 8px; color: #17324d;"><strong>Correct!</strong> Large Language Models learn by predicting the next word or token in a sequence of text.</div>
 
       </details>
 
@@ -1185,7 +1202,7 @@
 
         <summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;">C. By watching videos like humans do</summary>
 
-        <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"><strong>Not quite.</strong> LLMs are primarily trained on text rather than learning like humans do.</div>
+        <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px; color: #17324d;"><strong>Not quite.</strong> LLMs are primarily trained on text rather than learning like humans do.</div>
 
       </details>
 
@@ -1193,7 +1210,7 @@
 
         <summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;">D. By browsing the internet in real time</summary>
 
-        <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"><strong>Not quite.</strong> Most LLMs do not browse the internet in real time by default.</div>
+        <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px; color: #17324d;"><strong>Not quite.</strong> Most LLMs do not browse the internet in real time by default.</div>
 
       </details>
 
@@ -1215,7 +1232,7 @@
 
 &lt;summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;"&gt;A. By memorizing a database of facts&lt;/summary&gt;
 
-&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; LLMs do not simply memorize facts.&lt;/div&gt;
+&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px; color: #17324d;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; LLMs do not simply memorize facts.&lt;/div&gt;
 
 &lt;/details&gt;
 
@@ -1223,7 +1240,7 @@
 
 &lt;summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;"&gt;B. By predicting the next word in text&lt;/summary&gt;
 
-&lt;div style="margin-top: 8px; padding: 14px; background: #e8f6ee; border-left: 5px solid #116149; border-radius: 8px;"&gt;&lt;strong&gt;Correct!&lt;/strong&gt; Large Language Models learn by predicting the next word or token in a sequence of text.&lt;/div&gt;
+&lt;div style="margin-top: 8px; padding: 14px; background: #e8f6ee; border-left: 5px solid #116149; border-radius: 8px; color: #17324d;"&gt;&lt;strong&gt;Correct!&lt;/strong&gt; Large Language Models learn by predicting the next word or token in a sequence of text.&lt;/div&gt;
 
 &lt;/details&gt;
 
@@ -1231,7 +1248,7 @@
 
 &lt;summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;"&gt;C. By watching videos like humans do&lt;/summary&gt;
 
-&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; LLMs are primarily trained on text rather than learning like humans do.&lt;/div&gt;
+&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px; color: #17324d;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; LLMs are primarily trained on text rather than learning like humans do.&lt;/div&gt;
 
 &lt;/details&gt;
 
@@ -1239,7 +1256,7 @@
 
 &lt;summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;"&gt;D. By browsing the internet in real time&lt;/summary&gt;
 
-&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; Most LLMs do not browse the internet in real time by default.&lt;/div&gt;
+&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px; color: #17324d;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; Most LLMs do not browse the internet in real time by default.&lt;/div&gt;
 
 &lt;/details&gt;
 
@@ -1262,7 +1279,7 @@
 
         <summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;">A. Make it as vague as possible</summary>
 
-        <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"><strong>Not quite.</strong> Clear prompts usually produce better results.</div>
+        <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px; color: #17324d;"><strong>Not quite.</strong> Clear prompts usually produce better results.</div>
 
       </details>
 
@@ -1270,7 +1287,7 @@
 
         <summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;">B. Avoid giving context</summary>
 
-        <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"><strong>Not quite.</strong> Context helps guide the AI response.</div>
+        <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px; color: #17324d;"><strong>Not quite.</strong> Context helps guide the AI response.</div>
 
       </details>
 
@@ -1278,7 +1295,7 @@
 
         <summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;">C. Provide clear instructions and context</summary>
 
-        <div style="margin-top: 8px; padding: 14px; background: #e8f6ee; border-left: 5px solid #116149; border-radius: 8px;"><strong>Correct!</strong> Clear instructions and context help AI produce better responses.</div>
+        <div style="margin-top: 8px; padding: 14px; background: #e8f6ee; border-left: 5px solid #116149; border-radius: 8px; color: #17324d;"><strong>Correct!</strong> Clear instructions and context help AI produce better responses.</div>
 
       </details>
 
@@ -1286,7 +1303,7 @@
 
         <summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;">D. Use only one-word prompts</summary>
 
-        <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"><strong>Not quite.</strong> One-word prompts often lack enough detail.</div>
+        <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px; color: #17324d;"><strong>Not quite.</strong> One-word prompts often lack enough detail.</div>
 
       </details>
 
@@ -1308,7 +1325,7 @@
 
 &lt;summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;"&gt;A. Make it as vague as possible&lt;/summary&gt;
 
-&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; Clear prompts usually produce better results.&lt;/div&gt;
+&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px; color: #17324d;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; Clear prompts usually produce better results.&lt;/div&gt;
 
 &lt;/details&gt;
 
@@ -1316,7 +1333,7 @@
 
 &lt;summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;"&gt;B. Avoid giving context&lt;/summary&gt;
 
-&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; Context helps guide the AI response.&lt;/div&gt;
+&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px; color: #17324d;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; Context helps guide the AI response.&lt;/div&gt;
 
 &lt;/details&gt;
 
@@ -1324,7 +1341,7 @@
 
 &lt;summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;"&gt;C. Provide clear instructions and context&lt;/summary&gt;
 
-&lt;div style="margin-top: 8px; padding: 14px; background: #e8f6ee; border-left: 5px solid #116149; border-radius: 8px;"&gt;&lt;strong&gt;Correct!&lt;/strong&gt; Clear instructions and context help AI produce better responses.&lt;/div&gt;
+&lt;div style="margin-top: 8px; padding: 14px; background: #e8f6ee; border-left: 5px solid #116149; border-radius: 8px; color: #17324d;"&gt;&lt;strong&gt;Correct!&lt;/strong&gt; Clear instructions and context help AI produce better responses.&lt;/div&gt;
 
 &lt;/details&gt;
 
@@ -1332,7 +1349,7 @@
 
 &lt;summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;"&gt;D. Use only one-word prompts&lt;/summary&gt;
 
-&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; One-word prompts often lack enough detail.&lt;/div&gt;
+&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px; color: #17324d;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; One-word prompts often lack enough detail.&lt;/div&gt;
 
 &lt;/details&gt;
 
@@ -1356,7 +1373,7 @@
 
         <summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;">A. Assume it is always correct</summary>
 
-        <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"><strong>Not quite.</strong> AI can make mistakes.</div>
+        <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px; color: #17324d;"><strong>Not quite.</strong> AI can make mistakes.</div>
 
       </details>
 
@@ -1364,7 +1381,7 @@
 
         <summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;">B. Copy it without reviewing</summary>
 
-        <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"><strong>Not quite.</strong> AI responses should be reviewed before use.</div>
+        <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px; color: #17324d;"><strong>Not quite.</strong> AI responses should be reviewed before use.</div>
 
       </details>
 
@@ -1372,7 +1389,7 @@
 
         <summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;">C. Ignore the source of the information</summary>
 
-        <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"><strong>Not quite.</strong> Source quality matters.</div>
+        <div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px; color: #17324d;"><strong>Not quite.</strong> Source quality matters.</div>
 
       </details>
 
@@ -1380,7 +1397,7 @@
 
         <summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;">D. Verify it using reliable sources</summary>
 
-        <div style="margin-top: 8px; padding: 14px; background: #e8f6ee; border-left: 5px solid #116149; border-radius: 8px;"><strong>Correct!</strong> Important information should be checked using reliable sources.</div>
+        <div style="margin-top: 8px; padding: 14px; background: #e8f6ee; border-left: 5px solid #116149; border-radius: 8px; color: #17324d;"><strong>Correct!</strong> Important information should be checked using reliable sources.</div>
 
       </details>
 
@@ -1402,7 +1419,7 @@
 
 &lt;summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;"&gt;A. Assume it is always correct&lt;/summary&gt;
 
-&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; AI can make mistakes.&lt;/div&gt;
+&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px; color: #17324d;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; AI can make mistakes.&lt;/div&gt;
 
 &lt;/details&gt;
 
@@ -1410,7 +1427,7 @@
 
 &lt;summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;"&gt;B. Copy it without reviewing&lt;/summary&gt;
 
-&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; AI responses should be reviewed before use.&lt;/div&gt;
+&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px; color: #17324d;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; AI responses should be reviewed before use.&lt;/div&gt;
 
 &lt;/details&gt;
 
@@ -1418,7 +1435,7 @@
 
 &lt;summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;"&gt;C. Ignore the source of the information&lt;/summary&gt;
 
-&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; Source quality matters.&lt;/div&gt;
+&lt;div style="margin-top: 8px; padding: 14px; background: #fff0f0; border-left: 5px solid #a62b2b; border-radius: 8px; color: #17324d;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; Source quality matters.&lt;/div&gt;
 
 &lt;/details&gt;
 
@@ -1426,7 +1443,7 @@
 
 &lt;summary style="list-style: none; cursor: pointer; padding: 12px 16px; color: #000000; background: #ffffff; border: 1px solid #d7e2ec; border-radius: 10px;"&gt;D. Verify it using reliable sources&lt;/summary&gt;
 
-&lt;div style="margin-top: 8px; padding: 14px; background: #e8f6ee; border-left: 5px solid #116149; border-radius: 8px;"&gt;&lt;strong&gt;Correct!&lt;/strong&gt; Important information should be checked using reliable sources.&lt;/div&gt;
+&lt;div style="margin-top: 8px; padding: 14px; background: #e8f6ee; border-left: 5px solid #116149; border-radius: 8px; color: #17324d;"&gt;&lt;strong&gt;Correct!&lt;/strong&gt; Important information should be checked using reliable sources.&lt;/div&gt;
 
 &lt;/details&gt;
 
