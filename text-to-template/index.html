@@ -94,7 +94,7 @@ textarea { width: 100%; border: 0; resize: vertical; padding: 14px; font-family:
 [role="tablist"] { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
 [role="tab"] { border: 0; border-radius: 0; padding: 6px 12px; }
 [role="tab"][aria-selected="true"] { background: var(--accent-soft); font-weight: bold; }
-#preview { background: #ffffff; color: #2d3b45; padding: 20px 24px; min-height: 560px; border-radius: 0 0 10px 10px; font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.5; overflow-wrap: anywhere; }
+#preview { color-scheme: light; background: #ffffff; color: #2d3b45; padding: 20px 24px; min-height: 560px; border-radius: 0 0 10px 10px; font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.5; overflow-wrap: anywhere; }
 #preview a { color: #0770a3; }
 #preview a.btn { display: inline-block; padding: 8px 14px; background: #f5f5f5; border: 1px solid #c7cdd1; border-radius: 4px; color: #2d3b45; text-decoration: none; }
 /* Approximates Canvas table styling, as on the Tables page of html-code.html. */
@@ -124,7 +124,7 @@ textarea { width: 100%; border: 0; resize: vertical; padding: 14px; font-family:
 .snip-variants { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; max-height: 330px; overflow-y: auto; padding: 2px; }
 .snip-card { display: grid; grid-template-rows: auto 1fr; gap: 6px; text-align: left; padding: 8px; border: 1px solid #d7e2ec; border-radius: 12px; background: #ffffff; color: #00406e; font-weight: bold; font-size: 0.82rem; }
 .snip-card[aria-checked="true"] { border: 2px solid #f2a900; padding: 7px; box-shadow: 0 0 0 3px rgba(242, 169, 0, 0.25); }
-.snip-mini { border: 1px solid #d7e2ec; border-radius: 8px; background: #fbfdff; padding: 8px; max-height: 200px; overflow: hidden; pointer-events: none; color: #2d3b45; font-weight: normal; font-family: Arial, sans-serif; zoom: 0.55; }
+.snip-mini { color-scheme: light; border: 1px solid #d7e2ec; border-radius: 8px; background: #fbfdff; padding: 8px; max-height: 200px; overflow: hidden; pointer-events: none; color: #2d3b45; font-weight: normal; font-family: Arial, sans-serif; zoom: 0.55; }
 .snip-mini .btn { display: inline-block; padding: 8px 14px; border: 1px solid #c7cdd1; border-radius: 3px; background: #f5f5f5; color: #2d3b45; text-decoration: none; }
 /* Two readiness checks for applying a snippet: text highlighted, design picked. */
 .snip-steps { list-style: none; margin: 0; padding: 0; flex: 1 1 240px; display: grid; gap: 2px; font-size: 0.85rem; color: var(--muted); }
@@ -134,6 +134,9 @@ textarea { width: 100%; border: 0; resize: vertical; padding: 14px; font-family:
 .snip-steps li.done .dot { background: var(--ok); border-color: var(--ok); color: #ffffff; font-size: 0; }
 .snip-steps li.done .dot::after { content: "✓"; font-size: 0.72rem; }
 .snip-note { margin: 0; font-size: 0.85rem; color: var(--muted); }
+/* A one-line "how to" for the open or chosen snippet, for designs whose text format isn't obvious. */
+.snip-tip { margin: 0; font-size: 0.84rem; color: var(--ink); padding: 4px 0 4px 10px; border-left: 3px solid var(--gold); }
+.snip-tip code { font-family: var(--font-code); background: var(--surface); padding: 0 4px; border-radius: 4px; font-size: 0.92em; }
 .snip-note a { color: var(--accent); }
 .manualbar { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--line); background: #fff4d6; color: #5a3d00; font-size: 0.88rem; }
 .manualbar p { margin: 0; flex: 1 1 260px; }
@@ -225,6 +228,9 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
           <li>Highlight text in the Preview, pick a snippet category and design, and select <strong>Apply</strong>. The snippet wraps or restyles the whole paragraphs, lists, and headings you touched.</li>
           <li>Accordions, dropdowns, and Clickable Steps make one item per heading you highlight.</li>
           <li>Quick Check uses the first line as the question and the list below it as answers. End the right answer with <code>*</code> to mark it correct; otherwise the design you pick decides (for example, "Answer B Correct" makes the second answer green).</li>
+          <li>True / False Challenge makes one statement per line. End each with <code>(True)</code> or <code>(False)</code>; any words after it become the feedback, as in <code>AI can be wrong. (True) Always verify.</code></li>
+          <li>Flashcards make one card per line written as <code>Term: definition</code>, or one per heading with its answer below. A heading above the lines titles the set.</li>
+          <li>When you open a category, a short tip under the designs shows the format it expects.</li>
           <li>Snippets stay applied while you keep editing your text. Use <strong>Undo</strong> or <strong>Remove all</strong> to take them off.</li>
           <li>You can also click into the Preview and fix wording there, or edit the code itself on the <strong>HTML</strong> tab next to Your text. After that, the page keeps your edits. Select <strong>Rebuild from Your text</strong> to go back to building it from your text.</li>
         </ul>
@@ -247,7 +253,7 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
       </div>
       <div id="sourceWrap" class="wrapcol" role="tabpanel" aria-labelledby="tabText">
         <label class="sr-only" for="source">Your text</label>
-        <textarea id="source" spellcheck="true" placeholder="Paste or type your page text here.&#10;&#10;The first line becomes the title banner.&#10;Section names like Module Overview or Directions on their own line become headings.&#10;Start lines with - for bullets or 1. for numbered steps."></textarea>
+        <textarea id="source" spellcheck="true" placeholder="Paste or type your page text here.&#10;&#10;The first line becomes the title banner.&#10;Section names like Module Overview or Directions on their own line become headings.&#10;Start lines with - for bullets or 1. for numbered steps.&#10;Separate table columns with a tab or | (the first row is the header).&#10;Quick Check answers: end the correct one with *."></textarea>
       </div>
       <div id="codeWrap" class="wrapcol" role="tabpanel" aria-labelledby="tabCode" hidden>
         <p class="hint" id="codeHint">You can edit this HTML directly; the Preview updates as you type. In Canvas, open the page editor, switch to the HTML editor (&lt;/&gt;), and paste.</p>
@@ -274,6 +280,7 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
           <button id="undoSnippet" type="button" disabled>Undo</button>
           <button id="clearSnippets" type="button" disabled>Remove all</button>
         </div>
+        <p class="snip-tip" id="snipTip" aria-live="polite" hidden></p>
         <p class="snip-note" id="snipNote">You can also click into the Preview to fix wording directly. <a href="../html-code.html" target="_blank" rel="noopener">See all snippets ↗</a></p>
       </div>
       <div class="manualbar" id="manualBar" role="status" hidden>
@@ -463,7 +470,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
       return cells.length >= 2 ? cells : null;
     }
     // "Apples | Red" without outer bars counts only when two or more such lines run together (checked later).
-    if (/\S\s\|\s\S/.test(t)) {
+    if (/\S\s\|\s\S/.test(t) && !/^([-*•·▪◦‣–—]|\d{1,3}[.)])\s/.test(t)) {
       const cells = t.split(/\s\|\s/).map(c => c.trim());
       cells.loose = true;
       return cells;
@@ -1066,6 +1073,32 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     updateSnipButtons();
   }
 
+  // Short directions for snippets whose text format isn't obvious, matched to the category name.
+  const SNIP_TIPS = [
+    [/quick check/i, 'Highlight the question and its answers. End the correct answer with <code>*</code>, like <code>Check reliable sources *</code>.'],
+    [/true\s*\/\s*false/i, 'Put each statement on its own line ending in <code>(True)</code> or <code>(False)</code>. Words after it become the feedback.'],
+    [/flashcard/i, 'Write one card per line as <code>Term: definition</code>, or give each card a heading with its answer below.'],
+    [/clickable steps/i, 'Highlight a heading for each step with its text below. Each heading becomes a step.'],
+    [/info icon/i, 'Highlight a short heading and the text below it. The heading becomes the clickable label.'],
+    [/accordion|dropdown/i, 'Each heading you highlight becomes a dropdown, with the text under it inside.'],
+    [/table/i, 'Separate columns with a tab or <code> | </code>. The first row becomes the header.'],
+    [/button/i, 'Highlight a line with a link. Its words become the button label.'],
+    [/horizontal line/i, 'The line is added just above the text you highlight.'],
+    [/call ?out|chunking|example/i, 'Highlight the text for the box. Start with a heading to give the box that title.'],
+    [/header|heading/i, 'Highlight a line to restyle it as this heading.']
+  ];
+  function showTip(group) {
+    const tip = $('snipTip');
+    const hit = group && SNIP_TIPS.find(([re]) => re.test(group));
+    tip.hidden = !hit;
+    tip.innerHTML = hit ? hit[1] : '';
+  }
+  // The tip follows the open category, or the chosen design when no category is open.
+  function refreshTip() {
+    const open = $('snipVariants').hidden ? '' : $('snipVariants').dataset.group;
+    showTip(open || (selected >= 0 ? library[selected].group : ''));
+  }
+
   // Category buttons, like the navigation on the HTML Code page.
   function renderCategories() {
     const cats = $('snipCats');
@@ -1084,7 +1117,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     const panel = $('snipVariants');
     const open = panel.dataset.group === group && !panel.hidden;
     $('snipCats').querySelectorAll('.snip-cat').forEach(b => b.setAttribute('aria-expanded', String(!open && b.textContent === group)));
-    if (open) { panel.hidden = true; panel.dataset.group = ''; return; }
+    if (open) { panel.hidden = true; panel.dataset.group = ''; refreshTip(); return; }
     panel.dataset.group = group;
     panel.innerHTML = '';
     library.forEach((item, i) => {
@@ -1104,6 +1137,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
       panel.appendChild(card);
     });
     panel.hidden = false;
+    refreshTip();
   }
   function chooseSnippet(i, remember) {
     selected = i;
@@ -1113,6 +1147,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     $('snipChosen').innerHTML = '';
     $('snipChosen').append('Design: ', Object.assign(document.createElement('strong'), { textContent: item.name }), ` (${item.group.replace(/^\P{L}+/u, '')})`);
     $('snipVariants').querySelectorAll('.snip-card').forEach(c => c.setAttribute('aria-checked', String(+c.dataset.index === i)));
+    refreshTip();
     if (remember) { try { localStorage.setItem('t2t-snippet', JSON.stringify({ group: item.group, name: item.name })); } catch (e) {} }
     updateSnipButtons();
   }
@@ -1367,6 +1402,104 @@ This assignment is worth 50 points. Review the rubric attached below before you 
       fill(tabList, lis);
       fill(root, [tabList, ...panels]);
       return { nodes: [root] };
+    }
+
+    // Lines of the selection as text: list items one by one, other blocks whole. Headings are skipped.
+    const textLines = list => list.flatMap(b => /^(UL|OL)$/.test(b.tagName)
+      ? Array.from(b.children).filter(li => li.tagName === 'LI').map(li => clean(li.textContent))
+      : isHeading(b) ? [] : [clean(b.textContent)]).filter(Boolean);
+    const summaries = Array.from(root.querySelectorAll('summary')).map(s => clean(s.textContent));
+    const deckTitle = root.querySelector('h2, h3');
+    const plain = el => clean(el.textContent.replace(/\p{Extended_Pictographic}|\uFE0F/gu, '')); // heading text without the template's emoji
+
+    // True / False Challenge: one statement per line, each ending in (True) or (False).
+    if (summaries.includes('True') && summaries.includes('False')) {
+      const cardsTpl = Array.from(root.children).filter(c => c.tagName === 'DIV' && c.querySelector('details'));
+      const firstCard = cardsTpl[0];
+      if (firstCard) {
+        const head = blocks[0] && isHeading(blocks[0]) && blocks.length > 1 ? plain(blocks[0]) : '';
+        const statements = textLines(head ? blocks.slice(1) : blocks);
+        if (statements.length) {
+          const feedback = Array.from(root.querySelectorAll('details > div'));
+          const rightFb = feedback.find(d => /correct!/i.test(d.textContent));
+          const wrongFb = feedback.find(d => /not quite/i.test(d.textContent));
+          const [trueTpl, falseTpl] = Array.from(firstCard.querySelectorAll('details'));
+          let unmarked = 0;
+          const cards = statements.map((line, i) => {
+            const m = line.match(/^(.*?)\s*[([]\s*(true|false|t|f)\s*[)\]]\s*[.:\-–—]?\s*(.*)$/i) ||
+              line.match(/^(.*?\S)\s*[:\-–—]\s*(true|false)\s*$/i);
+            const isTrue = m ? /^t/i.test(m[2]) : (unmarked++, true);
+            const statement = m ? m[1] : line;
+            const why = m && m[3] ? esc(m[3]) : '';
+            const card = (i === statements.length - 1 ? cardsTpl[cardsTpl.length - 1] : firstCard).cloneNode(false);
+            const h = firstCard.querySelector('h3, h4').cloneNode(false);
+            h.textContent = 'Statement ' + (i + 1);
+            const p = document.createElement('p');
+            p.appendChild(document.createElement('strong')).textContent = statement;
+            const choice = (tpl, right) => {
+              const d = tpl.cloneNode(true);
+              const fb = (right ? rightFb : wrongFb).cloneNode(false);
+              fb.innerHTML = right ? `<strong>Correct!</strong> ${why || '[Explain why.]'}` : `<strong>Not quite.</strong> ${why || '[Explain why.]'}`;
+              d.querySelector('div').replaceWith(fb);
+              return d;
+            };
+            fill(card, [h, p, choice(trueTpl, isTrue), choice(falseTpl, !isTrue)]);
+            return card;
+          });
+          if (deckTitle) setText(deckTitle, head ? 'True / False Challenge: ' + head : 'True / False Challenge');
+          const parent = firstCard.parentNode;
+          cards.forEach(c => { parent.insertBefore(c, firstCard); parent.insertBefore(document.createTextNode('\n'), firstCard); });
+          cardsTpl.forEach(c => c.remove());
+          return { nodes: [root], note: unmarked ? `${unmarked} statement(s) had no answer, so they were set to True. End each statement with (True) or (False).` : '' };
+        }
+      }
+    }
+
+    // Flashcards: "Term: definition" lines (or a heading per card with its answer below) become cards.
+    if (summaries.some(s => /^Card\s+\d+\s*:/i.test(s))) {
+      const tpls = Array.from(root.querySelectorAll('details'));
+      const heads = blocks.filter(isHeading);
+      const pair = line => {
+        const m = line.match(/^(.{1,160}?)\s*(?:\t|\s\|\s|:\s|\s[-–—]\s)\s*(.+)$/) || line.match(/^(.{1,160}?\?)\s+(.+)$/);
+        return m ? [m[1].replace(/\s*\|\s*$/, ''), m[2]] : [line, ''];
+      };
+      let title = '', cards = []; // cards: {term, body: nodes | null, def}
+      const allLines = blocks.flatMap(b => isHeading(b) ? [plain(b)] : textLines([b]));
+      if (allLines.length >= 2 && allLines.length % 2 === 0 && allLines.every(l => !pair(l)[1])) {
+        // No "Term: definition" lines: read them as question, answer, question, answer.
+        for (let k = 0; k < allLines.length; k += 2) cards.push({ term: allLines[k], def: allLines[k + 1] });
+      } else if (heads.length >= 2 || (heads.length === 1 && heads[0] !== blocks[0])) {
+        groupByHeading(blocks).forEach(g => {
+          if (g.title) cards.push({ term: clean(g.title.replace(/\p{Extended_Pictographic}|\uFE0F/gu, '')), body: g.body });
+          else textLines(g.body).forEach(l => { const [term, def] = pair(l); cards.push({ term, def }); });
+        });
+      } else {
+        if (heads.length === 1 && blocks.length > 1) {
+          const rest = textLines(blocks.slice(1));
+          // One heading over one plain line is a single card; over "Term: definition" lines it's the deck title.
+          if (rest.length === 1 && !pair(rest[0])[1]) cards.push({ term: plain(blocks[0]), body: blocks.slice(1) });
+          else { title = plain(blocks[0]); rest.forEach(l => { const [term, def] = pair(l); cards.push({ term, def }); }); }
+        } else textLines(blocks).forEach(l => { const [term, def] = pair(l); cards.push({ term, def }); });
+      }
+      if (cards.length) {
+        let missing = 0;
+        const made = cards.map((c, i) => {
+          const d = (i === cards.length - 1 ? tpls[tpls.length - 1] : tpls[0]).cloneNode(true);
+          d.querySelector('summary').textContent = `Card ${i + 1}: ${c.term}`;
+          const body = d.querySelector('div');
+          if (c.body && c.body.length) fill(body, c.body);
+          else {
+            if (!c.def) missing++;
+            fill(body, [Object.assign(document.createElement('p'), { textContent: c.def || '[Add the answer.]' })]);
+          }
+          return d;
+        });
+        if (deckTitle) setText(deckTitle, title ? (/flashcard/i.test(title) ? title : 'Flashcards: ' + title) : 'Flashcards');
+        const parent = tpls[0].parentNode;
+        made.forEach(d => { parent.insertBefore(d, tpls[0]); parent.insertBefore(document.createTextNode('\n'), tpls[0]); });
+        tpls.forEach(d => d.remove());
+        return { nodes: [root], note: missing ? `${missing} card(s) need an answer. Write each card as Term: definition.` : '' };
+      }
     }
 
     // Quick Check: first block is the question; list items become the answer choices.
