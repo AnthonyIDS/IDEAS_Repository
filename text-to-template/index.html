@@ -231,7 +231,7 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
           <li>True / False Challenge makes one statement per line. End each with <code>(True)</code> or <code>(False)</code>; any words after it become the feedback, as in <code>AI can be wrong. (True) Always verify.</code></li>
           <li>Flashcards make one card per line written as <code>Term: definition</code>, or one per heading with its answer below. A heading above the lines titles the set.</li>
           <li>When you open a category, a short tip under the designs shows the format it expects.</li>
-          <li>Snippets stay applied while you keep editing your text. To take one off, click inside it in the Preview and select <strong>Make basic text</strong>; its words go back to plain formatting. <strong>Undo</strong> and <strong>Remove all</strong> also take snippets off.</li>
+          <li>Snippets stay applied while you keep editing your text. To take one off, click inside it in the Preview and select <strong>Make basic text</strong>; its words go back to plain formatting. Make basic text also works on any highlighted area, such as a template heading or box: the styling is removed and the words stay. <strong>Undo</strong> and <strong>Remove all</strong> also take snippets off.</li>
           <li>You can also click into the Preview and fix wording there, or edit the code itself on the <strong>HTML</strong> tab next to Your text. After that, the page keeps your edits. Select <strong>Rebuild from Your text</strong> to go back to building it from your text.</li>
         </ul>
       </div>
@@ -279,7 +279,7 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
           <button class="primary" id="applySnippet" type="button" disabled>Apply snippet</button>
           <button id="undoSnippet" type="button" disabled>Undo</button>
           <button id="clearSnippets" type="button" disabled>Remove all</button>
-          <button id="unsnip" type="button" disabled title="Click or highlight inside a snippet in the Preview, then select this to turn it back into plain text">Make basic text</button>
+          <button id="unsnip" type="button" disabled title="Highlight any part of the Preview (or click inside a snippet), then select this to remove its formatting">Make basic text</button>
         </div>
         <p class="snip-tip" id="snipTip" aria-live="polite" hidden></p>
         <p class="snip-note" id="snipNote">You can also click into the Preview to fix wording directly. <a href="../html-code.html" target="_blank" rel="noopener">See all snippets ↗</a></p>
@@ -1167,7 +1167,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     $('applySnippet').disabled = selected < 0 || !code.value || !blocks.length;
     $('undoSnippet').disabled = manualHtml !== null ? !history.length : !ops.length;
     $('clearSnippets').disabled = manualHtml !== null || !ops.length;
-    $('unsnip').disabled = !snippetAt();
+    $('unsnip').disabled = !code.value || !basicTargets();
   }
 
   // Remember the highlight in the Preview, since using the dropdown can clear it.
@@ -1612,23 +1612,63 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     return { nodes: [root] };
   }
 
-  /* ---------- Make basic text: take a snippet off and put its words back as plain text ---------- */
-  // The snippet under the cursor or highlight in the Preview: a marked one, or (for edited pages) the
-  // nearest snippet-like box such as a quiz, dropdown, table, step tabs, or styled box.
-  function snippetAt() {
-    const sel = window.getSelection();
-    let node = sel && sel.rangeCount && preview.contains(sel.anchorNode) ? sel.anchorNode : (savedRange ? savedRange.startContainer : lastCaret);
-    if (!node || !preview.contains(node)) return null;
-    const el = node.nodeType === 1 ? node : node.parentElement;
-    const marked = el.closest('[data-t2t-snip]');
+  /* ---------- Make basic text: strip snippets and template styling from the highlighted area ---------- */
+  // The template's own overview card; a bare cursor inside it means the line, not the whole card.
+  const isTemplateCard = n => n.parentElement === preview && /border-width: 1px 1px 1px 6px/.test(n.getAttribute('style') || '');
+  // A quiz, dropdown set, step tabs, or applied snippet is changed as a whole, never half.
+  function widgetOf(n) {
+    const marked = n.closest('[data-t2t-snip]');
     if (marked && preview.contains(marked)) return marked;
-    if (manualHtml === null) return null;
-    // Edited pages lose the markers: use the outermost snippet-like element below the template's own boxes.
-    let found = null;
-    for (let n = el; n && n !== preview; n = n.parentElement) {
-      if (n.matches('details, table, .tabs, div[style]') && !(n.parentElement === preview && n.matches('div[style]') && /6px/.test(n.getAttribute('style') || '') && !n.querySelector('details'))) found = n;
+    const tabs = n.closest('.tabs');
+    if (tabs && preview.contains(tabs)) return tabs;
+    const d = n.closest('details');
+    if (!d || !preview.contains(d)) return null;
+    let w = d;
+    for (let p = d.parentElement; p && p !== preview; p = p.parentElement) if (p.matches('details') || (p.matches('div[style]') && !isTemplateCard(p))) w = p;
+    return w;
+  }
+  // What Make basic text would change: { op } to drop a snippet built from Your text, or { els } to flatten.
+  function basicTargets() {
+    const sel = window.getSelection();
+    const live = sel && sel.rangeCount && !sel.isCollapsed && preview.contains(sel.getRangeAt(0).commonAncestorContainer) ? sel.getRangeAt(0) : null;
+    const range = live || (savedRange && preview.contains(savedRange.commonAncestorContainer) ? savedRange : null);
+    let els;
+    if (range) {
+      els = blocksFromRange(range).filter(b => preview.contains(b) && b !== preview);
+      // A highlight inside one styled box (a call-out, for example) means the whole box.
+      const boxOf = n => { for (let p = n.parentElement; p && p !== preview; p = p.parentElement) if (p.matches('div[style], blockquote') && !isTemplateCard(p)) return p; return null; };
+      const boxes = [...new Set(els.map(boxOf))];
+      if (els.length && boxes.length === 1 && boxes[0]) els = [boxes[0]];
+    } else {
+      const node = sel && sel.rangeCount && preview.contains(sel.anchorNode) ? sel.anchorNode : lastCaret;
+      if (!node || !preview.contains(node) || node === preview) return null;
+      const el = node.nodeType === 1 ? node : node.parentElement;
+      // A bare cursor means the snippet or styled box it sits in, else its line.
+      let box = null;
+      for (let n = el; n && n !== preview; n = n.parentElement) if (n.matches('div[style], blockquote') && !isTemplateCard(n)) { box = n; break; }
+      els = [widgetOf(el) || box || el.closest(BLOCK) || el].filter(n => n && n !== preview);
     }
-    return found;
+    if (!els.length) return null;
+    // Whole widgets instead of their parts, then whole boxes when every part of a box is included.
+    els = [...new Set(els.map(e => widgetOf(e) || e))];
+    let grew = true;
+    while (grew) {
+      grew = false;
+      const parents = [...new Set(els.map(e => e.parentElement))];
+      for (const p of parents) {
+        if (!p || p === preview || !preview.contains(p)) continue;
+        const kids = Array.from(p.children);
+        if (kids.every(k => els.includes(k) || !clean(k.textContent))) { els = els.filter(e => e.parentElement !== p); els.push(p); grew = true; }
+      }
+    }
+    // Keep page order and drop anything already inside another target.
+    els = els.filter(e => !els.some(o => o !== e && o.contains(e)));
+    els.sort((x, y) => (x.compareDocumentPosition(y) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
+    if (manualHtml === null && els.length === 1 && els[0].hasAttribute('data-t2t-snip')) {
+      const at = ops.findIndex(o => o.id === els[0].getAttribute('data-t2t-snip'));
+      if (at >= 0) return { op: at };
+    }
+    return { els };
   }
   // Plain blocks from a snippet: headings and paragraphs as <p>, lists as plain lists, table rows as "a | b" lines.
   function basicBlocks(el) {
@@ -1657,32 +1697,35 @@ This assignment is worth 50 points. Review the rubric attached below before you 
       if (tag === 'P' && n.querySelector('a.btn')) { const a = n.querySelector('a'); out.push(para(`<a href="${esc(a.getAttribute('href') || '')}" target="_blank" rel="noopener">${esc(clean(a.textContent))}</a>`)); return; }
       const hasBlocks = Array.from(n.children).some(c => /^(P|DIV|UL|OL|H[1-6]|TABLE|DETAILS|SUMMARY|SECTION|BLOCKQUOTE)$/.test(c.tagName));
       if (hasBlocks || tag === 'DETAILS') { Array.from(n.childNodes).forEach(walk); return; }
+      // Headings and dropdown titles lose their bold too, so they read as ordinary lines.
+      if (/^(H[1-6]|SUMMARY)$/.test(tag)) { const t = clean(n.textContent.replace(/\p{Extended_Pictographic}|\uFE0F/gu, '')); if (t) out.push(para(esc(t))); return; }
       if (clean(n.textContent)) out.push(para(n.innerHTML.replace(/<span[^>]*aria-hidden="true"[^>]*>[\s\S]*?<\/span>/g, '').trim()));
     };
     walk(el);
     return out;
   }
   $('unsnip').addEventListener('click', () => {
-    const el = snippetAt();
-    if (!el) { say('Click or highlight inside a snippet in the Preview first.'); return; }
-    const id = el.getAttribute('data-t2t-snip');
-    const at = id && manualHtml === null ? ops.findIndex(o => o.id === id) : -1;
-    if (at >= 0) {
-      // Built from Your text: dropping the snippet rebuilds that part exactly as it was before.
+    const t = basicTargets();
+    if (!t) { say('Click or highlight text in the Preview first.'); return; }
+    savedRange = null; lastCaret = null;
+    if (t.op !== undefined) {
+      // A snippet built from Your text: dropping it rebuilds that part exactly as it was before.
+      const at = t.op;
       const [op] = ops.splice(at, 1);
-      savedRange = null; lastCaret = null;
       run();
       say(`Removed “${op.name}”. That text is back to plain formatting.`, { label: 'Undo', run: () => { ops.splice(at, 0, op); run(); say(`Put “${op.name}” back.`); } });
       return;
     }
-    // Edited page: replace the snippet with its words as plain paragraphs and lists.
+    // Anything else (template headings, boxes, call-outs, edited snippets): its words become plain paragraphs and lists.
     history.push(manualHtml !== null ? manualHtml : code.value);
-    const parent = el.parentNode;
-    basicBlocks(el).forEach(b => { parent.insertBefore(b, el); parent.insertBefore(document.createTextNode('\n'), el); });
-    parent.removeChild(el);
-    savedRange = null; lastCaret = null;
+    t.els.forEach(el => {
+      const parent = el.parentNode;
+      basicBlocks(el).forEach(b => { parent.insertBefore(b, el); parent.insertBefore(document.createTextNode('\n'), el); });
+      parent.removeChild(el);
+    });
+    const sel = window.getSelection(); if (sel) sel.removeAllRanges();
     setManual(serialize(preview));
-    say('Turned the snippet into plain text. Undo brings it back.');
+    say('Turned the highlighted area into plain text. Undo brings the formatting back.');
   });
 
   function applyOp(root, op) {
