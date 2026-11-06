@@ -698,9 +698,34 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     return parts.filter(p => p.heading || p.blocks.some(b => b.type !== 'blank'));
   }
 
+  // Split assignment section labels before the general heading heuristics run.
+  function assignmentInput(raw) {
+    function label(t) {
+      if (!t || !['p', 'heading'].includes(t.type)) return null;
+      const m = t.text.match(/^((?:\*\*|__)*)(discussion prompt|assignment prompt|purpose|initial post guidelines|reply guidelines|grading criteria(?:\s*\([^()\n]*\))?|assignment overview|materials|directions|submission instructions)\s*(?:\1\s*:\s*|:\1\s*|\1\s*$)(.*)$/i);
+      return m && { name: m[2], body: m[3].trim() };
+    }
+    let first = raw.findIndex(t => t.type !== 'blank');
+    let next = raw.findIndex((t, i) => i > first && t.type !== 'blank');
+    const prompt = i => /^(discussion|assignment) prompt$/i.test(label(raw[i])?.name || '');
+    const banner = prompt(first) ? first :
+      first >= 0 && ['heading', 'p'].includes(raw[first].type) && prompt(next) ? next : -1;
+    const tokens = [];
+    raw.forEach((t, i) => {
+      if (i < banner) return;
+      const part = label(t);
+      if (!part || (i === first && banner < 0)) { tokens.push(t); return; }
+      tokens.push({type: 'heading', level: i === banner ? 1 : 2, text: part.name});
+      if (part.body) tokens.push({type: 'assignmentBody', text: part.body});
+    });
+    return {tokens, hasPromptBanner: banner >= 0};
+  }
+
   function convert(text, styleKey) {
     const cfg = STYLES[styleKey];
-    const tokens = classify(tokenize(text), cfg);
+    const raw = tokenize(text);
+    const input = styleKey === 'assignment' ? assignmentInput(raw) : {tokens: raw};
+    const tokens = classify(input.tokens, cfg).map(t => t.type === 'assignmentBody' ? {...t, type: 'p'} : t);
     const titleTok = tokens.find(t => t.type === 'title');
     const rest = tokens.filter(t => t.type !== 'title');
     const { intro, sections } = sectionize(rest);
@@ -783,8 +808,8 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     }
 
     if (cfg.family === 'assignment') {
-      sections.forEach(s => {
-        out.push(HR);
+      sections.forEach((s, i) => {
+        if (i || !input.hasPromptBanner) out.push(HR);
         out.push(`<h3 style="color: ${BLUE};"><strong>${headingText(s.heading)}</strong></h3>`);
         // Assignment 2 puts academic integrity and AI-use expectations in its red policy card.
         if (styleKey === 'assignment-2' && /academic integrity|\bai\b|artificial intelligence|collaboration|honesty|plagiarism|policy/i.test(s.heading)) {
