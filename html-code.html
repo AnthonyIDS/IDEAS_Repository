@@ -274,6 +274,8 @@
       <button class="nav-button" type="button" onclick="showPage('clickable-steps', this)">🧭 Clickable Steps</button>
        <button class="nav-button" type="button" onclick="showPage('clickable-info-icon', this)">ⓘ Clickable Info Icon</button>
       <button class="nav-button" type="button" onclick="showPage('quick-check', this)">✅ Quick Check Quiz</button>
+      <button class="nav-button" type="button" onclick="showPage('flashcards', this)">🗂️ Flashcards</button>
+      <button class="nav-button" type="button" onclick="showPage('true-false-challenge', this)">✅ True / False Challenge</button>
      
     </section>
 
@@ -1452,6 +1454,132 @@
 </section>
 
     
+
+    <section id="flashcards" class="snippet-page">
+      <h2 class="snippet-title">🗂️ Flashcards</h2>
+      <p>Students recall a concept, then select a card to reveal its definition. The cards are built using Canvas-compatible disclosure elements; replace the example questions and answers with your own.</p>
+      <p class="preview-label">Preview</p>
+      <div class="preview-box">
+<div style="font-family: Arial, sans-serif; color: #17324d; background-color: #f7fafc; padding: 22px; border: 1px solid #d7e2ec; border-radius: 14px; line-height: 1.6;">
+  <h2 style="color: #00406e; margin-top: 0;">Flashcards: AI Fundamentals</h2>
+  <p style="color: #17324d;">Think of your answer, then select a card to reveal the definition.</p>
+  <details style="background-color: #ffffff; color: #17324d; border: 1px solid #d7e2ec; border-left: 5px solid #00406e; border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+    <summary style="cursor: pointer; color: #00406e; font-weight: bold;">Card 1: What is a large language model (LLM)?</summary>
+    <div style="border-top: 1px solid #d7e2ec; margin-top: 12px; padding-top: 12px; color: #17324d;">
+      <p>An AI model trained to recognize language patterns and generate text.</p>
+    </div>
+  </details>
+  <details style="background-color: #ffffff; color: #17324d; border: 1px solid #d7e2ec; border-left: 5px solid #00406e; border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+    <summary style="cursor: pointer; color: #00406e; font-weight: bold;">Card 2: What is an AI hallucination?</summary>
+    <div style="border-top: 1px solid #d7e2ec; margin-top: 12px; padding-top: 12px; color: #17324d;">
+      <p>An AI-generated response that presents inaccurate or fabricated information as if it were factual.</p>
+    </div>
+  </details>
+  <details style="background-color: #ffffff; color: #17324d; border: 1px solid #d7e2ec; border-left: 5px solid #00406e; border-radius: 10px; padding: 16px;">
+    <summary style="cursor: pointer; color: #00406e; font-weight: bold;">Card 3: What is prompt engineering?</summary>
+    <div style="border-top: 1px solid #d7e2ec; margin-top: 12px; padding-top: 12px; color: #17324d;">
+      <p>Designing and refining instructions to guide an AI model toward a useful response.</p>
+    </div>
+  </details>
+</div>
+      </div>
+      <p class="code-label">Code</p>
+      <div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-flashcards" aria-controls="snippet-code-flashcards">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-flashcards">&lt;div style="font-family: Arial, sans-serif; color: #17324d; background-color: #f7fafc; padding: 22px; border: 1px solid #d7e2ec; border-radius: 14px; line-height: 1.6;"&gt;
+  &lt;h2 style="color: #00406e; margin-top: 0;"&gt;Flashcards: AI Fundamentals&lt;/h2&gt;
+  &lt;p style="color: #17324d;"&gt;Think of your answer, then select a card to reveal the definition.&lt;/p&gt;
+  &lt;details style="background-color: #ffffff; color: #17324d; border: 1px solid #d7e2ec; border-left: 5px solid #00406e; border-radius: 10px; padding: 16px; margin-bottom: 12px;"&gt;
+    &lt;summary style="cursor: pointer; color: #00406e; font-weight: bold;"&gt;Card 1: What is a large language model (LLM)?&lt;/summary&gt;
+    &lt;div style="border-top: 1px solid #d7e2ec; margin-top: 12px; padding-top: 12px; color: #17324d;"&gt;
+      &lt;p&gt;An AI model trained to recognize language patterns and generate text.&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/details&gt;
+  &lt;details style="background-color: #ffffff; color: #17324d; border: 1px solid #d7e2ec; border-left: 5px solid #00406e; border-radius: 10px; padding: 16px; margin-bottom: 12px;"&gt;
+    &lt;summary style="cursor: pointer; color: #00406e; font-weight: bold;"&gt;Card 2: What is an AI hallucination?&lt;/summary&gt;
+    &lt;div style="border-top: 1px solid #d7e2ec; margin-top: 12px; padding-top: 12px; color: #17324d;"&gt;
+      &lt;p&gt;An AI-generated response that presents inaccurate or fabricated information as if it were factual.&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/details&gt;
+  &lt;details style="background-color: #ffffff; color: #17324d; border: 1px solid #d7e2ec; border-left: 5px solid #00406e; border-radius: 10px; padding: 16px;"&gt;
+    &lt;summary style="cursor: pointer; color: #00406e; font-weight: bold;"&gt;Card 3: What is prompt engineering?&lt;/summary&gt;
+    &lt;div style="border-top: 1px solid #d7e2ec; margin-top: 12px; padding-top: 12px; color: #17324d;"&gt;
+      &lt;p&gt;Designing and refining instructions to guide an AI model toward a useful response.&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/details&gt;
+&lt;/div&gt;</code></pre>
+    </section>
+
+    <section id="true-false-challenge" class="snippet-page">
+      <h2 class="snippet-title">✅ True / False Challenge</h2>
+      <p>Students choose True or False and open immediate feedback. Both choices are independently expandable, and this version does not calculate a score or record a grade.</p>
+      <p class="preview-label">Preview</p>
+      <div class="preview-box">
+<div style="font-family: Arial, sans-serif; color: #17324d; background-color: #f7fafc; padding: 22px; border: 1px solid #d7e2ec; border-radius: 14px; line-height: 1.6;">
+  <h2 style="color: #00406e; margin-top: 0;">True / False Challenge: AI Literacy</h2>
+  <p style="color: #17324d;">Decide whether each statement is true or false. Select your choice to reveal feedback. This is an ungraded practice activity.</p>
+  <div style="background-color: #ffffff; color: #17324d; border: 1px solid #d7e2ec; border-radius: 10px; padding: 16px; margin-bottom: 16px;">
+    <h3 style="color: #00406e; margin-top: 0;">Statement 1</h3>
+    <p><strong>AI-generated information should be verified before it is used in important decisions.</strong></p>
+    <details style="margin-bottom: 10px;">
+      <summary style="cursor: pointer; color: #17324d; background-color: #e6eef5; border: 1px solid #d7e2ec; border-radius: 8px; padding: 12px;">True</summary>
+      <div style="color: #17324d; background-color: #e8f6ee; border-left: 5px solid #116149; padding: 12px; margin-top: 8px; border-radius: 8px;"><strong>Correct!</strong> AI responses can contain errors, so checking important claims against trustworthy sources is essential.</div>
+    </details>
+    <details>
+      <summary style="cursor: pointer; color: #17324d; background-color: #e6eef5; border: 1px solid #d7e2ec; border-radius: 8px; padding: 12px;">False</summary>
+      <div style="color: #17324d; background-color: #fff0f0; border-left: 5px solid #a62b2b; padding: 12px; margin-top: 8px; border-radius: 8px;"><strong>Not quite.</strong> AI can generate plausible but incorrect information. Always verify important claims.</div>
+    </details>
+  </div>
+  <div style="background-color: #ffffff; color: #17324d; border: 1px solid #d7e2ec; border-radius: 10px; padding: 16px;">
+    <h3 style="color: #00406e; margin-top: 0;">Statement 2</h3>
+    <p><strong>A large language model guarantees that every source it cites is real.</strong></p>
+    <details style="margin-bottom: 10px;">
+      <summary style="cursor: pointer; color: #17324d; background-color: #e6eef5; border: 1px solid #d7e2ec; border-radius: 8px; padding: 12px;">True</summary>
+      <div style="color: #17324d; background-color: #fff0f0; border-left: 5px solid #a62b2b; padding: 12px; margin-top: 8px; border-radius: 8px;"><strong>Not quite.</strong> AI tools can fabricate or misidentify citations. Check the original sources.</div>
+    </details>
+    <details>
+      <summary style="cursor: pointer; color: #17324d; background-color: #e6eef5; border: 1px solid #d7e2ec; border-radius: 8px; padding: 12px;">False</summary>
+      <div style="color: #17324d; background-color: #e8f6ee; border-left: 5px solid #116149; padding: 12px; margin-top: 8px; border-radius: 8px;"><strong>Correct!</strong> Generated citations may be inaccurate or invented; confirm each source independently.</div>
+    </details>
+  </div>
+</div>
+      </div>
+      <p class="code-label">Code</p>
+      <div class="copy-controls">
+        <button class="copy-html-button" type="button" data-copy-target="snippet-code-true-false" aria-controls="snippet-code-true-false">Copy HTML</button>
+        <span class="copy-status" role="status" aria-live="polite"></span>
+      </div>
+      <pre><code id="snippet-code-true-false">&lt;div style="font-family: Arial, sans-serif; color: #17324d; background-color: #f7fafc; padding: 22px; border: 1px solid #d7e2ec; border-radius: 14px; line-height: 1.6;"&gt;
+  &lt;h2 style="color: #00406e; margin-top: 0;"&gt;True / False Challenge: AI Literacy&lt;/h2&gt;
+  &lt;p style="color: #17324d;"&gt;Decide whether each statement is true or false. Select your choice to reveal feedback. This is an ungraded practice activity.&lt;/p&gt;
+  &lt;div style="background-color: #ffffff; color: #17324d; border: 1px solid #d7e2ec; border-radius: 10px; padding: 16px; margin-bottom: 16px;"&gt;
+    &lt;h3 style="color: #00406e; margin-top: 0;"&gt;Statement 1&lt;/h3&gt;
+    &lt;p&gt;&lt;strong&gt;AI-generated information should be verified before it is used in important decisions.&lt;/strong&gt;&lt;/p&gt;
+    &lt;details style="margin-bottom: 10px;"&gt;
+      &lt;summary style="cursor: pointer; color: #17324d; background-color: #e6eef5; border: 1px solid #d7e2ec; border-radius: 8px; padding: 12px;"&gt;True&lt;/summary&gt;
+      &lt;div style="color: #17324d; background-color: #e8f6ee; border-left: 5px solid #116149; padding: 12px; margin-top: 8px; border-radius: 8px;"&gt;&lt;strong&gt;Correct!&lt;/strong&gt; AI responses can contain errors, so checking important claims against trustworthy sources is essential.&lt;/div&gt;
+    &lt;/details&gt;
+    &lt;details&gt;
+      &lt;summary style="cursor: pointer; color: #17324d; background-color: #e6eef5; border: 1px solid #d7e2ec; border-radius: 8px; padding: 12px;"&gt;False&lt;/summary&gt;
+      &lt;div style="color: #17324d; background-color: #fff0f0; border-left: 5px solid #a62b2b; padding: 12px; margin-top: 8px; border-radius: 8px;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; AI can generate plausible but incorrect information. Always verify important claims.&lt;/div&gt;
+    &lt;/details&gt;
+  &lt;/div&gt;
+  &lt;div style="background-color: #ffffff; color: #17324d; border: 1px solid #d7e2ec; border-radius: 10px; padding: 16px;"&gt;
+    &lt;h3 style="color: #00406e; margin-top: 0;"&gt;Statement 2&lt;/h3&gt;
+    &lt;p&gt;&lt;strong&gt;A large language model guarantees that every source it cites is real.&lt;/strong&gt;&lt;/p&gt;
+    &lt;details style="margin-bottom: 10px;"&gt;
+      &lt;summary style="cursor: pointer; color: #17324d; background-color: #e6eef5; border: 1px solid #d7e2ec; border-radius: 8px; padding: 12px;"&gt;True&lt;/summary&gt;
+      &lt;div style="color: #17324d; background-color: #fff0f0; border-left: 5px solid #a62b2b; padding: 12px; margin-top: 8px; border-radius: 8px;"&gt;&lt;strong&gt;Not quite.&lt;/strong&gt; AI tools can fabricate or misidentify citations. Check the original sources.&lt;/div&gt;
+    &lt;/details&gt;
+    &lt;details&gt;
+      &lt;summary style="cursor: pointer; color: #17324d; background-color: #e6eef5; border: 1px solid #d7e2ec; border-radius: 8px; padding: 12px;"&gt;False&lt;/summary&gt;
+      &lt;div style="color: #17324d; background-color: #e8f6ee; border-left: 5px solid #116149; padding: 12px; margin-top: 8px; border-radius: 8px;"&gt;&lt;strong&gt;Correct!&lt;/strong&gt; Generated citations may be inaccurate or invented; confirm each source independently.&lt;/div&gt;
+    &lt;/details&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+    </section>
 
     <hr class="footer-rule" />
   </main>
