@@ -1089,7 +1089,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     [/table/i, 'Separate columns with a tab or <code> | </code>. The first row becomes the header.'],
     [/button/i, 'Highlight a line with a link. Its words become the button label.'],
     [/horizontal line/i, 'The line is added just above the text you highlight.'],
-    [/call ?out|chunking|example/i, 'Highlight the text for the box. Start with a heading to give the box that title.'],
+    [/call ?out|chunking|example/i, 'Highlight the text for the box. Start with a heading to give the box that title. In the Purple box, your text becomes the prompt.'],
     [/header|heading/i, 'Highlight a line to restyle it as this heading.']
   ];
   function showTip(group) {
@@ -1251,6 +1251,32 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     container.appendChild(document.createTextNode('\n'));
   }
   const bodyOrText = (g, fallback) => (g.body.length ? g.body : [Object.assign(document.createElement('p'), { textContent: g.title || fallback })]);
+
+  // A sample line that opens with a bold label, like "<strong>Note:</strong> Sample content here.", keeps that
+  // label in front of the highlighted text. With copyStyle, the text also takes on the sample line's style.
+  function withInlineLabel(tpl, content, copyStyle) {
+    const isP = tpl && tpl.tagName === 'P';
+    const lab = isP && !isHeading(tpl) && tpl.firstElementChild;
+    const opens = lab && /^(STRONG|B)$/.test(lab.tagName) && /:\s*$/.test(lab.textContent) &&
+      clean(tpl.textContent).startsWith(clean(lab.textContent));
+    const style = isP && copyStyle ? tpl.getAttribute('style') : null;
+    const out = content.map(b => b.cloneNode(true));
+    const paras = out.filter(b => b.tagName === 'P' && !isHeading(b));
+    // Paragraphs after the first keep a gap even when the sample line has no bottom margin.
+    if (style) paras.forEach((p, i) => { if (!p.hasAttribute('style')) p.setAttribute('style', i < paras.length - 1 ? (style.replace(/margin:[^;]*;?\s*/, '') + ' margin: 0 0 12px;').trim() : style); });
+    if (!opens) return out;
+    const label = clean(lab.textContent);
+    const first = out[0];
+    if (first && clean(first.textContent).toLowerCase().startsWith(label.toLowerCase())) return out;
+    if (first && first.tagName === 'P' && !isHeading(first)) {
+      first.insertBefore(document.createTextNode(/\s$/.test(lab.textContent) ? '' : ' '), first.firstChild);
+      first.insertBefore(lab.cloneNode(true), first.firstChild);
+      return out;
+    }
+    const p = tpl.cloneNode(false);
+    p.appendChild(lab.cloneNode(true));
+    return [p, ...out];
+  }
 
   // Build the snippet around the selected blocks. Returns the nodes to insert and whether to keep the originals.
   function buildSnippet(html, blocks) {
@@ -1605,7 +1631,17 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     const usedOwnHeading = content !== blocks;
     const labels = keep.filter(c => usedOwnHeading || !/^H[1-6]$/.test(c.tagName) || clean(c.textContent).split(' ').length <= 4);
     labels.forEach(c => { if (c.lastChild && c.lastChild.nodeType === 3) c.lastChild.nodeValue = c.lastChild.nodeValue.replace(/[\s ]+$/, ''); });
-    fill(root, [...labels, ...content]);
+    // A box inside the box (the white prompt area of the Purple AI Prompt design) gets the highlighted text;
+    // the outer box keeps its heading and the directions above the inner box.
+    const inner = kids.find(c => c.tagName === 'DIV' && c.hasAttribute('style'));
+    const directions = inner ? kids.slice(keep.length, kids.indexOf(inner)) : [];
+    // Only for a short design: one line of directions, no [placeholders] left to fill (unlike the AI Policy boxes).
+    if (inner && !inner.querySelector('div, details') && directions.length <= 1 && directions.every(c => c.tagName === 'P' && !/\[/.test(c.textContent))) {
+      fill(inner, withInlineLabel(Array.from(inner.children).find(c => c.tagName === 'P'), content, true));
+      Array.from(inner.childNodes).forEach(n => { if (n.nodeType === 3) n.nodeValue = '\n        '; });
+      if (inner.lastChild && inner.lastChild.nodeType === 3) inner.lastChild.nodeValue = '\n    ';
+      fill(root, [...labels, ...directions, inner]);
+    } else fill(root, [...labels, ...withInlineLabel(kids[keep.length], content)]);
     // Re-indent lightly so the HTML stays readable.
     Array.from(root.childNodes).forEach(n => { if (n.nodeType === 3) n.nodeValue = '\n    '; });
     if (root.lastChild && root.lastChild.nodeType === 3) root.lastChild.nodeValue = '\n';
