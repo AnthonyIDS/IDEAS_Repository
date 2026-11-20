@@ -125,6 +125,14 @@ textarea { width: 100%; border: 0; resize: vertical; padding: 14px; font-family:
 .snip-card { display: grid; grid-template-rows: auto 1fr; gap: 6px; text-align: left; padding: 8px; border: 1px solid #d7e2ec; border-radius: 12px; background: #ffffff; color: #00406e; font-weight: bold; font-size: 0.82rem; }
 .snip-card[aria-checked="true"] { border: 2px solid #f2a900; padding: 7px; box-shadow: 0 0 0 3px rgba(242, 169, 0, 0.25); }
 .snip-mini { color-scheme: light; border: 1px solid #d7e2ec; border-radius: 8px; background: #fbfdff; padding: 8px; max-height: 200px; overflow: hidden; pointer-events: none; color: #2d3b45; font-weight: normal; font-family: Arial, sans-serif; zoom: 0.55; }
+/* The Emoji category has 100 small designs, so its cards are compact and a search box narrows them. */
+.snip-variants.emoji-set { grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); }
+.snip-variants.emoji-set .snip-card { font-size: 0.78rem; }
+.snip-card[hidden] { display: none; }
+.snip-variants.emoji-set .snip-mini { zoom: 0.7; text-align: center; font-size: 34px; line-height: 1.3; padding: 4px; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+.snip-filter { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 0.85rem; }
+.snip-filter[hidden] { display: none; }
+.snip-filter input { flex: 1 1 200px; max-width: 360px; min-height: 36px; padding: 6px 10px; font: inherit; border: 1px solid #607286; border-radius: 8px; color: #17324d; background: #ffffff; }
 .snip-mini .btn { display: inline-block; padding: 8px 14px; border: 1px solid #c7cdd1; border-radius: 3px; background: #f5f5f5; color: #2d3b45; text-decoration: none; }
 /* Two readiness checks for applying a snippet: text highlighted, design picked. */
 .snip-steps { list-style: none; margin: 0; padding: 0; flex: 1 1 240px; display: grid; gap: 2px; font-size: 0.85rem; color: var(--muted); }
@@ -230,6 +238,7 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
           <li>Quick Check uses the first line as the question and the list below it as answers. End the right answer with <code>*</code> to mark it correct; otherwise the design you pick decides (for example, "Answer B Correct" makes the second answer green).</li>
           <li>True / False Challenge makes one statement per line. End each with <code>(True)</code> or <code>(False)</code>; any words after it become the feedback, as in <code>AI can be wrong. (True) Always verify.</code></li>
           <li>Flashcards make one card per line written as <code>Term: definition</code>, or one per heading with its answer below. A heading above the lines titles the set.</li>
+          <li>Emoji puts the emoji you pick at the start of the first highlighted line, or swaps an emoji that line already has. Type in <strong>Find an emoji</strong> to narrow the 100 designs. Each emoji has a spoken label, so keep your words next to it.</li>
           <li>When you open a category, a short tip under the designs shows the format it expects.</li>
           <li>Snippets stay applied while you keep editing your text. To take one off, click inside it in the Preview and select <strong>Make basic text</strong>; its words go back to plain formatting. Make basic text also works on any highlighted area, such as a template heading or box: the styling is removed and the words stay. <strong>Undo</strong> and <strong>Remove all</strong> also take snippets off.</li>
           <li>You can also click into the Preview and fix wording there, or edit the code itself on the <strong>HTML</strong> tab next to Your text. After that, the page keeps your edits. Select <strong>Rebuild from Your text</strong> to go back to building it from your text.</li>
@@ -270,6 +279,11 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
       <div class="snipbar" id="snipbar">
         <h3 class="snip-head" id="snipHead">Reformat highlighted text with a snippet</h3>
         <div class="snip-cats" id="snipCats" role="group" aria-labelledby="snipHead"><p class="snip-note">Loading the snippet library…</p></div>
+        <div class="snip-filter" id="snipFilterWrap" hidden>
+          <label for="snipFilter"><strong>Find an emoji</strong></label>
+          <input id="snipFilter" type="search" placeholder="Search names or uses, like reading or deadline" aria-describedby="snipFilterCount" />
+          <span id="snipFilterCount" role="status" aria-live="polite"></span>
+        </div>
         <div class="snip-variants" id="snipVariants" role="radiogroup" aria-label="Snippet design" hidden></div>
         <div class="row">
           <ul class="snip-steps" aria-live="polite">
@@ -1049,6 +1063,21 @@ This assignment is worth 50 points. Review the rubric attached below before you 
       sections.forEach(section => {
         const navBtn = doc.querySelector(`.nav-button[onclick*="'${section.id}'"]`);
         let title = '', label = '', codeLabel = '', preview = '';
+        // The Emoji page lists cards instead of labelled previews: each has a name, a use, a preview and its code.
+        const cards = section.querySelectorAll('.emoji-card');
+        if (cards.length) {
+          const group = navBtn ? clean(navBtn.textContent) : clean((section.querySelector('h2') || {}).textContent);
+          cards.forEach(card => {
+            const pre = card.querySelector('pre');
+            const html = pre ? pre.textContent.trim() : '';
+            if (!html) return;
+            const name = clean((card.querySelector('h4') || {}).textContent) || 'Emoji';
+            const look = card.querySelector('.emoji-preview');
+            const use = clean((card.querySelector('.emoji-use') || {}).textContent);
+            library.push({ group, name, html, preview: look ? look.innerHTML : html, use, search: (card.getAttribute('data-emoji-search') || name + ' ' + use).toLowerCase() });
+          });
+          return;
+        }
         section.querySelectorAll('h2.snippet-title, p.preview-label, p.code-label, .preview-box, pre').forEach(el => {
           if (el.matches('h2.snippet-title')) { title = clean(el.textContent); label = ''; return; }
           if (el.matches('p.preview-label')) { label = tidy(el.textContent); codeLabel = ''; preview = ''; return; }
@@ -1090,6 +1119,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     [/button/i, 'Highlight a line with a link. Its words become the button label.'],
     [/horizontal line/i, 'The line is added just above the text you highlight.'],
     [/call ?out|chunking|example/i, 'Highlight the text for the box. Start with a heading to give the box that title. In the Purple box, your text becomes the prompt.'],
+    [/emoji/i, 'The emoji goes at the start of the line you highlight, or replaces an emoji already there. Its label is read aloud, so keep your words beside it.'],
     [/header|heading/i, 'Highlight a line to restyle it as this heading.']
   ];
   function showTip(group) {
@@ -1122,9 +1152,14 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     const panel = $('snipVariants');
     const open = panel.dataset.group === group && !panel.hidden;
     $('snipCats').querySelectorAll('.snip-cat').forEach(b => b.setAttribute('aria-expanded', String(!open && b.textContent === group)));
-    if (open) { panel.hidden = true; panel.dataset.group = ''; refreshTip(); return; }
+    if (open) { panel.hidden = true; panel.dataset.group = ''; $('snipFilterWrap').hidden = true; refreshTip(); return; }
     panel.dataset.group = group;
     panel.innerHTML = '';
+    const searchable = library.some(x => x.group === group && x.search);
+    panel.classList.toggle('emoji-set', searchable);
+    $('snipFilterWrap').hidden = !searchable;
+    $('snipFilter').value = '';
+    $('snipFilterCount').textContent = '';
     library.forEach((item, i) => {
       if (item.group !== group) return;
       const card = document.createElement('button');
@@ -1132,6 +1167,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
       card.setAttribute('role', 'radio');
       card.setAttribute('aria-checked', String(i === selected));
       card.dataset.index = String(i);
+      if (item.search) { card.dataset.search = item.search; if (item.use) card.title = item.use; }
       const name = document.createElement('span'); name.textContent = item.name;
       const mini = document.createElement('div'); mini.className = 'snip-mini'; mini.setAttribute('aria-hidden', 'true');
       mini.innerHTML = item.preview;
@@ -1144,10 +1180,22 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     panel.hidden = false;
     refreshTip();
   }
+  // Narrow the Emoji cards to those whose name, use or category matches every typed word.
+  $('snipFilter').addEventListener('input', () => {
+    const words = clean($('snipFilter').value).toLowerCase().split(' ').filter(Boolean);
+    let shown = 0, total = 0;
+    $('snipVariants').querySelectorAll('.snip-card').forEach(c => {
+      total++;
+      const hit = words.every(w => (c.dataset.search || '').includes(w));
+      c.hidden = !hit;
+      if (hit) shown++;
+    });
+    $('snipFilterCount').textContent = words.length ? (shown ? `Showing ${shown} of ${total} emojis.` : 'No emojis match. Try another word.') : '';
+  });
   function chooseSnippet(i, remember) {
     selected = i;
     // When the bar is pinned over a long page, fold the design cards away once one is picked.
-    if (remember && $('snipbar').classList.contains('stuck') && !$('snipbar').classList.contains('side')) { $('snipVariants').hidden = true; $('snipVariants').dataset.group = ''; $('snipCats').querySelectorAll('.snip-cat').forEach(b => b.setAttribute('aria-expanded', 'false')); }
+    if (remember && $('snipbar').classList.contains('stuck') && !$('snipbar').classList.contains('side')) { $('snipVariants').hidden = true; $('snipFilterWrap').hidden = true; $('snipVariants').dataset.group = ''; $('snipCats').querySelectorAll('.snip-cat').forEach(b => b.setAttribute('aria-expanded', 'false')); }
     const item = library[i];
     $('snipChosen').innerHTML = '';
     $('snipChosen').append('Design: ', Object.assign(document.createElement('strong'), { textContent: item.name }), ` (${item.group.replace(/^\P{L}+/u, '')})`);
@@ -1286,6 +1334,32 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     if (!root) return null;
 
     if (root.tagName === 'HR') return { nodes: [root], keep: true };
+
+    // Emoji: a single labelled emoji goes in front of the first highlighted line's words. An emoji already
+    // at the start or end of that line (like the ones template headings carry) is swapped for the new one.
+    if (roots.length === 1 && root.tagName === 'SPAN' && hasEmoji(root.textContent) && clean(root.textContent).length <= 16) {
+      const first = blocks.find(b => clean(b.textContent)) || blocks[0];
+      let target = first.matches('ul, ol') ? (first.querySelector('li') || first) : first;
+      if (target.matches('table')) target = target.querySelector('caption, th, td') || target;
+      if (target.matches('details')) target = target.querySelector('summary') || target;
+      // Step into a wrapper (bold, a link) that holds all of the line's words.
+      while (target.children.length === 1 && clean(target.textContent) === clean(target.children[0].textContent) && !/^(A|SPAN)$/.test(target.children[0].tagName)) target = target.children[0];
+      const emojiOnly = n => n && n.nodeType === 1 && n.tagName === 'SPAN' && hasEmoji(n.textContent) && clean(n.textContent).length <= 16;
+      const textOf = n => n && (n.nodeType === 3 ? clean(n.nodeValue) : 'x');
+      const kids = Array.from(target.childNodes);
+      const lead = kids.find(textOf), tail = kids.slice().reverse().find(textOf);
+      const span = root.cloneNode(true);
+      if (emojiOnly(lead)) target.replaceChild(span, lead);
+      else if (emojiOnly(tail)) target.replaceChild(span, tail);
+      else {
+        // A plain emoji typed at the start of the text is replaced too.
+        const t = lead && lead.nodeType === 3 ? lead : null;
+        if (t) t.nodeValue = t.nodeValue.replace(/^\s*(?:\p{Extended_Pictographic}|\uFE0F|\u200D)+\s*/u, '');
+        target.insertBefore(document.createTextNode(' '), target.firstChild);
+        target.insertBefore(span, target.firstChild);
+      }
+      return { nodes: blocks };
+    }
 
     // Headings: restyle every heading in the selection, or turn the first paragraph into this heading.
     if (/^H[1-6]$/.test(root.tagName) && roots.length === 1) {
