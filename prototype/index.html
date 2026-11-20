@@ -201,6 +201,9 @@ body.resizing { cursor: ew-resize; user-select: none; }
 .manualbar p { margin: 0; flex: 1 1 260px; }
 .manualbar.stale { background: rgba(255, 122, 138, 0.12); border-color: rgba(255, 122, 138, 0.45); color: #ffd0d6; font-weight: 600; }
 #codeWrap { padding: 0 22px 22px; }
+#srcCodeSlot #codeWrap { flex: 1; display: flex; flex-direction: column; padding: 0 20px 18px; }
+#srcCodeSlot #code { flex: 1; min-height: 520px; }
+#srcCodeSlot:empty { display: none; }
 .hint { color: var(--muted); font-size: 0.84rem; margin: 16px 0 10px; }
 #code { min-height: 640px; border-radius: 12px; background: rgba(3, 7, 15, 0.8); border: 1px solid var(--line); color: #bfe9ff; }
 #code:focus { box-shadow: var(--glow); }
@@ -216,12 +219,15 @@ body.resizing { cursor: ew-resize; user-select: none; }
 #preview button { all: revert; }
 #preview[contenteditable="true"] { cursor: text; }
 #preview[contenteditable="true"]:focus { outline: none; box-shadow: inset 0 0 0 3px rgba(79, 216, 255, 0.55); }
+/* A banner still waiting for its image address shows as a dashed box with its alt text. */
+#preview img[src="YOUR_BANNER_IMAGE_URL"] { display: block; width: 100%; min-height: 120px; border: 2px dashed #9fb3c8; background: #f2f6fa; color: #5f6f7f; }
+#preview img { max-width: 100%; }
 #preview .t2t-flash { outline: 3px solid #f2a900; outline-offset: 4px; transition: outline-color 1.2s; }
 
 /* Toast */
 .toast { position: fixed; left: 50%; bottom: 22px; transform: translate(-50%, 16px); opacity: 0; pointer-events: none; display: flex; gap: 12px; align-items: center; max-width: min(640px, calc(100vw - 32px)); background: rgba(12, 20, 36, 0.95); border: 1px solid rgba(79, 216, 255, 0.4); color: #fff; padding: 11px 12px 11px 16px; border-radius: 14px; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(79, 216, 255, 0.15); font-size: 0.92rem; z-index: 60; transition: opacity 0.2s, transform 0.2s; backdrop-filter: blur(12px); }
 .toast.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
-.toast button { background: transparent; color: var(--gold); border-color: var(--gold); padding: 4px 10px; }
+.toast button { white-space: nowrap; flex: none; background: transparent; color: var(--gold); border-color: var(--gold); padding: 4px 10px; }
 @media (prefers-reduced-motion: reduce) { .toast, .btn, button { transition: none; } .gate.shake .gate-card { animation: none; } }
 
 @media (max-width: 1100px) {
@@ -311,11 +317,16 @@ body.resizing { cursor: ew-resize; user-select: none; }
             <h2>Paste your original content</h2>
           </div>
           <div class="push">
+            <div class="seg" role="tablist" aria-label="Show">
+              <button type="button" role="tab" id="tabSrcText" aria-selected="true" aria-controls="source">Your text</button>
+              <button type="button" role="tab" id="tabSrcCode" aria-selected="false" aria-controls="codeWrap" tabindex="-1">HTML</button>
+            </div>
             <button class="small" id="exampleBtn" type="button">Load example</button>
             <button class="small" id="clearBtn" type="button">Clear</button>
           </div>
         </div>
         <label class="sr-only" for="source">Original content</label>
+        <div id="srcCodeSlot"></div>
         <textarea id="source" spellcheck="true" placeholder="Paste from Word, Google Docs, or type here.&#10;&#10;The first line becomes the title banner.&#10;Section names like Module Overview or Directions on their own line become headings.&#10;Start lines with - for bullets or 1. for numbered steps."></textarea>
         <div class="source-foot">
           <span class="stat" id="sourceStat" aria-live="off"></span>
@@ -344,6 +355,7 @@ body.resizing { cursor: ew-resize; user-select: none; }
             <li><code>YouTube URL</code><span>Alone on a line: embedded video</span></li>
             <li><code>a | b</code><span>Table row (or tab-separated). First row is the header.</span></li>
             <li><code>Caption:</code><span>Line above a table becomes its caption</span></li>
+            <li><code>Banner: url</code><span>Then a description. Apply the Banners snippet on the Edit tab to make it an image.</span></li>
           </ul>
         </div>
         <div class="panel cheat">
@@ -1034,6 +1046,14 @@ This assignment is worth 50 points. Review the rubric attached below before you 
       if (node.nodeType === 3) return node.nodeValue.replace(/\s+/g, ' ');
       if (node.nodeType !== 1) return '';
       if (node.tagName === 'BR') return '\n';
+      // Pictures: a web address is kept on its own "Image:" line. Pictures stored in Word itself can't be
+      // copied, so they leave a reminder line to upload them to Canvas Files.
+      if (node.tagName === 'IMG') {
+        const srcUrl = node.getAttribute('src') || '', alt = clean(node.getAttribute('alt') || '');
+        if (/^https?:/.test(srcUrl)) return `\nImage: ${srcUrl} ${alt}\n`;
+        htmlToMarkup.skipped = (htmlToMarkup.skipped || 0) + 1;
+        return `\nImage: (upload this picture to Canvas Files and put its address here) ${alt}\n`;
+      }
       let inner = Array.from(node.childNodes).map(inlineText).join('');
       if (node.tagName === 'A' && node.getAttribute('href') && /^(https?:|mailto:)/.test(node.getAttribute('href'))) {
         const href = node.getAttribute('href');
@@ -1192,7 +1212,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
         const ia = order.indexOf(a.id), ib = order.indexOf(b.id);
         return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
       });
-      const tidy = t => clean(t).replace(/\b(preview|code)\b/gi, '').replace(/^[\s:–—-]+|[\s:–—-]+$/g, '').replace(/\s{2,}/g, ' ').trim();
+      const tidy = t => clean(t).replace(/\b(preview|code|placeholder)\b/gi, '').replace(/^[\s:–—-]+|[\s:–—-]+$/g, '').replace(/\s{2,}/g, ' ').trim();
       sections.forEach(section => {
         const navBtn = doc.querySelector(`.nav-button[onclick*="'${section.id}'"]`);
         let title = '', label = '', codeLabel = '', preview = '';
@@ -1252,6 +1272,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     [/button/i, 'Highlight a line with a link. Its words become the button label.'],
     [/horizontal line/i, 'The line is added just above the text you highlight.'],
     [/call ?out|chunking|example/i, 'Highlight the text for the box. Start with a heading to give the box that title. In the Purple box, your text becomes the prompt.'],
+    [/banner/i, 'Highlight one line with the image address from Canvas Files and a short description, like <code>Banner: https://…/preview Students in the lab</code>. The address becomes the image and the words become its alt text.'],
     [/emoji/i, 'The emoji goes at the start of the line you highlight, or replaces an emoji already there. Its label is read aloud, so keep your words beside it.'],
     [/header|heading/i, 'Highlight a line to restyle it as this heading.']
   ];
@@ -1499,6 +1520,31 @@ This assignment is worth 50 points. Review the rubric attached below before you 
         target.insertBefore(span, target.firstChild);
       }
       return { nodes: blocks };
+    }
+
+    // Banner image: a paragraph holding only an <img>. The highlighted line gives the image address (the first
+    // link or web address in it) and the alt text (its other words). "Image:" or "Banner:" lines, and lines with
+    // an address, are replaced by the banner. Anything else stays, and the banner goes above it with placeholders.
+    const img = roots.length === 1 && root.querySelector('img');
+    if (img && !clean(root.textContent) && root.querySelectorAll('img').length === 1) {
+      const banner = root.cloneNode(true), pic = banner.querySelector('img');
+      const words = clean(blocks.map(b => b.textContent).join(' '));
+      const oldImg = blocks.map(b => b.matches('img') ? b : b.querySelector('img')).find(Boolean);
+      const link = blocks.map(b => b.matches('a[href]') ? b : b.querySelector('a[href^="http"]')).find(Boolean);
+      const typed = words.match(/https?:\/\/\S+/);
+      const url = (oldImg && /^https?:/.test(oldImg.getAttribute('src') || '') && oldImg.getAttribute('src')) || (link && link.getAttribute('href')) || (typed && typed[0].replace(/[.,;:)\]]+$/, ''));
+      const labelled = /^(course |page |module )?(banner|image|picture|banner image)\s*:/i.test(words);
+      if (!url && !labelled) {
+        return { nodes: [banner], keep: true, note: 'Banner added above your text. In the HTML tab, replace YOUR_BANNER_IMAGE_URL with the image address from Canvas Files and describe the image in alt.' };
+      }
+      let alt = (oldImg && oldImg.getAttribute('alt')) || words.replace(/https?:\/\/\S+/g, ' ')
+        .replace(/^(course |page |module )?(banner|image|picture|banner image)\s*:/i, '')
+        .replace(/\(?\s*upload this picture to Canvas Files[^)]*\)?/i, '')
+        .replace(/^\s*(alt( text)?|description)\s*:\s*/i, '').replace(/\s+/g, ' ').replace(/^[\s|–—-]+|[\s|–—-]+$/g, '').trim();
+      if (alt) pic.setAttribute('alt', alt);
+      if (url) pic.setAttribute('src', url);
+      const missing = [!url && 'the image address (YOUR_BANNER_IMAGE_URL)', !alt && 'the alt text'].filter(Boolean);
+      return { nodes: [banner], note: missing.length ? `Still to add in the HTML tab: ${missing.join(' and ')}.` : 'Check the alt text describes the image and any words in it.' };
     }
 
     // Headings: restyle every heading in the selection, or turn the first paragraph into this heading.
@@ -2092,6 +2138,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
   src.addEventListener('paste', e => {
     const html = e.clipboardData && e.clipboardData.getData('text/html');
     if (!html) return;
+    htmlToMarkup.skipped = 0;
     const markup = htmlToMarkup(html);
     if (!markup.trim()) return;
     e.preventDefault();
@@ -2099,7 +2146,9 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     src.setRangeText(markup, s, en, 'end');
     run(true);
     updateStat();
-    say('Pasted formatted text. Headings, bold, lists, and links were kept.', { label: 'Go to Edit →', run: () => selectTab('edit') });
+    const pics = htmlToMarkup.skipped;
+    say(pics ? `Pasted formatted text. ${pics} picture${pics > 1 ? 's' : ''} from Word can't be copied: each left an "Image:" line. Upload the picture to Canvas Files and put its address on that line.`
+      : 'Pasted formatted text. Headings, bold, lists, and links were kept.', { label: 'Go to Edit →', run: () => selectTab('edit') });
   });
   // The style menu only takes effect when Apply is selected.
   function markStylePending() {
@@ -2133,7 +2182,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
   $('clearBtn').addEventListener('click', () => {
     if (!src.value && manualHtml === null) { src.focus(); return; }
     const before = { text: src.value, ops: ops.slice(), manual: manualHtml, history: history.slice() };
-    src.value = ''; ops = []; leaveManual(); run(); updateStat(); selectTab('source'); src.focus();
+    src.value = ''; ops = []; leaveManual(); run(); updateStat(); selectTab('srctext'); src.focus();
     say('Cleared your text.', { label: 'Undo', run: () => {
       src.value = before.text; ops = before.ops; run(); updateStat();
       if (before.manual !== null) { preview.innerHTML = before.manual; preview.contentEditable = 'true'; history = before.history; setManual(before.manual); }
@@ -2141,28 +2190,42 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     } });
   });
 
-  // Two main tabs (Original content, Edit) and, inside Edit, a Visual / HTML switch.
+  // Two main tabs (Original content, Edit). Each has its own switch to show the HTML; the one HTML box
+  // moves to whichever tab is showing it.
+  const views = { tab: 'source', src: 'text', edit: 'visual' };
   function selectTab(which) {
-    const edit = which !== 'source';
-    const codeView = which === 'code' || (which === 'edit' && $('tabCode').getAttribute('aria-selected') === 'true');
-    [['tabSource', !edit], ['tabEdit', edit], ['tabText', !codeView], ['tabCode', codeView]].forEach(([id, on]) => {
+    if (which === 'source' || which === 'edit') views.tab = which;
+    if (which === 'srctext' || which === 'srccode') { views.tab = 'source'; views.src = which === 'srccode' ? 'code' : 'text'; }
+    if (which === 'visual' || which === 'code') { views.tab = 'edit'; views.edit = which; }
+    const edit = views.tab === 'edit';
+    const codeHere = edit ? views.edit === 'code' : views.src === 'code';
+    [['tabSource', !edit], ['tabEdit', edit], ['tabText', views.edit !== 'code'], ['tabCode', views.edit === 'code'],
+      ['tabSrcText', views.src !== 'code'], ['tabSrcCode', views.src === 'code']].forEach(([id, on]) => {
       $(id).setAttribute('aria-selected', String(on));
       $(id).tabIndex = on ? 0 : -1;
     });
+    const wrap = $('codeWrap');
+    if (edit) { if (wrap.parentNode !== $('previewWrap').parentNode) $('previewWrap').after(wrap); }
+    else if (wrap.parentNode !== $('srcCodeSlot')) $('srcCodeSlot').appendChild(wrap);
+    wrap.setAttribute('aria-labelledby', edit ? 'tabCode' : 'tabSrcCode');
     $('viewSource').hidden = edit;
     $('viewEdit').hidden = !edit;
-    $('previewWrap').hidden = codeView;
-    $('codeWrap').hidden = !codeView;
-    try { localStorage.setItem('t2tp-tab', edit ? 'edit' : 'source'); } catch (e) {}
+    $('previewWrap').hidden = edit && codeHere;
+    src.hidden = !edit && codeHere;
+    wrap.hidden = !codeHere;
+    try { localStorage.setItem('t2tp-tab', views.tab); localStorage.setItem('t2tp-views', JSON.stringify({ src: views.src, edit: views.edit })); } catch (e) {}
     window.scrollTo({ top: 0 });
   }
-  $('tabSource').addEventListener('click', () => { selectTab('source'); src.focus(); });
+  try { Object.assign(views, JSON.parse(localStorage.getItem('t2tp-views') || '{}')); } catch (e) {}
+  $('tabSource').addEventListener('click', () => { selectTab('source'); if (views.src === 'text') src.focus(); });
   $('tabEdit').addEventListener('click', () => selectTab('edit'));
   $('toEdit').addEventListener('click', () => selectTab('edit'));
-  $('tabText').addEventListener('click', () => { $('tabCode').setAttribute('aria-selected', 'false'); selectTab('edit'); });
+  $('tabText').addEventListener('click', () => selectTab('visual'));
   $('tabCode').addEventListener('click', () => selectTab('code'));
+  $('tabSrcText').addEventListener('click', () => { selectTab('srctext'); src.focus(); });
+  $('tabSrcCode').addEventListener('click', () => selectTab('srccode'));
   // Arrow keys move between tabs in each tab list.
-  [['tabSource', 'tabEdit'], ['tabText', 'tabCode']].forEach(pair => pair.forEach((id, k) => {
+  [['tabSource', 'tabEdit'], ['tabText', 'tabCode'], ['tabSrcText', 'tabSrcCode']].forEach(pair => pair.forEach((id, k) => {
     $(id).addEventListener('keydown', e => {
       if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
       e.preventDefault();
@@ -2217,7 +2280,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     try {
       await navigator.clipboard.writeText(code.value);
     } catch (e) {
-      selectTab('code'); code.focus(); code.select();
+      selectTab(views.tab === 'edit' ? 'code' : 'srccode'); code.focus(); code.select();
       document.execCommand && document.execCommand('copy');
     }
     say('HTML copied. Paste it into the Canvas HTML editor.');
@@ -2255,7 +2318,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     if (m) { preview.innerHTML = m; preview.contentEditable = 'true'; history = [code.value]; setManual(m); }
   } catch (e) {}
   updateStat();
-  try { if (localStorage.getItem('t2tp-tab') === 'edit' && src.value.trim()) selectTab('edit'); } catch (e) {}
+  try { selectTab(localStorage.getItem('t2tp-tab') === 'edit' && src.value.trim() ? 'edit' : 'source'); } catch (e) {}
   loadLibrary();
 
   window.__textToTemplatePrototype = { convert, htmlToMarkup };
