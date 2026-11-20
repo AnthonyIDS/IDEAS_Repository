@@ -85,7 +85,7 @@ select option { background: #0d1628; }
 
 /* ---------- Header ---------- */
 .top { position: sticky; top: 0; z-index: 30; background: rgba(6, 10, 19, 0.78); backdrop-filter: blur(16px); border-bottom: 1px solid var(--line); }
-.top-inner { max-width: 1560px; margin: 0 auto; padding: 12px 20px; display: grid; grid-template-columns: auto 1fr auto; gap: 12px 20px; align-items: center; }
+.top-inner { max-width: 1880px; margin: 0 auto; padding: 12px 20px; display: grid; grid-template-columns: auto 1fr auto; gap: 12px 20px; align-items: center; }
 .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .brand > div:last-child { min-width: 0; }
 .maintabs [role="tab"] { white-space: nowrap; }
@@ -104,12 +104,12 @@ select option { background: #0d1628; }
 .lock { border-color: transparent; background: none; color: var(--muted); padding: 8px; }
 
 /* Style bar, under the header. */
-.stylebar { max-width: 1560px; margin: 0 auto; padding: 0 20px 12px; display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.stylebar { max-width: 1880px; margin: 0 auto; padding: 0 20px 12px; display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
 .stylebar label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); font-weight: 700; }
 .saved { margin-left: auto; font-size: 0.78rem; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
 .saved::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 10px var(--ok); }
 
-main { flex: 1; width: 100%; max-width: 1560px; margin: 0 auto; padding: 18px 20px 40px; }
+main { flex: 1; width: 100%; max-width: 1880px; margin: 0 auto; padding: 18px 20px 40px; }
 .panel { background: var(--glass); border: 1px solid var(--line); border-radius: var(--radius); backdrop-filter: blur(14px); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.04); }
 .panel-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--line); }
 .panel-head h2 { margin: 0; font-size: 1rem; }
@@ -139,40 +139,46 @@ textarea:focus { outline: none; }
 .cheat details[open] summary { margin-bottom: 10px; }
 
 /* ---------- Tab 2: Edit ---------- */
-.edit-grid { display: grid; grid-template-columns: 400px minmax(0, 1fr); gap: 18px; align-items: start; }
+.edit-grid { --dock-w: clamp(480px, 42vw, 720px); display: grid; grid-template-columns: var(--dock-w) minmax(0, 1fr); gap: 18px; align-items: start; }
+/* Drag the glowing edge (or focus it and use the arrow keys) to make the snippet tools wider or narrower. */
+.dock-resize { position: absolute; top: 0; right: 0; bottom: 0; width: 12px; cursor: ew-resize; z-index: 3; touch-action: none; }
+.dock-resize::after { content: ""; position: absolute; top: 50%; right: 3px; width: 4px; height: 56px; transform: translateY(-50%); border-radius: 4px; background: rgba(130, 170, 230, 0.35); transition: background 0.15s, height 0.15s; }
+.dock-resize:hover::after, .dock-resize:focus-visible::after, .dock-resize.dragging::after { background: var(--cyan); height: 96px; box-shadow: 0 0 14px rgba(79, 216, 255, 0.6); }
+.dock-resize:focus-visible { outline: none; }
+body.resizing { cursor: ew-resize; user-select: none; }
 /* The snippet dock stays on screen beside the page and scrolls on its own. */
-.dock { position: sticky; top: 140px; max-height: calc(100vh - 156px); display: flex; flex-direction: column; overflow: hidden; }
-.dock-scroll { overflow-y: auto; padding: 14px 16px 16px; display: grid; gap: 14px; scrollbar-width: thin; scrollbar-color: rgba(130, 170, 230, 0.3) transparent; }
+.dock { position: sticky; top: 140px; height: calc(100vh - 156px); min-height: 560px; display: flex; flex-direction: column; overflow: hidden; }
+.dock-scroll { flex: 1; overflow-y: auto; align-content: start; padding: 16px 20px 20px; display: grid; gap: 14px; scrollbar-width: thin; scrollbar-color: rgba(130, 170, 230, 0.3) transparent; }
 .snipbar { display: contents; }
 .snip-head { margin: 0; font-size: 1rem; }
-.dock .hdr { padding: 14px 16px 12px; border-bottom: 1px solid var(--line); display: grid; gap: 10px; background: linear-gradient(180deg, rgba(79, 216, 255, 0.06), transparent); }
-.snip-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 0.86rem; color: var(--muted); }
+.dock .hdr { padding: 14px 20px 14px; border-bottom: 1px solid var(--line); display: grid; gap: 10px; background: linear-gradient(180deg, rgba(79, 216, 255, 0.06), transparent); }
+.snip-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 6px; font-size: 0.86rem; color: var(--muted); }
 .snip-steps li { display: flex; align-items: center; gap: 9px; padding: 7px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--line); transition: border-color 0.2s, background 0.2s; }
 .snip-steps .dot { display: inline-grid; place-items: center; flex: none; width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--muted); font-size: 0.72rem; font-weight: 700; }
 .snip-steps li.done { color: var(--ink); border-color: rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.07); }
 .snip-steps li.done .dot { background: var(--ok); border-color: var(--ok); color: #04210f; font-size: 0; }
 .snip-steps li.done .dot::after { content: "✓"; font-size: 0.75rem; }
-#snipActions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+#snipActions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
 #snipActions #applySnippet { grid-column: 1 / -1; justify-content: center; padding: 11px; font-size: 0.98rem; }
 #snipActions button:not(#applySnippet) { justify-content: center; font-size: 0.84rem; padding: 7px 8px; }
 .snip-tip { margin: 0; font-size: 0.84rem; padding: 9px 12px; border-radius: 10px; background: rgba(242, 181, 44, 0.08); border: 1px solid rgba(242, 181, 44, 0.3); color: #f6deab; }
 .snip-tip code { font-family: var(--font-code); background: rgba(0, 0, 0, 0.3); padding: 0 5px; border-radius: 4px; font-size: 0.92em; color: #fff; }
 .section-label { margin: 0; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--muted); font-weight: 700; }
-.snip-cats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
-.snip-cat { justify-content: center; text-align: center; padding: 9px 8px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; min-height: 40px; line-height: 1.25; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--line); }
+.snip-cats { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.snip-cat { justify-content: center; text-align: center; padding: 10px 10px; border-radius: 10px; font-size: 0.88rem; font-weight: 600; min-height: 40px; line-height: 1.25; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--line); }
 .snip-cat[aria-expanded="true"] { background: rgba(79, 216, 255, 0.14); border-color: var(--cyan); color: #fff; box-shadow: 0 0 18px rgba(79, 216, 255, 0.2); }
-.snip-variants { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 2px; }
-.snip-card { display: grid; grid-template-rows: auto 1fr; gap: 7px; align-items: start; text-align: left; padding: 8px; border-radius: 12px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--line); font-size: 0.78rem; font-weight: 600; color: var(--ink); }
+.snip-variants { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; padding: 2px; }
+.snip-card { display: grid; grid-template-rows: auto 1fr; gap: 8px; align-items: start; text-align: left; padding: 10px; border-radius: 12px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--line); font-size: 0.86rem; font-weight: 600; color: var(--ink); }
 .snip-card[aria-checked="true"] { border-color: var(--cyan); box-shadow: var(--glow); background: rgba(79, 216, 255, 0.08); }
 .snip-card[hidden] { display: none; }
-.snip-mini { color-scheme: light; border-radius: 8px; background: #ffffff; padding: 8px; max-height: 170px; overflow: hidden; pointer-events: none; color: #2d3b45; font-weight: normal; font-family: Arial, sans-serif; zoom: 0.5; }
+.snip-mini { color-scheme: light; border-radius: 8px; background: #ffffff; padding: 8px; max-height: 260px; overflow: hidden; pointer-events: none; color: #2d3b45; font-weight: normal; font-family: Arial, sans-serif; zoom: 0.62; }
 .snip-mini a { color: #0770a3; }
 .snip-mini .btn { display: inline-block; padding: 8px 14px; border: 1px solid #c7cdd1; border-radius: 3px; background: #f5f5f5; color: #2d3b45; text-decoration: none; font-weight: normal; box-shadow: none; }
 .snip-mini .ic-Table th, .snip-mini .ic-Table td { padding: 8px 10px; text-align: left; }
 .snip-mini .ic-Table caption { padding: 0 0 12px; text-align: left; }
-.snip-variants.emoji-set { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.snip-variants.emoji-set .snip-card { font-size: 0.72rem; }
-.snip-variants.emoji-set .snip-mini { zoom: 0.7; text-align: center; font-size: 34px; line-height: 1.3; padding: 4px; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+.snip-variants.emoji-set { grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); }
+.snip-variants.emoji-set .snip-card { font-size: 0.8rem; }
+.snip-variants.emoji-set .snip-mini { zoom: 0.85; text-align: center; font-size: 34px; line-height: 1.3; padding: 4px; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
 .snip-filter { display: grid; gap: 6px; font-size: 0.85rem; }
 .snip-filter input { width: 100%; padding: 9px 12px; border-radius: 10px; border: 1px solid var(--line-2); background: rgba(5, 10, 20, 0.6); }
 .snip-filter input:focus { outline: none; box-shadow: var(--glow); }
@@ -223,7 +229,8 @@ textarea:focus { outline: none; }
   .maintabs { grid-column: 1 / -1; grid-row: 2; justify-self: stretch; }
   .maintabs [role="tab"] { flex: 1; justify-content: center; }
   .source-grid, .edit-grid { grid-template-columns: 1fr; }
-  .cheats, .dock { position: static; max-height: none; }
+  .cheats, .dock { position: static; max-height: none; height: auto; min-height: 0; }
+  .dock-resize { display: none; }
   .stage .panel-head { position: static; }
   .source-panel { min-height: 0; }
 }
@@ -233,7 +240,8 @@ textarea:focus { outline: none; }
   .brand h1 .tag { margin-left: 0; }
   .brand-mark { display: none; }
   .maintabs [role="tab"] { padding: 8px 10px; font-size: 0.9rem; }
-  .dock-scroll { max-height: 55vh; }
+  .dock-scroll { max-height: 60vh; }
+  #snipActions { grid-template-columns: 1fr 1fr; }
   select { min-width: 0; flex: 1 1 100%; }
   main, .stylebar, .top-inner { padding-left: 12px; padding-right: 12px; }
   .canvas-wrap { padding: 10px; }
@@ -357,6 +365,7 @@ textarea:focus { outline: none; }
   <section id="viewEdit" role="tabpanel" aria-labelledby="tabEdit" hidden>
     <div class="edit-grid">
       <aside class="panel dock" id="snipbar" aria-labelledby="snipHead">
+        <div class="dock-resize" id="dockResize" role="separator" aria-orientation="vertical" aria-label="Resize snippet tools" tabindex="0" title="Drag to resize the snippet tools. Double-click to reset."></div>
         <div class="hdr">
           <div>
             <p class="eyebrow">Snippet tools</p>
@@ -370,7 +379,7 @@ textarea:focus { outline: none; }
             <button class="primary" id="applySnippet" type="button" disabled>✦ Apply snippet</button>
             <button id="undoSnippet" type="button" disabled>↶ Undo</button>
             <button id="clearSnippets" type="button" disabled>Remove all</button>
-            <button id="unsnip" type="button" disabled title="Highlight any part of the Preview (or click inside a snippet), then select this to remove its formatting" style="grid-column: 1 / -1">Make basic text</button>
+            <button id="unsnip" type="button" disabled title="Highlight any part of the Preview (or click inside a snippet), then select this to remove its formatting">Make basic text</button>
           </div>
         </div>
         <div class="dock-scroll">
@@ -2171,6 +2180,37 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     $('toEdit').disabled = !words;
   }
   src.addEventListener('input', updateStat);
+
+  // The snippet tools panel can be dragged wider or narrower; the width is remembered in this browser.
+  {
+    const grid = document.querySelector('.edit-grid'), handle = $('dockResize');
+    const clampW = w => Math.round(Math.max(380, Math.min(w, window.innerWidth - 480)));
+    const setW = (w, save) => {
+      if (w == null) { grid.style.removeProperty('--dock-w'); handle.removeAttribute('aria-valuenow'); }
+      else { w = clampW(w); grid.style.setProperty('--dock-w', w + 'px'); handle.setAttribute('aria-valuenow', String(w)); }
+      if (save) { try { w == null ? localStorage.removeItem('t2tp-dock') : localStorage.setItem('t2tp-dock', String(w)); } catch (e) {} }
+    };
+    try { const w = +localStorage.getItem('t2tp-dock'); if (w) setW(w, false); } catch (e) {}
+    handle.addEventListener('pointerdown', e => {
+      e.preventDefault();
+      const left = $('snipbar').getBoundingClientRect().left;
+      handle.setPointerCapture(e.pointerId);
+      handle.classList.add('dragging'); document.body.classList.add('resizing');
+      const move = ev => setW(ev.clientX - left, false);
+      const up = ev => {
+        handle.removeEventListener('pointermove', move); handle.removeEventListener('pointerup', up);
+        handle.classList.remove('dragging'); document.body.classList.remove('resizing');
+        setW(ev.clientX - left, true);
+      };
+      handle.addEventListener('pointermove', move); handle.addEventListener('pointerup', up);
+    });
+    handle.addEventListener('dblclick', () => { setW(null, true); say('Snippet tools are back to their standard width.'); });
+    handle.addEventListener('keydown', e => {
+      const step = e.shiftKey ? 80 : 30, cur = $('snipbar').offsetWidth;
+      if (e.key === 'ArrowRight') { e.preventDefault(); setW(cur + step, true); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); setW(cur - step, true); }
+    });
+  }
 
   $('copyBtn').addEventListener('click', async () => {
     if (!code.value) { say('Add some text first.'); return; }
