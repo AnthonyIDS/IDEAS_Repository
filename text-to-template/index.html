@@ -125,7 +125,7 @@ textarea { width: 100%; border: 0; resize: vertical; padding: 14px; font-family:
 .snip-card { display: grid; grid-template-rows: auto 1fr; gap: 6px; text-align: left; padding: 8px; border: 1px solid #d7e2ec; border-radius: 12px; background: #ffffff; color: #00406e; font-weight: bold; font-size: 0.82rem; }
 .snip-card[aria-checked="true"] { border: 2px solid #f2a900; padding: 7px; box-shadow: 0 0 0 3px rgba(242, 169, 0, 0.25); }
 .snip-mini { color-scheme: light; border: 1px solid #d7e2ec; border-radius: 8px; background: #fbfdff; padding: 8px; max-height: 200px; overflow: hidden; pointer-events: none; color: #2d3b45; font-weight: normal; font-family: Arial, sans-serif; zoom: 0.55; }
-/* The Emoji category has 100 small designs, so its cards are compact and a search box narrows them. */
+/* The Emoji category has over 100 small designs, so its cards are compact and a search box narrows them. */
 .snip-variants.emoji-set { grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); }
 .snip-variants.emoji-set .snip-card { font-size: 0.78rem; }
 .snip-card[hidden] { display: none; }
@@ -238,7 +238,7 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
           <li>Quick Check uses the first line as the question and the list below it as answers. End the right answer with <code>*</code> to mark it correct; otherwise the design you pick decides (for example, "Answer B Correct" makes the second answer green).</li>
           <li>True / False Challenge makes one statement per line. End each with <code>(True)</code> or <code>(False)</code>; any words after it become the feedback, as in <code>AI can be wrong. (True) Always verify.</code></li>
           <li>Flashcards make one card per line written as <code>Term: definition</code>, or one per heading with its answer below. A heading above the lines titles the set.</li>
-          <li>Emoji puts the emoji you pick at the start of the first highlighted line, or swaps an emoji that line already has. Type in <strong>Find an emoji</strong> to narrow the 100 designs. Each emoji has a spoken label, so keep your words next to it.</li>
+          <li>Emoji puts the emoji you pick at the start of the first highlighted line, or swaps an emoji that line already has. Type in <strong>Find an emoji</strong> to narrow the designs. Each emoji has a spoken label, so keep your words next to it.</li>
           <li>When you open a category, a short tip under the designs shows the format it expects.</li>
           <li>Snippets stay applied while you keep editing your text. To take one off, click inside it in the Preview and select <strong>Make basic text</strong>; its words go back to plain formatting. Make basic text also works on any highlighted area, such as a template heading or box: the styling is removed and the words stay. <strong>Undo</strong> and <strong>Remove all</strong> also take snippets off.</li>
           <li>You can also click into the Preview and fix wording there, or edit the code itself on the <strong>HTML</strong> tab next to Your text. After that, the page keeps your edits. Select <strong>Rebuild from Your text</strong> to go back to building it from your text.</li>
@@ -1372,10 +1372,21 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     if (/^H[1-6]$/.test(root.tagName) && roots.length === 1) {
       const heads = blocks.filter(isHeading);
       const targets = heads.length ? heads : [blocks[0]];
+      // A numbered sample label, like "<strong>Step 1: </strong>" in the H4 Bold with Black Font design, numbers
+      // each highlighted heading (Step 1, Step 2, ...) and keeps its words after the label. A heading that
+      // already starts with the label word keeps its own wording.
+      const lab = root.querySelector('strong, b') || root;
+      const m = clean(root.textContent) === clean(lab.textContent) && clean(lab.textContent).match(/^(.*\S)\s+(\d+)\s*:$/);
+      let n = m ? +m[2] : 0;
       const nodes = blocks.map(bk => {
         if (!targets.includes(bk)) return bk;
         const h = root.cloneNode(true);
-        setText(h, clean(bk.textContent));
+        const text = clean(bk.textContent);
+        if (m && !text.toLowerCase().startsWith(m[1].toLowerCase())) {
+          const l = h.querySelector('strong, b') || h;
+          l.textContent = `${m[1]} ${n++}: `;
+          if (l !== h) h.appendChild(document.createTextNode(text)); else l.textContent += text;
+        } else setText(h, text);
         return h;
       });
       return { nodes };
