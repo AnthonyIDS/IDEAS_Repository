@@ -285,7 +285,7 @@ details.guide code { font-family: var(--font-code); background: var(--code-bg); 
           <span id="snipFilterCount" role="status" aria-live="polite"></span>
         </div>
         <div class="snip-variants" id="snipVariants" role="radiogroup" aria-label="Snippet design" hidden></div>
-        <div class="row">
+        <div class="row" id="snipActions">
           <ul class="snip-steps" aria-live="polite">
             <li id="stepHighlight"><span class="dot" aria-hidden="true">1</span> <span id="snipHighlighted">Highlight text in the Preview</span></li>
             <li id="stepDesign"><span class="dot" aria-hidden="true">2</span> <span id="snipChosen">Pick a design above</span></li>
@@ -1152,12 +1152,12 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     const panel = $('snipVariants');
     const open = panel.dataset.group === group && !panel.hidden;
     $('snipCats').querySelectorAll('.snip-cat').forEach(b => b.setAttribute('aria-expanded', String(!open && b.textContent === group)));
-    if (open) { panel.hidden = true; panel.dataset.group = ''; $('snipFilterWrap').hidden = true; refreshTip(); return; }
+    if (open) { panel.hidden = true; panel.dataset.group = ''; showFilter(false); refreshTip(); return; }
     panel.dataset.group = group;
     panel.innerHTML = '';
     const searchable = library.some(x => x.group === group && x.search);
     panel.classList.toggle('emoji-set', searchable);
-    $('snipFilterWrap').hidden = !searchable;
+    showFilter(searchable);
     $('snipFilter').value = '';
     $('snipFilterCount').textContent = '';
     library.forEach((item, i) => {
@@ -1180,6 +1180,13 @@ This assignment is worth 50 points. Review the rubric attached below before you 
     panel.hidden = false;
     refreshTip();
   }
+  // The Emoji search box, with the Apply, Undo, Remove all and Make basic text buttons moved right under it,
+  // so they stay in reach above the long list of emoji designs. Otherwise the buttons sit below the designs.
+  function showFilter(on) {
+    $('snipFilterWrap').hidden = !on;
+    const panel = $('snipVariants'), row = $('snipActions');
+    panel.parentNode.insertBefore(row, on ? panel : panel.nextSibling);
+  }
   // Narrow the Emoji cards to those whose name, use or category matches every typed word.
   $('snipFilter').addEventListener('input', () => {
     const words = clean($('snipFilter').value).toLowerCase().split(' ').filter(Boolean);
@@ -1195,7 +1202,7 @@ This assignment is worth 50 points. Review the rubric attached below before you 
   function chooseSnippet(i, remember) {
     selected = i;
     // When the bar is pinned over a long page, fold the design cards away once one is picked.
-    if (remember && $('snipbar').classList.contains('stuck') && !$('snipbar').classList.contains('side')) { $('snipVariants').hidden = true; $('snipFilterWrap').hidden = true; $('snipVariants').dataset.group = ''; $('snipCats').querySelectorAll('.snip-cat').forEach(b => b.setAttribute('aria-expanded', 'false')); }
+    if (remember && $('snipbar').classList.contains('stuck') && !$('snipbar').classList.contains('side')) { $('snipVariants').hidden = true; showFilter(false); $('snipVariants').dataset.group = ''; $('snipCats').querySelectorAll('.snip-cat').forEach(b => b.setAttribute('aria-expanded', 'false')); }
     const item = library[i];
     $('snipChosen').innerHTML = '';
     $('snipChosen').append('Design: ', Object.assign(document.createElement('strong'), { textContent: item.name }), ` (${item.group.replace(/^\P{L}+/u, '')})`);
