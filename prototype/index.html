@@ -427,7 +427,7 @@ textarea:focus { outline: none; }
    it keeps casual visitors out, but anyone who reads the page source can get past it. */
 (function () {
   'use strict';
-  const HASH = '0f68633c23976581ab29c8e29a61c7c367eb8a5c80470a2eda9445043264ccd1';
+  const HASH = '5db0527fa0fff7ea61c42ce4da2118d4549d941721b4a9a6afa3d449edfe1ab5';
   const KEY = 't2tp-unlocked';
   const gate = document.getElementById('gate'), app = document.getElementById('app');
   const form = document.getElementById('gateForm'), pass = document.getElementById('gatePass'), err = document.getElementById('gateErr');
@@ -440,7 +440,7 @@ textarea:focus { outline: none; }
   form.addEventListener('submit', async e => {
     e.preventDefault();
     let ok = false;
-    try { ok = (await sha256(pass.value.trim())) === HASH; } catch (x) { err.textContent = 'This browser cannot check the password here. Open the page from the GitHub Pages site.'; return; }
+    try { ok = (await sha256(pass.value.trim().replace(/\s+/g, ' ').toLowerCase())) === HASH; } catch (x) { err.textContent = 'This browser cannot check the password here. Open the page from the GitHub Pages site.'; return; }
     if (ok) {
       try { sessionStorage.setItem(KEY, HASH); } catch (x) {}
       err.textContent = '';
