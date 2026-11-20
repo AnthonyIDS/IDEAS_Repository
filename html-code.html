@@ -247,6 +247,39 @@
       .hero { color: #ffffff; }
       .footer-rule { border-color: #90c9ff; }
     }
+
+    #emoji .emoji-help-link { color: var(--spc-blue); text-underline-offset: 3px; }
+    #emoji .emoji-search { margin: 24px 0; }
+    #emoji .emoji-search label { display: block; margin-bottom: 6px; }
+    #emoji input {
+      display: block; width: 100%; max-width: 520px; min-height: 48px;
+      padding: 10px 12px; font: inherit; color: #17324d; background: #ffffff;
+      border: 1px solid #607286; border-radius: 8px;
+    }
+    #emoji input::placeholder { color: #526579; opacity: 1; }
+    #emoji input:focus-visible,
+    #emoji .copy-html-button:focus-visible,
+    #emoji a:focus-visible { outline: 3px solid var(--spc-blue); outline-offset: 3px; }
+    #emoji .emoji-group { margin-top: 32px; }
+    #emoji .emoji-group > h3 { color: var(--spc-blue); margin-bottom: 14px; }
+    #emoji .emoji-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+      gap: 16px; list-style: none; padding: 0; margin: 0;
+    }
+    #emoji .emoji-card {
+      min-width: 0; padding: 18px; border: 1px solid var(--border);
+      border-radius: 12px; background: var(--white); color: var(--text);
+    }
+    #emoji .emoji-preview {
+      font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+      font-size: 38px; line-height: 1.4; margin-bottom: 8px;
+    }
+    #emoji .emoji-card h4 { font-size: 17px; margin: 0 0 6px; color: var(--spc-blue); }
+    #emoji .emoji-use { margin: 0 0 12px; }
+    #emoji pre { padding: 12px; border-left-width: 3px; }
+    #emoji pre code { font-size: 13px; overflow-wrap: anywhere; }
+    #emoji [hidden] { display: none !important; }
+
 </style>
 </head>
 
@@ -268,6 +301,7 @@
       <button class="nav-button" type="button" onclick="showPage('chunking-information', this)">Chunking Information</button>
       <button class="nav-button" type="button" onclick="showPage('button', this)">🔗 Button</button>
       <button class="nav-button" type="button" onclick="showPage('student-example', this)">👩‍🎓 Callout Box</button>
+      <button class="nav-button" type="button" onclick="showPage('emoji', this)">Emoji</button>
       <button class="nav-button" type="button" onclick="showPage('tables', this)">Tables</button>
       <button class="nav-button" type="button" onclick="showPage('ai-callout', this)">💡 AI Information Call Out Box</button>
       <button class="nav-button" type="button" onclick="showPage('accordion-dropdowns', this)">▾ Accordion Dropdowns</button>
@@ -518,6 +552,1068 @@
         &lt;p style="margin: 0; line-height: 1.6;"&gt;&lt;strong&gt;Prompt: &lt;/strong&gt;Paste prompt here&lt;/p&gt;
     &lt;/div&gt;
 &lt;/div&gt;</code></pre>
+    </section>
+
+    <section id="emoji" class="snippet-page">
+      <h2 class="snippet-title">Emoji</h2>
+      <p>100 emojis for course pages, assignments, announcements, and feedback. Copy an HTML snippet into the Canvas HTML editor to use it.</p>
+      <p>Each snippet uses <code>role="img"</code> and a descriptive <code>aria-label</code>. If you use an emoji to communicate a different meaning, update its label to match. Keep written instructions alongside emojis.</p>
+      <p>If an emoji is purely decorative and repeats the adjacent text, use <code>aria-hidden="true"</code> instead of <code>role</code> and <code>aria-label</code>. <a class="emoji-help-link" href="https://www.w3.org/WAI/WCAG22/Techniques/html/H86">Read the W3C guidance on emoji text alternatives</a>.</p>
+      <div class="emoji-search">
+        <label for="emoji-search"><strong>Find an emoji</strong></label>
+        <input id="emoji-search" type="search" placeholder="Search names, uses, or categories" aria-describedby="emoji-results" />
+        <p id="emoji-results" role="status" aria-live="polite" aria-atomic="true">Showing all 100 emojis.</p>
+      </div>
+      <div class="emoji-group" data-category="Reading and study">
+        <h3 id="emoji-group-1">Reading and study</h3>
+        <ul class="emoji-grid" role="list" aria-labelledby="emoji-group-1">
+          <li class="emoji-card" data-emoji-search="Reading and study Books Reading lists and library resources">
+            <div class="emoji-preview"><span role="img" aria-label="Books">📚</span></div>
+            <h4>Books</h4>
+            <p class="emoji-use">Reading lists and library resources</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-001" aria-controls="snippet-code-emoji-001" aria-label="Copy HTML for books">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-001">&lt;span role=&quot;img&quot; aria-label=&quot;Books&quot;&gt;📚&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Reading and study Open book Assigned reading and textbook chapters">
+            <div class="emoji-preview"><span role="img" aria-label="Open book">📖</span></div>
+            <h4>Open book</h4>
+            <p class="emoji-use">Assigned reading and textbook chapters</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-002" aria-controls="snippet-code-emoji-002" aria-label="Copy HTML for open book">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-002">&lt;span role=&quot;img&quot; aria-label=&quot;Open book&quot;&gt;📖&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Reading and study Bookmark Save a resource for later">
+            <div class="emoji-preview"><span role="img" aria-label="Bookmark">🔖</span></div>
+            <h4>Bookmark</h4>
+            <p class="emoji-use">Save a resource for later</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-003" aria-controls="snippet-code-emoji-003" aria-label="Copy HTML for bookmark">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-003">&lt;span role=&quot;img&quot; aria-label=&quot;Bookmark&quot;&gt;🔖&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Reading and study Graduation cap Course completion and graduation">
+            <div class="emoji-preview"><span role="img" aria-label="Graduation cap">🎓</span></div>
+            <h4>Graduation cap</h4>
+            <p class="emoji-use">Course completion and graduation</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-004" aria-controls="snippet-code-emoji-004" aria-label="Copy HTML for graduation cap">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-004">&lt;span role=&quot;img&quot; aria-label=&quot;Graduation cap&quot;&gt;🎓&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Reading and study School Campus information and course orientation">
+            <div class="emoji-preview"><span role="img" aria-label="School">🏫</span></div>
+            <h4>School</h4>
+            <p class="emoji-use">Campus information and course orientation</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-005" aria-controls="snippet-code-emoji-005" aria-label="Copy HTML for school">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-005">&lt;span role=&quot;img&quot; aria-label=&quot;School&quot;&gt;🏫&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Reading and study Teacher Instructor guidance and office hours">
+            <div class="emoji-preview"><span role="img" aria-label="Teacher">🧑‍🏫</span></div>
+            <h4>Teacher</h4>
+            <p class="emoji-use">Instructor guidance and office hours</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-006" aria-controls="snippet-code-emoji-006" aria-label="Copy HTML for teacher">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-006">&lt;span role=&quot;img&quot; aria-label=&quot;Teacher&quot;&gt;🧑‍🏫&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Reading and study Student Student perspectives and learner activities">
+            <div class="emoji-preview"><span role="img" aria-label="Student">🧑‍🎓</span></div>
+            <h4>Student</h4>
+            <p class="emoji-use">Student perspectives and learner activities</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-007" aria-controls="snippet-code-emoji-007" aria-label="Copy HTML for student">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-007">&lt;span role=&quot;img&quot; aria-label=&quot;Student&quot;&gt;🧑‍🎓&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Reading and study Brain Critical thinking and reflection">
+            <div class="emoji-preview"><span role="img" aria-label="Brain">🧠</span></div>
+            <h4>Brain</h4>
+            <p class="emoji-use">Critical thinking and reflection</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-008" aria-controls="snippet-code-emoji-008" aria-label="Copy HTML for brain">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-008">&lt;span role=&quot;img&quot; aria-label=&quot;Brain&quot;&gt;🧠&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Reading and study Light bulb Ideas and helpful insights">
+            <div class="emoji-preview"><span role="img" aria-label="Light bulb">💡</span></div>
+            <h4>Light bulb</h4>
+            <p class="emoji-use">Ideas and helpful insights</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-009" aria-controls="snippet-code-emoji-009" aria-label="Copy HTML for light bulb">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-009">&lt;span role=&quot;img&quot; aria-label=&quot;Light bulb&quot;&gt;💡&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Reading and study Puzzle piece Connect concepts and solve problems">
+            <div class="emoji-preview"><span role="img" aria-label="Puzzle piece">🧩</span></div>
+            <h4>Puzzle piece</h4>
+            <p class="emoji-use">Connect concepts and solve problems</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-010" aria-controls="snippet-code-emoji-010" aria-label="Copy HTML for puzzle piece">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-010">&lt;span role=&quot;img&quot; aria-label=&quot;Puzzle piece&quot;&gt;🧩&lt;/span&gt;</code></pre>
+          </li>
+        </ul>
+      </div>
+      <div class="emoji-group" data-category="Writing and assignments">
+        <h3 id="emoji-group-2">Writing and assignments</h3>
+        <ul class="emoji-grid" role="list" aria-labelledby="emoji-group-2">
+          <li class="emoji-card" data-emoji-search="Writing and assignments Pencil Drafting and written work">
+            <div class="emoji-preview"><span role="img" aria-label="Pencil">✏️</span></div>
+            <h4>Pencil</h4>
+            <p class="emoji-use">Drafting and written work</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-011" aria-controls="snippet-code-emoji-011" aria-label="Copy HTML for pencil">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-011">&lt;span role=&quot;img&quot; aria-label=&quot;Pencil&quot;&gt;✏️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Writing and assignments Pen Formal writing and final drafts">
+            <div class="emoji-preview"><span role="img" aria-label="Pen">🖊️</span></div>
+            <h4>Pen</h4>
+            <p class="emoji-use">Formal writing and final drafts</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-012" aria-controls="snippet-code-emoji-012" aria-label="Copy HTML for pen">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-012">&lt;span role=&quot;img&quot; aria-label=&quot;Pen&quot;&gt;🖊️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Writing and assignments Memo Notes and assignment instructions">
+            <div class="emoji-preview"><span role="img" aria-label="Memo">📝</span></div>
+            <h4>Memo</h4>
+            <p class="emoji-use">Notes and assignment instructions</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-013" aria-controls="snippet-code-emoji-013" aria-label="Copy HTML for memo">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-013">&lt;span role=&quot;img&quot; aria-label=&quot;Memo&quot;&gt;📝&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Writing and assignments Document Handouts and assignment files">
+            <div class="emoji-preview"><span role="img" aria-label="Document">📄</span></div>
+            <h4>Document</h4>
+            <p class="emoji-use">Handouts and assignment files</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-014" aria-controls="snippet-code-emoji-014" aria-label="Copy HTML for document">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-014">&lt;span role=&quot;img&quot; aria-label=&quot;Document&quot;&gt;📄&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Writing and assignments Bookmark tabs Organize readings and references">
+            <div class="emoji-preview"><span role="img" aria-label="Bookmark tabs">📑</span></div>
+            <h4>Bookmark tabs</h4>
+            <p class="emoji-use">Organize readings and references</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-015" aria-controls="snippet-code-emoji-015" aria-label="Copy HTML for bookmark tabs">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-015">&lt;span role=&quot;img&quot; aria-label=&quot;Bookmark tabs&quot;&gt;📑&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Writing and assignments Clipboard Checklists and assignment criteria">
+            <div class="emoji-preview"><span role="img" aria-label="Clipboard">📋</span></div>
+            <h4>Clipboard</h4>
+            <p class="emoji-use">Checklists and assignment criteria</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-016" aria-controls="snippet-code-emoji-016" aria-label="Copy HTML for clipboard">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-016">&lt;span role=&quot;img&quot; aria-label=&quot;Clipboard&quot;&gt;📋&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Writing and assignments Notebook Learning journals">
+            <div class="emoji-preview"><span role="img" aria-label="Notebook">📓</span></div>
+            <h4>Notebook</h4>
+            <p class="emoji-use">Learning journals</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-017" aria-controls="snippet-code-emoji-017" aria-label="Copy HTML for notebook">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-017">&lt;span role=&quot;img&quot; aria-label=&quot;Notebook&quot;&gt;📓&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Writing and assignments Decorative notebook Reflective writing">
+            <div class="emoji-preview"><span role="img" aria-label="Decorative notebook">📔</span></div>
+            <h4>Decorative notebook</h4>
+            <p class="emoji-use">Reflective writing</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-018" aria-controls="snippet-code-emoji-018" aria-label="Copy HTML for decorative notebook">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-018">&lt;span role=&quot;img&quot; aria-label=&quot;Decorative notebook&quot;&gt;📔&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Writing and assignments Notepad Quick notes and reminders">
+            <div class="emoji-preview"><span role="img" aria-label="Notepad">🗒️</span></div>
+            <h4>Notepad</h4>
+            <p class="emoji-use">Quick notes and reminders</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-019" aria-controls="snippet-code-emoji-019" aria-label="Copy HTML for notepad">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-019">&lt;span role=&quot;img&quot; aria-label=&quot;Notepad&quot;&gt;🗒️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Writing and assignments Paperclip Attachments and supporting documents">
+            <div class="emoji-preview"><span role="img" aria-label="Paperclip">📎</span></div>
+            <h4>Paperclip</h4>
+            <p class="emoji-use">Attachments and supporting documents</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-020" aria-controls="snippet-code-emoji-020" aria-label="Copy HTML for paperclip">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-020">&lt;span role=&quot;img&quot; aria-label=&quot;Paperclip&quot;&gt;📎&lt;/span&gt;</code></pre>
+          </li>
+        </ul>
+      </div>
+      <div class="emoji-group" data-category="Planning and deadlines">
+        <h3 id="emoji-group-3">Planning and deadlines</h3>
+        <ul class="emoji-grid" role="list" aria-labelledby="emoji-group-3">
+          <li class="emoji-card" data-emoji-search="Planning and deadlines Calendar Due dates and class meetings">
+            <div class="emoji-preview"><span role="img" aria-label="Calendar">📅</span></div>
+            <h4>Calendar</h4>
+            <p class="emoji-use">Due dates and class meetings</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-021" aria-controls="snippet-code-emoji-021" aria-label="Copy HTML for calendar">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-021">&lt;span role=&quot;img&quot; aria-label=&quot;Calendar&quot;&gt;📅&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Planning and deadlines Spiral calendar Weekly plans and course schedules">
+            <div class="emoji-preview"><span role="img" aria-label="Spiral calendar">🗓️</span></div>
+            <h4>Spiral calendar</h4>
+            <p class="emoji-use">Weekly plans and course schedules</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-022" aria-controls="snippet-code-emoji-022" aria-label="Copy HTML for spiral calendar">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-022">&lt;span role=&quot;img&quot; aria-label=&quot;Spiral calendar&quot;&gt;🗓️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Planning and deadlines Alarm clock Deadline reminders">
+            <div class="emoji-preview"><span role="img" aria-label="Alarm clock">⏰</span></div>
+            <h4>Alarm clock</h4>
+            <p class="emoji-use">Deadline reminders</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-023" aria-controls="snippet-code-emoji-023" aria-label="Copy HTML for alarm clock">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-023">&lt;span role=&quot;img&quot; aria-label=&quot;Alarm clock&quot;&gt;⏰&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Planning and deadlines Stopwatch Timed activities">
+            <div class="emoji-preview"><span role="img" aria-label="Stopwatch">⏱️</span></div>
+            <h4>Stopwatch</h4>
+            <p class="emoji-use">Timed activities</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-024" aria-controls="snippet-code-emoji-024" aria-label="Copy HTML for stopwatch">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-024">&lt;span role=&quot;img&quot; aria-label=&quot;Stopwatch&quot;&gt;⏱️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Planning and deadlines Hourglass Work in progress and remaining time">
+            <div class="emoji-preview"><span role="img" aria-label="Hourglass">⏳</span></div>
+            <h4>Hourglass</h4>
+            <p class="emoji-use">Work in progress and remaining time</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-025" aria-controls="snippet-code-emoji-025" aria-label="Copy HTML for hourglass">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-025">&lt;span role=&quot;img&quot; aria-label=&quot;Hourglass&quot;&gt;⏳&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Planning and deadlines Three o'clock Meeting times and study blocks">
+            <div class="emoji-preview"><span role="img" aria-label="Three o'clock">🕒</span></div>
+            <h4>Three o'clock</h4>
+            <p class="emoji-use">Meeting times and study blocks</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-026" aria-controls="snippet-code-emoji-026" aria-label="Copy HTML for three o'clock">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-026">&lt;span role=&quot;img&quot; aria-label=&quot;Three o'clock&quot;&gt;🕒&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Planning and deadlines Pushpin Pinned instructions and priorities">
+            <div class="emoji-preview"><span role="img" aria-label="Pushpin">📌</span></div>
+            <h4>Pushpin</h4>
+            <p class="emoji-use">Pinned instructions and priorities</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-027" aria-controls="snippet-code-emoji-027" aria-label="Copy HTML for pushpin">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-027">&lt;span role=&quot;img&quot; aria-label=&quot;Pushpin&quot;&gt;📌&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Planning and deadlines Location pin Classroom and meeting locations">
+            <div class="emoji-preview"><span role="img" aria-label="Location pin">📍</span></div>
+            <h4>Location pin</h4>
+            <p class="emoji-use">Classroom and meeting locations</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-028" aria-controls="snippet-code-emoji-028" aria-label="Copy HTML for location pin">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-028">&lt;span role=&quot;img&quot; aria-label=&quot;Location pin&quot;&gt;📍&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Planning and deadlines Card index dividers Organize course materials">
+            <div class="emoji-preview"><span role="img" aria-label="Card index dividers">🗂️</span></div>
+            <h4>Card index dividers</h4>
+            <p class="emoji-use">Organize course materials</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-029" aria-controls="snippet-code-emoji-029" aria-label="Copy HTML for card index dividers">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-029">&lt;span role=&quot;img&quot; aria-label=&quot;Card index dividers&quot;&gt;🗂️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Planning and deadlines Folder Module folders and file collections">
+            <div class="emoji-preview"><span role="img" aria-label="Folder">📁</span></div>
+            <h4>Folder</h4>
+            <p class="emoji-use">Module folders and file collections</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-030" aria-controls="snippet-code-emoji-030" aria-label="Copy HTML for folder">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-030">&lt;span role=&quot;img&quot; aria-label=&quot;Folder&quot;&gt;📁&lt;/span&gt;</code></pre>
+          </li>
+        </ul>
+      </div>
+      <div class="emoji-group" data-category="Communication and collaboration">
+        <h3 id="emoji-group-4">Communication and collaboration</h3>
+        <ul class="emoji-grid" role="list" aria-labelledby="emoji-group-4">
+          <li class="emoji-card" data-emoji-search="Communication and collaboration Speech bubble Discussion prompts">
+            <div class="emoji-preview"><span role="img" aria-label="Speech bubble">💬</span></div>
+            <h4>Speech bubble</h4>
+            <p class="emoji-use">Discussion prompts</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-031" aria-controls="snippet-code-emoji-031" aria-label="Copy HTML for speech bubble">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-031">&lt;span role=&quot;img&quot; aria-label=&quot;Speech bubble&quot;&gt;💬&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Communication and collaboration Dialogue bubble Peer responses and conversation">
+            <div class="emoji-preview"><span role="img" aria-label="Dialogue bubble">🗨️</span></div>
+            <h4>Dialogue bubble</h4>
+            <p class="emoji-use">Peer responses and conversation</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-032" aria-controls="snippet-code-emoji-032" aria-label="Copy HTML for dialogue bubble">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-032">&lt;span role=&quot;img&quot; aria-label=&quot;Dialogue bubble&quot;&gt;🗨️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Communication and collaboration Speaking head Oral presentations and speaking practice">
+            <div class="emoji-preview"><span role="img" aria-label="Speaking head">🗣️</span></div>
+            <h4>Speaking head</h4>
+            <p class="emoji-use">Oral presentations and speaking practice</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-033" aria-controls="snippet-code-emoji-033" aria-label="Copy HTML for speaking head">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-033">&lt;span role=&quot;img&quot; aria-label=&quot;Speaking head&quot;&gt;🗣️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Communication and collaboration Handshake Partner work and collaboration">
+            <div class="emoji-preview"><span role="img" aria-label="Handshake">🤝</span></div>
+            <h4>Handshake</h4>
+            <p class="emoji-use">Partner work and collaboration</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-034" aria-controls="snippet-code-emoji-034" aria-label="Copy HTML for handshake">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-034">&lt;span role=&quot;img&quot; aria-label=&quot;Handshake&quot;&gt;🤝&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Communication and collaboration Group of people Group projects and study teams">
+            <div class="emoji-preview"><span role="img" aria-label="Group of people">👥</span></div>
+            <h4>Group of people</h4>
+            <p class="emoji-use">Group projects and study teams</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-035" aria-controls="snippet-code-emoji-035" aria-label="Copy HTML for group of people">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-035">&lt;span role=&quot;img&quot; aria-label=&quot;Group of people&quot;&gt;👥&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Communication and collaboration Megaphone Course announcements">
+            <div class="emoji-preview"><span role="img" aria-label="Megaphone">📣</span></div>
+            <h4>Megaphone</h4>
+            <p class="emoji-use">Course announcements</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-036" aria-controls="snippet-code-emoji-036" aria-label="Copy HTML for megaphone">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-036">&lt;span role=&quot;img&quot; aria-label=&quot;Megaphone&quot;&gt;📣&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Communication and collaboration Loudspeaker Important class updates">
+            <div class="emoji-preview"><span role="img" aria-label="Loudspeaker">📢</span></div>
+            <h4>Loudspeaker</h4>
+            <p class="emoji-use">Important class updates</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-037" aria-controls="snippet-code-emoji-037" aria-label="Copy HTML for loudspeaker">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-037">&lt;span role=&quot;img&quot; aria-label=&quot;Loudspeaker&quot;&gt;📢&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Communication and collaboration Envelope Email and instructor contact">
+            <div class="emoji-preview"><span role="img" aria-label="Envelope">✉️</span></div>
+            <h4>Envelope</h4>
+            <p class="emoji-use">Email and instructor contact</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-038" aria-controls="snippet-code-emoji-038" aria-label="Copy HTML for envelope">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-038">&lt;span role=&quot;img&quot; aria-label=&quot;Envelope&quot;&gt;✉️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Communication and collaboration Incoming envelope New messages and responses">
+            <div class="emoji-preview"><span role="img" aria-label="Incoming envelope">📨</span></div>
+            <h4>Incoming envelope</h4>
+            <p class="emoji-use">New messages and responses</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-039" aria-controls="snippet-code-emoji-039" aria-label="Copy HTML for incoming envelope">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-039">&lt;span role=&quot;img&quot; aria-label=&quot;Incoming envelope&quot;&gt;📨&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Communication and collaboration Person raising a hand Ask a question or request help">
+            <div class="emoji-preview"><span role="img" aria-label="Person raising a hand">🙋</span></div>
+            <h4>Person raising a hand</h4>
+            <p class="emoji-use">Ask a question or request help</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-040" aria-controls="snippet-code-emoji-040" aria-label="Copy HTML for person raising a hand">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-040">&lt;span role=&quot;img&quot; aria-label=&quot;Person raising a hand&quot;&gt;🙋&lt;/span&gt;</code></pre>
+          </li>
+        </ul>
+      </div>
+      <div class="emoji-group" data-category="Research and evidence">
+        <h3 id="emoji-group-5">Research and evidence</h3>
+        <ul class="emoji-grid" role="list" aria-labelledby="emoji-group-5">
+          <li class="emoji-card" data-emoji-search="Research and evidence Magnifying glass Find and examine sources">
+            <div class="emoji-preview"><span role="img" aria-label="Magnifying glass">🔍</span></div>
+            <h4>Magnifying glass</h4>
+            <p class="emoji-use">Find and examine sources</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-041" aria-controls="snippet-code-emoji-041" aria-label="Copy HTML for magnifying glass">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-041">&lt;span role=&quot;img&quot; aria-label=&quot;Magnifying glass&quot;&gt;🔍&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Research and evidence Face with monocle Evaluate claims and evidence">
+            <div class="emoji-preview"><span role="img" aria-label="Face with monocle">🧐</span></div>
+            <h4>Face with monocle</h4>
+            <p class="emoji-use">Evaluate claims and evidence</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-042" aria-controls="snippet-code-emoji-042" aria-label="Copy HTML for face with monocle">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-042">&lt;span role=&quot;img&quot; aria-label=&quot;Face with monocle&quot;&gt;🧐&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Research and evidence Receipt Document sources and supporting evidence">
+            <div class="emoji-preview"><span role="img" aria-label="Receipt">🧾</span></div>
+            <h4>Receipt</h4>
+            <p class="emoji-use">Document sources and supporting evidence</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-043" aria-controls="snippet-code-emoji-043" aria-label="Copy HTML for receipt">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-043">&lt;span role=&quot;img&quot; aria-label=&quot;Receipt&quot;&gt;🧾&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Research and evidence Newspaper News analysis and current events">
+            <div class="emoji-preview"><span role="img" aria-label="Newspaper">📰</span></div>
+            <h4>Newspaper</h4>
+            <p class="emoji-use">News analysis and current events</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-044" aria-controls="snippet-code-emoji-044" aria-label="Copy HTML for newspaper">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-044">&lt;span role=&quot;img&quot; aria-label=&quot;Newspaper&quot;&gt;📰&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Research and evidence Card file box Research archives">
+            <div class="emoji-preview"><span role="img" aria-label="Card file box">🗃️</span></div>
+            <h4>Card file box</h4>
+            <p class="emoji-use">Research archives</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-045" aria-controls="snippet-code-emoji-045" aria-label="Copy HTML for card file box">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-045">&lt;span role=&quot;img&quot; aria-label=&quot;Card file box&quot;&gt;🗃️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Research and evidence File cabinet Data storage and records">
+            <div class="emoji-preview"><span role="img" aria-label="File cabinet">🗄️</span></div>
+            <h4>File cabinet</h4>
+            <p class="emoji-use">Data storage and records</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-046" aria-controls="snippet-code-emoji-046" aria-label="Copy HTML for file cabinet">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-046">&lt;span role=&quot;img&quot; aria-label=&quot;File cabinet&quot;&gt;🗄️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Research and evidence Label Keywords and research tags">
+            <div class="emoji-preview"><span role="img" aria-label="Label">🏷️</span></div>
+            <h4>Label</h4>
+            <p class="emoji-use">Keywords and research tags</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-047" aria-controls="snippet-code-emoji-047" aria-label="Copy HTML for label">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-047">&lt;span role=&quot;img&quot; aria-label=&quot;Label&quot;&gt;🏷️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Research and evidence Link Citations and related resources">
+            <div class="emoji-preview"><span role="img" aria-label="Link">🔗</span></div>
+            <h4>Link</h4>
+            <p class="emoji-use">Citations and related resources</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-048" aria-controls="snippet-code-emoji-048" aria-label="Copy HTML for link">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-048">&lt;span role=&quot;img&quot; aria-label=&quot;Link&quot;&gt;🔗&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Research and evidence Balance scale Compare perspectives and evaluate arguments">
+            <div class="emoji-preview"><span role="img" aria-label="Balance scale">⚖️</span></div>
+            <h4>Balance scale</h4>
+            <p class="emoji-use">Compare perspectives and evaluate arguments</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-049" aria-controls="snippet-code-emoji-049" aria-label="Copy HTML for balance scale">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-049">&lt;span role=&quot;img&quot; aria-label=&quot;Balance scale&quot;&gt;⚖️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Research and evidence Compass Research direction and guiding questions">
+            <div class="emoji-preview"><span role="img" aria-label="Compass">🧭</span></div>
+            <h4>Compass</h4>
+            <p class="emoji-use">Research direction and guiding questions</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-050" aria-controls="snippet-code-emoji-050" aria-label="Copy HTML for compass">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-050">&lt;span role=&quot;img&quot; aria-label=&quot;Compass&quot;&gt;🧭&lt;/span&gt;</code></pre>
+          </li>
+        </ul>
+      </div>
+      <div class="emoji-group" data-category="Science and mathematics">
+        <h3 id="emoji-group-6">Science and mathematics</h3>
+        <ul class="emoji-grid" role="list" aria-labelledby="emoji-group-6">
+          <li class="emoji-card" data-emoji-search="Science and mathematics Microscope Biology and close observation">
+            <div class="emoji-preview"><span role="img" aria-label="Microscope">🔬</span></div>
+            <h4>Microscope</h4>
+            <p class="emoji-use">Biology and close observation</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-051" aria-controls="snippet-code-emoji-051" aria-label="Copy HTML for microscope">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-051">&lt;span role=&quot;img&quot; aria-label=&quot;Microscope&quot;&gt;🔬&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Science and mathematics Test tube Experiments and laboratory work">
+            <div class="emoji-preview"><span role="img" aria-label="Test tube">🧪</span></div>
+            <h4>Test tube</h4>
+            <p class="emoji-use">Experiments and laboratory work</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-052" aria-controls="snippet-code-emoji-052" aria-label="Copy HTML for test tube">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-052">&lt;span role=&quot;img&quot; aria-label=&quot;Test tube&quot;&gt;🧪&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Science and mathematics DNA Genetics and life sciences">
+            <div class="emoji-preview"><span role="img" aria-label="DNA">🧬</span></div>
+            <h4>DNA</h4>
+            <p class="emoji-use">Genetics and life sciences</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-053" aria-controls="snippet-code-emoji-053" aria-label="Copy HTML for dna">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-053">&lt;span role=&quot;img&quot; aria-label=&quot;DNA&quot;&gt;🧬&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Science and mathematics Alembic Chemistry and laboratory processes">
+            <div class="emoji-preview"><span role="img" aria-label="Alembic">⚗️</span></div>
+            <h4>Alembic</h4>
+            <p class="emoji-use">Chemistry and laboratory processes</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-054" aria-controls="snippet-code-emoji-054" aria-label="Copy HTML for alembic">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-054">&lt;span role=&quot;img&quot; aria-label=&quot;Alembic&quot;&gt;⚗️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Science and mathematics Telescope Astronomy and observation">
+            <div class="emoji-preview"><span role="img" aria-label="Telescope">🔭</span></div>
+            <h4>Telescope</h4>
+            <p class="emoji-use">Astronomy and observation</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-055" aria-controls="snippet-code-emoji-055" aria-label="Copy HTML for telescope">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-055">&lt;span role=&quot;img&quot; aria-label=&quot;Telescope&quot;&gt;🔭&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Science and mathematics Atom symbol Physics and atomic structure">
+            <div class="emoji-preview"><span role="img" aria-label="Atom symbol">⚛️</span></div>
+            <h4>Atom symbol</h4>
+            <p class="emoji-use">Physics and atomic structure</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-056" aria-controls="snippet-code-emoji-056" aria-label="Copy HTML for atom symbol">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-056">&lt;span role=&quot;img&quot; aria-label=&quot;Atom symbol&quot;&gt;⚛️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Science and mathematics Magnet Magnetism and forces">
+            <div class="emoji-preview"><span role="img" aria-label="Magnet">🧲</span></div>
+            <h4>Magnet</h4>
+            <p class="emoji-use">Magnetism and forces</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-057" aria-controls="snippet-code-emoji-057" aria-label="Copy HTML for magnet">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-057">&lt;span role=&quot;img&quot; aria-label=&quot;Magnet&quot;&gt;🧲&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Science and mathematics Triangular ruler Geometry and measurement">
+            <div class="emoji-preview"><span role="img" aria-label="Triangular ruler">📐</span></div>
+            <h4>Triangular ruler</h4>
+            <p class="emoji-use">Geometry and measurement</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-058" aria-controls="snippet-code-emoji-058" aria-label="Copy HTML for triangular ruler">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-058">&lt;span role=&quot;img&quot; aria-label=&quot;Triangular ruler&quot;&gt;📐&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Science and mathematics Division symbol Mathematics and calculations">
+            <div class="emoji-preview"><span role="img" aria-label="Division symbol">➗</span></div>
+            <h4>Division symbol</h4>
+            <p class="emoji-use">Mathematics and calculations</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-059" aria-controls="snippet-code-emoji-059" aria-label="Copy HTML for division symbol">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-059">&lt;span role=&quot;img&quot; aria-label=&quot;Division symbol&quot;&gt;➗&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Science and mathematics Infinity symbol Limits and mathematical concepts">
+            <div class="emoji-preview"><span role="img" aria-label="Infinity symbol">♾️</span></div>
+            <h4>Infinity symbol</h4>
+            <p class="emoji-use">Limits and mathematical concepts</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-060" aria-controls="snippet-code-emoji-060" aria-label="Copy HTML for infinity symbol">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-060">&lt;span role=&quot;img&quot; aria-label=&quot;Infinity symbol&quot;&gt;♾️&lt;/span&gt;</code></pre>
+          </li>
+        </ul>
+      </div>
+      <div class="emoji-group" data-category="Technology and media">
+        <h3 id="emoji-group-7">Technology and media</h3>
+        <ul class="emoji-grid" role="list" aria-labelledby="emoji-group-7">
+          <li class="emoji-card" data-emoji-search="Technology and media Laptop Online coursework and computing">
+            <div class="emoji-preview"><span role="img" aria-label="Laptop">💻</span></div>
+            <h4>Laptop</h4>
+            <p class="emoji-use">Online coursework and computing</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-061" aria-controls="snippet-code-emoji-061" aria-label="Copy HTML for laptop">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-061">&lt;span role=&quot;img&quot; aria-label=&quot;Laptop&quot;&gt;💻&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Technology and media Desktop computer Computer lab activities">
+            <div class="emoji-preview"><span role="img" aria-label="Desktop computer">🖥️</span></div>
+            <h4>Desktop computer</h4>
+            <p class="emoji-use">Computer lab activities</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-062" aria-controls="snippet-code-emoji-062" aria-label="Copy HTML for desktop computer">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-062">&lt;span role=&quot;img&quot; aria-label=&quot;Desktop computer&quot;&gt;🖥️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Technology and media Keyboard Typing and coding tasks">
+            <div class="emoji-preview"><span role="img" aria-label="Keyboard">⌨️</span></div>
+            <h4>Keyboard</h4>
+            <p class="emoji-use">Typing and coding tasks</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-063" aria-controls="snippet-code-emoji-063" aria-label="Copy HTML for keyboard">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-063">&lt;span role=&quot;img&quot; aria-label=&quot;Keyboard&quot;&gt;⌨️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Technology and media Computer mouse Software navigation">
+            <div class="emoji-preview"><span role="img" aria-label="Computer mouse">🖱️</span></div>
+            <h4>Computer mouse</h4>
+            <p class="emoji-use">Software navigation</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-064" aria-controls="snippet-code-emoji-064" aria-label="Copy HTML for computer mouse">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-064">&lt;span role=&quot;img&quot; aria-label=&quot;Computer mouse&quot;&gt;🖱️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Technology and media Robot Artificial intelligence and automation">
+            <div class="emoji-preview"><span role="img" aria-label="Robot">🤖</span></div>
+            <h4>Robot</h4>
+            <p class="emoji-use">Artificial intelligence and automation</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-065" aria-controls="snippet-code-emoji-065" aria-label="Copy HTML for robot">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-065">&lt;span role=&quot;img&quot; aria-label=&quot;Robot&quot;&gt;🤖&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Technology and media Gear Settings and technical processes">
+            <div class="emoji-preview"><span role="img" aria-label="Gear">⚙️</span></div>
+            <h4>Gear</h4>
+            <p class="emoji-use">Settings and technical processes</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-066" aria-controls="snippet-code-emoji-066" aria-label="Copy HTML for gear">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-066">&lt;span role=&quot;img&quot; aria-label=&quot;Gear&quot;&gt;⚙️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Technology and media Headphones Listening activities and podcasts">
+            <div class="emoji-preview"><span role="img" aria-label="Headphones">🎧</span></div>
+            <h4>Headphones</h4>
+            <p class="emoji-use">Listening activities and podcasts</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-067" aria-controls="snippet-code-emoji-067" aria-label="Copy HTML for headphones">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-067">&lt;span role=&quot;img&quot; aria-label=&quot;Headphones&quot;&gt;🎧&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Technology and media Movie camera Video assignments">
+            <div class="emoji-preview"><span role="img" aria-label="Movie camera">🎥</span></div>
+            <h4>Movie camera</h4>
+            <p class="emoji-use">Video assignments</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-068" aria-controls="snippet-code-emoji-068" aria-label="Copy HTML for movie camera">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-068">&lt;span role=&quot;img&quot; aria-label=&quot;Movie camera&quot;&gt;🎥&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Technology and media Studio microphone Audio recordings and presentations">
+            <div class="emoji-preview"><span role="img" aria-label="Studio microphone">🎙️</span></div>
+            <h4>Studio microphone</h4>
+            <p class="emoji-use">Audio recordings and presentations</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-069" aria-controls="snippet-code-emoji-069" aria-label="Copy HTML for studio microphone">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-069">&lt;span role=&quot;img&quot; aria-label=&quot;Studio microphone&quot;&gt;🎙️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Technology and media Camera Photography and visual documentation">
+            <div class="emoji-preview"><span role="img" aria-label="Camera">📷</span></div>
+            <h4>Camera</h4>
+            <p class="emoji-use">Photography and visual documentation</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-070" aria-controls="snippet-code-emoji-070" aria-label="Copy HTML for camera">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-070">&lt;span role=&quot;img&quot; aria-label=&quot;Camera&quot;&gt;📷&lt;/span&gt;</code></pre>
+          </li>
+        </ul>
+      </div>
+      <div class="emoji-group" data-category="Arts and humanities">
+        <h3 id="emoji-group-8">Arts and humanities</h3>
+        <ul class="emoji-grid" role="list" aria-labelledby="emoji-group-8">
+          <li class="emoji-card" data-emoji-search="Arts and humanities Artist palette Art and visual design">
+            <div class="emoji-preview"><span role="img" aria-label="Artist palette">🎨</span></div>
+            <h4>Artist palette</h4>
+            <p class="emoji-use">Art and visual design</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-071" aria-controls="snippet-code-emoji-071" aria-label="Copy HTML for artist palette">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-071">&lt;span role=&quot;img&quot; aria-label=&quot;Artist palette&quot;&gt;🎨&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Arts and humanities Paintbrush Creative projects">
+            <div class="emoji-preview"><span role="img" aria-label="Paintbrush">🖌️</span></div>
+            <h4>Paintbrush</h4>
+            <p class="emoji-use">Creative projects</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-072" aria-controls="snippet-code-emoji-072" aria-label="Copy HTML for paintbrush">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-072">&lt;span role=&quot;img&quot; aria-label=&quot;Paintbrush&quot;&gt;🖌️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Arts and humanities Performing arts masks Theater and drama">
+            <div class="emoji-preview"><span role="img" aria-label="Performing arts masks">🎭</span></div>
+            <h4>Performing arts masks</h4>
+            <p class="emoji-use">Theater and drama</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-073" aria-controls="snippet-code-emoji-073" aria-label="Copy HTML for performing arts masks">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-073">&lt;span role=&quot;img&quot; aria-label=&quot;Performing arts masks&quot;&gt;🎭&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Arts and humanities Musical score Music theory and composition">
+            <div class="emoji-preview"><span role="img" aria-label="Musical score">🎼</span></div>
+            <h4>Musical score</h4>
+            <p class="emoji-use">Music theory and composition</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-074" aria-controls="snippet-code-emoji-074" aria-label="Copy HTML for musical score">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-074">&lt;span role=&quot;img&quot; aria-label=&quot;Musical score&quot;&gt;🎼&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Arts and humanities Musical note Music and listening">
+            <div class="emoji-preview"><span role="img" aria-label="Musical note">🎵</span></div>
+            <h4>Musical note</h4>
+            <p class="emoji-use">Music and listening</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-075" aria-controls="snippet-code-emoji-075" aria-label="Copy HTML for musical note">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-075">&lt;span role=&quot;img&quot; aria-label=&quot;Musical note&quot;&gt;🎵&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Arts and humanities Scroll Historical texts and primary sources">
+            <div class="emoji-preview"><span role="img" aria-label="Scroll">📜</span></div>
+            <h4>Scroll</h4>
+            <p class="emoji-use">Historical texts and primary sources</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-076" aria-controls="snippet-code-emoji-076" aria-label="Copy HTML for scroll">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-076">&lt;span role=&quot;img&quot; aria-label=&quot;Scroll&quot;&gt;📜&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Arts and humanities Classical building History and civic institutions">
+            <div class="emoji-preview"><span role="img" aria-label="Classical building">🏛️</span></div>
+            <h4>Classical building</h4>
+            <p class="emoji-use">History and civic institutions</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-077" aria-controls="snippet-code-emoji-077" aria-label="Copy HTML for classical building">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-077">&lt;span role=&quot;img&quot; aria-label=&quot;Classical building&quot;&gt;🏛️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Arts and humanities World map Geography and global studies">
+            <div class="emoji-preview"><span role="img" aria-label="World map">🗺️</span></div>
+            <h4>World map</h4>
+            <p class="emoji-use">Geography and global studies</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-078" aria-controls="snippet-code-emoji-078" aria-label="Copy HTML for world map">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-078">&lt;span role=&quot;img&quot; aria-label=&quot;World map&quot;&gt;🗺️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Arts and humanities Globe with meridians Languages and international connections">
+            <div class="emoji-preview"><span role="img" aria-label="Globe with meridians">🌐</span></div>
+            <h4>Globe with meridians</h4>
+            <p class="emoji-use">Languages and international connections</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-079" aria-controls="snippet-code-emoji-079" aria-label="Copy HTML for globe with meridians">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-079">&lt;span role=&quot;img&quot; aria-label=&quot;Globe with meridians&quot;&gt;🌐&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Arts and humanities Feather Poetry and creative writing">
+            <div class="emoji-preview"><span role="img" aria-label="Feather">🪶</span></div>
+            <h4>Feather</h4>
+            <p class="emoji-use">Poetry and creative writing</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-080" aria-controls="snippet-code-emoji-080" aria-label="Copy HTML for feather">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-080">&lt;span role=&quot;img&quot; aria-label=&quot;Feather&quot;&gt;🪶&lt;/span&gt;</code></pre>
+          </li>
+        </ul>
+      </div>
+      <div class="emoji-group" data-category="Feedback and progress">
+        <h3 id="emoji-group-9">Feedback and progress</h3>
+        <ul class="emoji-grid" role="list" aria-labelledby="emoji-group-9">
+          <li class="emoji-card" data-emoji-search="Feedback and progress Check mark button Completed work and correct responses">
+            <div class="emoji-preview"><span role="img" aria-label="Check mark button">✅</span></div>
+            <h4>Check mark button</h4>
+            <p class="emoji-use">Completed work and correct responses</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-081" aria-controls="snippet-code-emoji-081" aria-label="Copy HTML for check mark button">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-081">&lt;span role=&quot;img&quot; aria-label=&quot;Check mark button&quot;&gt;✅&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Feedback and progress Checked box Checklist completion">
+            <div class="emoji-preview"><span role="img" aria-label="Checked box">☑️</span></div>
+            <h4>Checked box</h4>
+            <p class="emoji-use">Checklist completion</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-082" aria-controls="snippet-code-emoji-082" aria-label="Copy HTML for checked box">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-082">&lt;span role=&quot;img&quot; aria-label=&quot;Checked box&quot;&gt;☑️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Feedback and progress Cross mark Incorrect responses and items to revise">
+            <div class="emoji-preview"><span role="img" aria-label="Cross mark">❌</span></div>
+            <h4>Cross mark</h4>
+            <p class="emoji-use">Incorrect responses and items to revise</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-083" aria-controls="snippet-code-emoji-083" aria-label="Copy HTML for cross mark">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-083">&lt;span role=&quot;img&quot; aria-label=&quot;Cross mark&quot;&gt;❌&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Feedback and progress Star Highlighted work">
+            <div class="emoji-preview"><span role="img" aria-label="Star">⭐</span></div>
+            <h4>Star</h4>
+            <p class="emoji-use">Highlighted work</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-084" aria-controls="snippet-code-emoji-084" aria-label="Copy HTML for star">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-084">&lt;span role=&quot;img&quot; aria-label=&quot;Star&quot;&gt;⭐&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Feedback and progress Glowing star Outstanding effort">
+            <div class="emoji-preview"><span role="img" aria-label="Glowing star">🌟</span></div>
+            <h4>Glowing star</h4>
+            <p class="emoji-use">Outstanding effort</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-085" aria-controls="snippet-code-emoji-085" aria-label="Copy HTML for glowing star">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-085">&lt;span role=&quot;img&quot; aria-label=&quot;Glowing star&quot;&gt;🌟&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Feedback and progress Trophy Achievements and milestones">
+            <div class="emoji-preview"><span role="img" aria-label="Trophy">🏆</span></div>
+            <h4>Trophy</h4>
+            <p class="emoji-use">Achievements and milestones</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-086" aria-controls="snippet-code-emoji-086" aria-label="Copy HTML for trophy">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-086">&lt;span role=&quot;img&quot; aria-label=&quot;Trophy&quot;&gt;🏆&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Feedback and progress Target Learning goals and objectives">
+            <div class="emoji-preview"><span role="img" aria-label="Target">🎯</span></div>
+            <h4>Target</h4>
+            <p class="emoji-use">Learning goals and objectives</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-087" aria-controls="snippet-code-emoji-087" aria-label="Copy HTML for target">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-087">&lt;span role=&quot;img&quot; aria-label=&quot;Target&quot;&gt;🎯&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Feedback and progress Increasing chart Progress and improvement">
+            <div class="emoji-preview"><span role="img" aria-label="Increasing chart">📈</span></div>
+            <h4>Increasing chart</h4>
+            <p class="emoji-use">Progress and improvement</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-088" aria-controls="snippet-code-emoji-088" aria-label="Copy HTML for increasing chart">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-088">&lt;span role=&quot;img&quot; aria-label=&quot;Increasing chart&quot;&gt;📈&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Feedback and progress Circular arrows Revision and another attempt">
+            <div class="emoji-preview"><span role="img" aria-label="Circular arrows">🔄</span></div>
+            <h4>Circular arrows</h4>
+            <p class="emoji-use">Revision and another attempt</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-089" aria-controls="snippet-code-emoji-089" aria-label="Copy HTML for circular arrows">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-089">&lt;span role=&quot;img&quot; aria-label=&quot;Circular arrows&quot;&gt;🔄&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Feedback and progress Flexed biceps Encouragement and persistence">
+            <div class="emoji-preview"><span role="img" aria-label="Flexed biceps">💪</span></div>
+            <h4>Flexed biceps</h4>
+            <p class="emoji-use">Encouragement and persistence</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-090" aria-controls="snippet-code-emoji-090" aria-label="Copy HTML for flexed biceps">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-090">&lt;span role=&quot;img&quot; aria-label=&quot;Flexed biceps&quot;&gt;💪&lt;/span&gt;</code></pre>
+          </li>
+        </ul>
+      </div>
+      <div class="emoji-group" data-category="Support and course guidance">
+        <h3 id="emoji-group-10">Support and course guidance</h3>
+        <ul class="emoji-grid" role="list" aria-labelledby="emoji-group-10">
+          <li class="emoji-card" data-emoji-search="Support and course guidance Information Helpful course details">
+            <div class="emoji-preview"><span role="img" aria-label="Information">ℹ️</span></div>
+            <h4>Information</h4>
+            <p class="emoji-use">Helpful course details</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-091" aria-controls="snippet-code-emoji-091" aria-label="Copy HTML for information">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-091">&lt;span role=&quot;img&quot; aria-label=&quot;Information&quot;&gt;ℹ️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Support and course guidance Warning Cautions and common mistakes">
+            <div class="emoji-preview"><span role="img" aria-label="Warning">⚠️</span></div>
+            <h4>Warning</h4>
+            <p class="emoji-use">Cautions and common mistakes</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-092" aria-controls="snippet-code-emoji-092" aria-label="Copy HTML for warning">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-092">&lt;span role=&quot;img&quot; aria-label=&quot;Warning&quot;&gt;⚠️&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Support and course guidance Question mark Questions and knowledge checks">
+            <div class="emoji-preview"><span role="img" aria-label="Question mark">❓</span></div>
+            <h4>Question mark</h4>
+            <p class="emoji-use">Questions and knowledge checks</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-093" aria-controls="snippet-code-emoji-093" aria-label="Copy HTML for question mark">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-093">&lt;span role=&quot;img&quot; aria-label=&quot;Question mark&quot;&gt;❓&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Support and course guidance Exclamation mark Important instructions">
+            <div class="emoji-preview"><span role="img" aria-label="Exclamation mark">❗</span></div>
+            <h4>Exclamation mark</h4>
+            <p class="emoji-use">Important instructions</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-094" aria-controls="snippet-code-emoji-094" aria-label="Copy HTML for exclamation mark">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-094">&lt;span role=&quot;img&quot; aria-label=&quot;Exclamation mark&quot;&gt;❗&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Support and course guidance Life ring Help and support resources">
+            <div class="emoji-preview"><span role="img" aria-label="Life ring">🛟</span></div>
+            <h4>Life ring</h4>
+            <p class="emoji-use">Help and support resources</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-095" aria-controls="snippet-code-emoji-095" aria-label="Copy HTML for life ring">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-095">&lt;span role=&quot;img&quot; aria-label=&quot;Life ring&quot;&gt;🛟&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Support and course guidance Wheelchair symbol Accessibility resources">
+            <div class="emoji-preview"><span role="img" aria-label="Wheelchair symbol">♿</span></div>
+            <h4>Wheelchair symbol</h4>
+            <p class="emoji-use">Accessibility resources</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-096" aria-controls="snippet-code-emoji-096" aria-label="Copy HTML for wheelchair symbol">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-096">&lt;span role=&quot;img&quot; aria-label=&quot;Wheelchair symbol&quot;&gt;♿&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Support and course guidance Locked padlock Privacy and secure information">
+            <div class="emoji-preview"><span role="img" aria-label="Locked padlock">🔒</span></div>
+            <h4>Locked padlock</h4>
+            <p class="emoji-use">Privacy and secure information</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-097" aria-controls="snippet-code-emoji-097" aria-label="Copy HTML for locked padlock">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-097">&lt;span role=&quot;img&quot; aria-label=&quot;Locked padlock&quot;&gt;🔒&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Support and course guidance Key Key concepts and essential ideas">
+            <div class="emoji-preview"><span role="img" aria-label="Key">🔑</span></div>
+            <h4>Key</h4>
+            <p class="emoji-use">Key concepts and essential ideas</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-098" aria-controls="snippet-code-emoji-098" aria-label="Copy HTML for key">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-098">&lt;span role=&quot;img&quot; aria-label=&quot;Key&quot;&gt;🔑&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Support and course guidance Seedling Growth and developing skills">
+            <div class="emoji-preview"><span role="img" aria-label="Seedling">🌱</span></div>
+            <h4>Seedling</h4>
+            <p class="emoji-use">Growth and developing skills</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-099" aria-controls="snippet-code-emoji-099" aria-label="Copy HTML for seedling">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-099">&lt;span role=&quot;img&quot; aria-label=&quot;Seedling&quot;&gt;🌱&lt;/span&gt;</code></pre>
+          </li>
+          <li class="emoji-card" data-emoji-search="Support and course guidance Person meditating Well-being and study breaks">
+            <div class="emoji-preview"><span role="img" aria-label="Person meditating">🧘</span></div>
+            <h4>Person meditating</h4>
+            <p class="emoji-use">Well-being and study breaks</p>
+            <div class="copy-controls">
+              <button class="copy-html-button" type="button" data-copy-target="snippet-code-emoji-100" aria-controls="snippet-code-emoji-100" aria-label="Copy HTML for person meditating">Copy HTML</button>
+              <span class="copy-status" role="status" aria-live="polite"></span>
+            </div>
+            <pre><code id="snippet-code-emoji-100">&lt;span role=&quot;img&quot; aria-label=&quot;Person meditating&quot;&gt;🧘&lt;/span&gt;</code></pre>
+          </li>
+        </ul>
+      </div>
     </section>
 
     <section id="tables" class="snippet-page">
@@ -1680,6 +2776,28 @@
         }
       });
     });
-  </script>
+  
+    const emojiSearch = document.getElementById('emoji-search');
+    if (emojiSearch) {
+      emojiSearch.addEventListener('input', function() {
+        const query = emojiSearch.value.trim().toLowerCase();
+        let visibleCount = 0;
+        document.querySelectorAll('#emoji .emoji-group').forEach(function(group) {
+          let groupCount = 0;
+          group.querySelectorAll('.emoji-card').forEach(function(card) {
+            const matches = card.dataset.emojiSearch.toLowerCase().includes(query) ||
+              card.querySelector('.emoji-preview').textContent.includes(query);
+            card.hidden = !matches;
+            if (matches) groupCount++;
+          });
+          group.hidden = groupCount === 0;
+          visibleCount += groupCount;
+        });
+        document.getElementById('emoji-results').textContent = visibleCount === 0
+          ? 'No emojis found. Try another search or clear the search field.'
+          : 'Showing ' + visibleCount + ' of 100 emojis.';
+      });
+    }
+</script>
 </body>
 </html>
