@@ -1,0 +1,2225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Prototype | Text to Template | IDEAS Resource Library</title>
+<style>
+/* Prototype of the Text to Template converter: same formatting engine, redesigned workspace.
+   Two tabs replace the Formatting guide: "Original content" (paste) and "Edit" (preview + snippet tools). */
+:root {
+  --bg: #060a13;
+  --bg-2: #0a1222;
+  --glass: rgba(15, 24, 42, 0.72);
+  --glass-2: rgba(22, 34, 58, 0.78);
+  --line: rgba(130, 170, 230, 0.16);
+  --line-2: rgba(130, 170, 230, 0.3);
+  --ink: #e8f0fc;
+  --muted: #93a6c2;
+  --cyan: #4fd8ff;
+  --violet: #8f7cff;
+  --gold: #f2b52c;
+  --ok: #4ade80;
+  --danger: #ff7a8a;
+  --glow: 0 0 0 1px rgba(79, 216, 255, 0.45), 0 0 24px rgba(79, 216, 255, 0.25);
+  --grad: linear-gradient(135deg, #4fd8ff 0%, #8f7cff 100%);
+  --font-ui: "Inter", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  --font-code: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
+  --radius: 16px;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  margin: 0; color: var(--ink); font-family: var(--font-ui); line-height: 1.5; font-size: 15px;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(79, 216, 255, 0.14), transparent 60%),
+    radial-gradient(900px 600px at 100% 0%, rgba(143, 124, 255, 0.16), transparent 60%),
+    radial-gradient(800px 500px at 50% 120%, rgba(242, 181, 44, 0.07), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+}
+/* Faint blueprint grid behind everything. */
+body::before {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image: linear-gradient(rgba(130, 170, 230, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(130, 170, 230, 0.05) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse at 50% 0%, #000 30%, transparent 80%);
+}
+#app { position: relative; z-index: 1; min-height: 100%; display: flex; flex-direction: column; }
+button, select, input, textarea { font: inherit; color: inherit; }
+a { color: var(--cyan); }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* ---------- Password gate ---------- */
+.gate { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 24px; background:
+  radial-gradient(700px 400px at 50% 30%, rgba(79, 216, 255, 0.18), transparent 70%),
+  radial-gradient(600px 400px at 70% 80%, rgba(143, 124, 255, 0.16), transparent 70%), var(--bg); }
+.gate-card { width: min(420px, 100%); padding: 34px 30px 28px; border-radius: 22px; background: var(--glass); border: 1px solid var(--line-2); backdrop-filter: blur(18px); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06); text-align: center; }
+.gate-orb { width: 64px; height: 64px; margin: 0 auto 16px; border-radius: 50%; display: grid; place-items: center; background: var(--grad); box-shadow: 0 0 40px rgba(79, 216, 255, 0.45); font-size: 28px; }
+.gate h1 { margin: 0 0 4px; font-size: 1.5rem; letter-spacing: 0.02em; }
+.gate p { margin: 0 0 20px; color: var(--muted); font-size: 0.92rem; }
+.gate form { display: grid; gap: 12px; }
+.gate input { width: 100%; padding: 13px 16px; border-radius: 12px; border: 1px solid var(--line-2); background: rgba(5, 10, 20, 0.7); font-size: 1rem; text-align: center; letter-spacing: 0.08em; }
+.gate input:focus { outline: none; box-shadow: var(--glow); border-color: transparent; }
+.gate .err { min-height: 1.3em; margin: 0; color: var(--danger); font-size: 0.88rem; }
+.gate.shake .gate-card { animation: shake 0.35s; }
+@keyframes shake { 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
+
+/* ---------- Buttons ---------- */
+.btn, button { cursor: pointer; border-radius: 11px; border: 1px solid var(--line-2); background: rgba(255, 255, 255, 0.04); padding: 9px 15px; font-size: 0.92rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 7px; transition: background 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.1s; color: var(--ink); }
+.btn:hover, button:hover:not(:disabled) { border-color: var(--cyan); background: rgba(79, 216, 255, 0.08); }
+button:active:not(:disabled) { transform: translateY(1px); }
+button:disabled { opacity: 0.4; cursor: not-allowed; }
+button.primary, .btn.primary { background: var(--grad); border-color: transparent; color: #061020; box-shadow: 0 6px 22px rgba(79, 216, 255, 0.28); }
+button.primary:hover:not(:disabled) { background: var(--grad); filter: brightness(1.1); box-shadow: 0 8px 28px rgba(79, 216, 255, 0.4); }
+button.small { padding: 6px 11px; font-size: 0.84rem; border-radius: 9px; }
+.btn.quiet { border-color: transparent; background: none; color: var(--cyan); padding-left: 6px; padding-right: 6px; }
+#applyStyle.pending { background: var(--gold); color: #1a1200; border-color: var(--gold); box-shadow: 0 0 0 4px rgba(242, 181, 44, 0.25); }
+select { padding: 9px 12px; border-radius: 11px; border: 1px solid var(--line-2); background: rgba(5, 10, 20, 0.6); min-width: 250px; }
+select option { background: #0d1628; }
+.ico { font-size: 1.05em; line-height: 1; }
+
+/* ---------- Header ---------- */
+.top { position: sticky; top: 0; z-index: 30; background: rgba(6, 10, 19, 0.78); backdrop-filter: blur(16px); border-bottom: 1px solid var(--line); }
+.top-inner { max-width: 1560px; margin: 0 auto; padding: 12px 20px; display: grid; grid-template-columns: auto 1fr auto; gap: 12px 20px; align-items: center; }
+.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.brand > div:last-child { min-width: 0; }
+.maintabs [role="tab"] { white-space: nowrap; }
+.brand-mark { width: 38px; height: 38px; flex: none; border-radius: 11px; background: var(--grad); display: grid; place-items: center; color: #061020; font-weight: 800; box-shadow: 0 0 22px rgba(79, 216, 255, 0.35); }
+.brand h1 { margin: 0; font-size: 1.06rem; letter-spacing: 0.01em; white-space: nowrap; }
+.brand h1 .tag { margin-left: 8px; padding: 2px 8px; border-radius: 999px; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--cyan); border: 1px solid rgba(79, 216, 255, 0.4); vertical-align: 2px; }
+.brand p { margin: 0; font-size: 0.78rem; color: var(--muted); }
+/* The two main tabs. */
+.maintabs { justify-self: center; display: inline-flex; padding: 5px; gap: 4px; border-radius: 15px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--line); }
+.maintabs [role="tab"] { border: 0; background: transparent; border-radius: 11px; padding: 9px 18px; color: var(--muted); font-size: 0.95rem; }
+.maintabs [role="tab"] .num { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; border: 1px solid currentColor; font-size: 0.75rem; }
+.maintabs [role="tab"]:hover { background: rgba(255, 255, 255, 0.05); color: var(--ink); }
+.maintabs [role="tab"][aria-selected="true"] { background: var(--glass-2); color: var(--ink); box-shadow: inset 0 0 0 1px rgba(79, 216, 255, 0.5), 0 0 22px rgba(79, 216, 255, 0.18); }
+.maintabs [role="tab"][aria-selected="true"] .num { background: var(--grad); border-color: transparent; color: #061020; }
+.top-actions { display: flex; gap: 8px; align-items: center; justify-self: end; }
+.lock { border-color: transparent; background: none; color: var(--muted); padding: 8px; }
+
+/* Style bar, under the header. */
+.stylebar { max-width: 1560px; margin: 0 auto; padding: 0 20px 12px; display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.stylebar label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); font-weight: 700; }
+.saved { margin-left: auto; font-size: 0.78rem; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+.saved::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 10px var(--ok); }
+
+main { flex: 1; width: 100%; max-width: 1560px; margin: 0 auto; padding: 18px 20px 40px; }
+.panel { background: var(--glass); border: 1px solid var(--line); border-radius: var(--radius); backdrop-filter: blur(14px); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.04); }
+.panel-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+.panel-head h2 { margin: 0; font-size: 1rem; }
+.panel-head .sub { color: var(--muted); font-size: 0.84rem; }
+.panel-head .push { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; }
+.eyebrow { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--cyan); font-weight: 700; margin: 0 0 4px; }
+
+/* ---------- Tab 1: Original content ---------- */
+.source-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 18px; align-items: start; }
+.source-panel { display: flex; flex-direction: column; min-height: calc(100vh - 210px); }
+textarea { width: 100%; border: 0; resize: vertical; padding: 18px 20px; font-family: var(--font-code); font-size: 0.9rem; line-height: 1.65; background: transparent; color: var(--ink); }
+textarea:focus { outline: none; }
+#source { flex: 1; min-height: 520px; border-radius: 0 0 var(--radius) var(--radius); }
+#source::placeholder { color: #61748f; }
+.source-panel:focus-within { box-shadow: 0 0 0 1px rgba(79, 216, 255, 0.4), 0 20px 60px rgba(0, 0, 0, 0.35); }
+.source-foot { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; padding: 12px 18px; border-top: 1px solid var(--line); }
+.source-foot .stat { color: var(--muted); font-size: 0.84rem; }
+.cheats { position: sticky; top: 140px; display: grid; gap: 12px; }
+.cheat { padding: 16px 18px; }
+.cheat h3 { margin: 0 0 10px; font-size: 0.92rem; display: flex; align-items: center; gap: 8px; }
+.cheat ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 0.85rem; color: var(--muted); }
+.cheat li { display: grid; grid-template-columns: 112px 1fr; gap: 10px; align-items: baseline; }
+.cheat li.wide { grid-template-columns: 1fr; }
+.cheat code { font-family: var(--font-code); font-size: 0.8rem; color: var(--ink); background: rgba(79, 216, 255, 0.08); border: 1px solid rgba(79, 216, 255, 0.18); border-radius: 6px; padding: 1px 6px; white-space: nowrap; }
+.cheat details summary { cursor: pointer; color: var(--cyan); font-size: 0.85rem; font-weight: 600; list-style: none; }
+.cheat details summary::-webkit-details-marker { display: none; }
+.cheat details[open] summary { margin-bottom: 10px; }
+
+/* ---------- Tab 2: Edit ---------- */
+.edit-grid { display: grid; grid-template-columns: 400px minmax(0, 1fr); gap: 18px; align-items: start; }
+/* The snippet dock stays on screen beside the page and scrolls on its own. */
+.dock { position: sticky; top: 140px; max-height: calc(100vh - 156px); display: flex; flex-direction: column; overflow: hidden; }
+.dock-scroll { overflow-y: auto; padding: 14px 16px 16px; display: grid; gap: 14px; scrollbar-width: thin; scrollbar-color: rgba(130, 170, 230, 0.3) transparent; }
+.snipbar { display: contents; }
+.snip-head { margin: 0; font-size: 1rem; }
+.dock .hdr { padding: 14px 16px 12px; border-bottom: 1px solid var(--line); display: grid; gap: 10px; background: linear-gradient(180deg, rgba(79, 216, 255, 0.06), transparent); }
+.snip-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 0.86rem; color: var(--muted); }
+.snip-steps li { display: flex; align-items: center; gap: 9px; padding: 7px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--line); transition: border-color 0.2s, background 0.2s; }
+.snip-steps .dot { display: inline-grid; place-items: center; flex: none; width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--muted); font-size: 0.72rem; font-weight: 700; }
+.snip-steps li.done { color: var(--ink); border-color: rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.07); }
+.snip-steps li.done .dot { background: var(--ok); border-color: var(--ok); color: #04210f; font-size: 0; }
+.snip-steps li.done .dot::after { content: "✓"; font-size: 0.75rem; }
+#snipActions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+#snipActions #applySnippet { grid-column: 1 / -1; justify-content: center; padding: 11px; font-size: 0.98rem; }
+#snipActions button:not(#applySnippet) { justify-content: center; font-size: 0.84rem; padding: 7px 8px; }
+.snip-tip { margin: 0; font-size: 0.84rem; padding: 9px 12px; border-radius: 10px; background: rgba(242, 181, 44, 0.08); border: 1px solid rgba(242, 181, 44, 0.3); color: #f6deab; }
+.snip-tip code { font-family: var(--font-code); background: rgba(0, 0, 0, 0.3); padding: 0 5px; border-radius: 4px; font-size: 0.92em; color: #fff; }
+.section-label { margin: 0; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--muted); font-weight: 700; }
+.snip-cats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.snip-cat { justify-content: center; text-align: center; padding: 9px 8px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; min-height: 40px; line-height: 1.25; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--line); }
+.snip-cat[aria-expanded="true"] { background: rgba(79, 216, 255, 0.14); border-color: var(--cyan); color: #fff; box-shadow: 0 0 18px rgba(79, 216, 255, 0.2); }
+.snip-variants { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 2px; }
+.snip-card { display: grid; grid-template-rows: auto 1fr; gap: 7px; align-items: start; text-align: left; padding: 8px; border-radius: 12px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--line); font-size: 0.78rem; font-weight: 600; color: var(--ink); }
+.snip-card[aria-checked="true"] { border-color: var(--cyan); box-shadow: var(--glow); background: rgba(79, 216, 255, 0.08); }
+.snip-card[hidden] { display: none; }
+.snip-mini { color-scheme: light; border-radius: 8px; background: #ffffff; padding: 8px; max-height: 170px; overflow: hidden; pointer-events: none; color: #2d3b45; font-weight: normal; font-family: Arial, sans-serif; zoom: 0.5; }
+.snip-mini a { color: #0770a3; }
+.snip-mini .btn { display: inline-block; padding: 8px 14px; border: 1px solid #c7cdd1; border-radius: 3px; background: #f5f5f5; color: #2d3b45; text-decoration: none; font-weight: normal; box-shadow: none; }
+.snip-mini .ic-Table th, .snip-mini .ic-Table td { padding: 8px 10px; text-align: left; }
+.snip-mini .ic-Table caption { padding: 0 0 12px; text-align: left; }
+.snip-variants.emoji-set { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.snip-variants.emoji-set .snip-card { font-size: 0.72rem; }
+.snip-variants.emoji-set .snip-mini { zoom: 0.7; text-align: center; font-size: 34px; line-height: 1.3; padding: 4px; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+.snip-filter { display: grid; gap: 6px; font-size: 0.85rem; }
+.snip-filter input { width: 100%; padding: 9px 12px; border-radius: 10px; border: 1px solid var(--line-2); background: rgba(5, 10, 20, 0.6); }
+.snip-filter input:focus { outline: none; box-shadow: var(--glow); }
+#snipFilterCount { color: var(--muted); font-size: 0.8rem; }
+.snip-note { margin: 0; font-size: 0.82rem; color: var(--muted); }
+.snip-note a { color: var(--cyan); }
+
+/* Preview stage: a white Canvas page floating on the dark workspace. */
+.stage { display: flex; flex-direction: column; min-width: 0; }
+.stage .panel-head { position: sticky; top: 128px; z-index: 5; background: rgba(12, 19, 34, 0.92); border-radius: var(--radius) var(--radius) 0 0; }
+.seg { display: inline-flex; padding: 3px; border-radius: 10px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--line); }
+.seg [role="tab"] { border: 0; border-radius: 8px; padding: 5px 12px; background: transparent; color: var(--muted); font-size: 0.84rem; }
+.seg [role="tab"][aria-selected="true"] { background: rgba(79, 216, 255, 0.16); color: #fff; }
+.canvas-wrap { padding: 22px; }
+.sheet { max-width: 980px; margin: 0 auto; border-radius: 12px; overflow: hidden; background: #fff; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 30px 70px rgba(0, 0, 0, 0.5), 0 0 60px rgba(79, 216, 255, 0.08); }
+.sheet-bar { display: flex; align-items: center; gap: 6px; padding: 9px 14px; background: #eef2f7; border-bottom: 1px solid #d7e2ec; color: #5f6f7f; font-size: 0.78rem; }
+.sheet-bar i { width: 9px; height: 9px; border-radius: 50%; background: #c9d3de; display: inline-block; }
+.sheet-bar span { margin-left: 8px; }
+.manualbar { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; margin: 0 22px; margin-top: 18px; padding: 10px 14px; border-radius: 12px; background: rgba(242, 181, 44, 0.1); border: 1px solid rgba(242, 181, 44, 0.35); color: #f6deab; font-size: 0.86rem; }
+.manualbar p { margin: 0; flex: 1 1 260px; }
+.manualbar.stale { background: rgba(255, 122, 138, 0.12); border-color: rgba(255, 122, 138, 0.45); color: #ffd0d6; font-weight: 600; }
+#codeWrap { padding: 0 22px 22px; }
+.hint { color: var(--muted); font-size: 0.84rem; margin: 16px 0 10px; }
+#code { min-height: 640px; border-radius: 12px; background: rgba(3, 7, 15, 0.8); border: 1px solid var(--line); color: #bfe9ff; }
+#code:focus { box-shadow: var(--glow); }
+
+/* Canvas-like page, as in the original converter. */
+#preview { color-scheme: light; background: #ffffff; color: #2d3b45; padding: 26px 30px; min-height: 620px; font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.5; overflow-wrap: anywhere; }
+#preview a { color: #0770a3; }
+#preview a.btn { display: inline-block; padding: 8px 14px; background: #f5f5f5; border: 1px solid #c7cdd1; border-radius: 4px; color: #2d3b45; text-decoration: none; font-weight: normal; box-shadow: none; transition: none; }
+#preview .ic-Table th, #preview .ic-Table td { padding: 8px 10px; text-align: left; }
+#preview .ic-Table caption { padding: 0 0 12px; text-align: left; }
+#preview .ic-Table--hover-row tbody tr:hover { background-color: #e6eef5; }
+#preview ::selection { background: #b9ecff; color: #0b1a2a; }
+#preview button { all: revert; }
+#preview[contenteditable="true"] { cursor: text; }
+#preview[contenteditable="true"]:focus { outline: none; box-shadow: inset 0 0 0 3px rgba(79, 216, 255, 0.55); }
+#preview .t2t-flash { outline: 3px solid #f2a900; outline-offset: 4px; transition: outline-color 1.2s; }
+
+/* Toast */
+.toast { position: fixed; left: 50%; bottom: 22px; transform: translate(-50%, 16px); opacity: 0; pointer-events: none; display: flex; gap: 12px; align-items: center; max-width: min(640px, calc(100vw - 32px)); background: rgba(12, 20, 36, 0.95); border: 1px solid rgba(79, 216, 255, 0.4); color: #fff; padding: 11px 12px 11px 16px; border-radius: 14px; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(79, 216, 255, 0.15); font-size: 0.92rem; z-index: 60; transition: opacity 0.2s, transform 0.2s; backdrop-filter: blur(12px); }
+.toast.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+.toast button { background: transparent; color: var(--gold); border-color: var(--gold); padding: 4px 10px; }
+@media (prefers-reduced-motion: reduce) { .toast, .btn, button { transition: none; } .gate.shake .gate-card { animation: none; } }
+
+@media (max-width: 1100px) {
+  .top-inner { grid-template-columns: 1fr auto; }
+  .maintabs { grid-column: 1 / -1; grid-row: 2; justify-self: stretch; }
+  .maintabs [role="tab"] { flex: 1; justify-content: center; }
+  .source-grid, .edit-grid { grid-template-columns: 1fr; }
+  .cheats, .dock { position: static; max-height: none; }
+  .stage .panel-head { position: static; }
+  .source-panel { min-height: 0; }
+}
+@media (max-width: 640px) {
+  .top { position: static; }
+  .brand p, .top-actions .label, .brand h1 .name { display: none; }
+  .brand h1 .tag { margin-left: 0; }
+  .brand-mark { display: none; }
+  .maintabs [role="tab"] { padding: 8px 10px; font-size: 0.9rem; }
+  .dock-scroll { max-height: 55vh; }
+  select { min-width: 0; flex: 1 1 100%; }
+  main, .stylebar, .top-inner { padding-left: 12px; padding-right: 12px; }
+  .canvas-wrap { padding: 10px; }
+  #preview { padding: 18px; }
+}
+</style>
+</head>
+<body>
+<!-- Soft gate: the page is a static GitHub Pages file, so this only hides the tool from casual visitors. -->
+<div class="gate" id="gate">
+  <div class="gate-card">
+    <div class="gate-orb" aria-hidden="true">🔒</div>
+    <h1>Prototype</h1>
+    <p>Text to Template, redesigned. Enter the password to continue.</p>
+    <form id="gateForm" autocomplete="off">
+      <label class="sr-only" for="gatePass">Password</label>
+      <input id="gatePass" type="password" placeholder="Password" autofocus aria-describedby="gateErr" />
+      <button class="primary" type="submit" style="justify-content:center">Unlock <span aria-hidden="true">→</span></button>
+      <p class="err" id="gateErr" role="alert"></p>
+    </form>
+  </div>
+</div>
+
+<div id="app" hidden>
+<header class="top" id="toolbar">
+  <div class="top-inner">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">T</div>
+      <div>
+        <h1><span class="name">Text to Template</span> <span class="tag">Prototype</span></h1>
+        <p>Canvas-ready HTML, built in your browser. Nothing is sent to AI or a server.</p>
+      </div>
+    </div>
+    <div class="maintabs" role="tablist" aria-label="Workspace">
+      <button type="button" role="tab" id="tabSource" aria-selected="true" aria-controls="viewSource"><span class="num">1</span> Original content</button>
+      <button type="button" role="tab" id="tabEdit" aria-selected="false" aria-controls="viewEdit" tabindex="-1"><span class="num">2</span> Edit</button>
+    </div>
+    <div class="top-actions">
+      <button id="downloadBtn" type="button" title="Download .html"><span class="ico" aria-hidden="true">⤓</span><span class="label">Download</span></button>
+      <button class="primary" id="copyBtn" type="button"><span class="ico" aria-hidden="true">⧉</span> Copy HTML</button>
+      <button class="lock" id="lockBtn" type="button" title="Lock the Prototype" aria-label="Lock the Prototype">🔒</button>
+    </div>
+  </div>
+  <div class="stylebar">
+    <label for="style">Template style</label>
+    <select id="style">
+      <option value="module-overview">Module Overview and To Do List</option>
+      <option value="learning-resources">Learning Resources</option>
+      <option value="learning-resources-2">Learning Resources Template 2</option>
+      <option value="assignment">Assignment</option>
+      <option value="assignment-2">Assignment 2</option>
+    </select>
+    <button id="applyStyle" type="button" title="Rebuild the page in the chosen template style">Apply style</button>
+    <a class="btn quiet" id="viewTemplate" href="../templates.html#module-overview" target="_blank" rel="noopener">View template<span aria-hidden="true"> ↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+    <span class="saved" id="savedNote" aria-live="off">Draft saved in this browser</span>
+  </div>
+</header>
+
+<main>
+  <!-- Tab 1: the original content, pasted or typed. -->
+  <section id="viewSource" role="tabpanel" aria-labelledby="tabSource">
+    <div class="source-grid">
+      <div class="panel source-panel" id="sourceWrap">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Step 1</p>
+            <h2>Paste your original content</h2>
+          </div>
+          <div class="push">
+            <button class="small" id="exampleBtn" type="button">Load example</button>
+            <button class="small" id="clearBtn" type="button">Clear</button>
+          </div>
+        </div>
+        <label class="sr-only" for="source">Original content</label>
+        <textarea id="source" spellcheck="true" placeholder="Paste from Word, Google Docs, or type here.&#10;&#10;The first line becomes the title banner.&#10;Section names like Module Overview or Directions on their own line become headings.&#10;Start lines with - for bullets or 1. for numbered steps."></textarea>
+        <div class="source-foot">
+          <span class="stat" id="sourceStat" aria-live="off"></span>
+          <button class="primary" id="toEdit" type="button">Continue to Edit <span aria-hidden="true">→</span></button>
+        </div>
+      </div>
+      <aside class="cheats" aria-label="Formatting shortcuts">
+        <div class="panel cheat">
+          <h3><span aria-hidden="true">⚡</span> Quick formatting</h3>
+          <ul>
+            <li><code>First line</code><span>Blue title banner</span></li>
+            <li><code>## Section</code><span>Heading (or a Title Case line)</span></li>
+            <li><code>### Sub</code><span>Smaller heading</span></li>
+            <li><code>- item</code><span>Bullet list; <code>1.</code> for numbers</span></li>
+            <li><code>Read:</code><span>Short label made bold</span></li>
+            <li><code>Tip:</code><span>Call-out box (also <code>Remember:</code>)</span></li>
+            <li><code>**bold**</code><span>Bold; <code>*italic*</code> for italic</span></li>
+            <li><code>---</code><span>Divider line</span></li>
+          </ul>
+        </div>
+        <div class="panel cheat">
+          <h3><span aria-hidden="true">🔗</span> Links, video, tables</h3>
+          <ul>
+            <li><code>https://…</code><span>Link that opens in a new tab</span></li>
+            <li><code>[Text](url)</code><span>Descriptive link text</span></li>
+            <li><code>YouTube URL</code><span>Alone on a line: embedded video</span></li>
+            <li><code>a | b</code><span>Table row (or tab-separated). First row is the header.</span></li>
+            <li><code>Caption:</code><span>Line above a table becomes its caption</span></li>
+          </ul>
+        </div>
+        <div class="panel cheat">
+          <details>
+            <summary>More rules ▾</summary>
+            <ul>
+              <li class="wide">Section names like <em>Module Overview</em>, <em>To Do List</em>, <em>Purpose</em>, <em>Directions</em>, <em>Resource 1: …</em>, <em>Step 1: …</em> or <em>Connect to Practice</em> become styled headings.</li>
+              <li class="wide">Each line is its own paragraph. Indent two spaces to nest a list.</li>
+              <li class="wide">Pasting from Word or Google Docs keeps headings, bold, lists, links and tables.</li>
+              <li class="wide">Snippets, Quick Checks, Flashcards and emoji are added on the <strong>Edit</strong> tab.</li>
+            </ul>
+          </details>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- Tab 2: the formatted page with the snippet tools beside it. -->
+  <section id="viewEdit" role="tabpanel" aria-labelledby="tabEdit" hidden>
+    <div class="edit-grid">
+      <aside class="panel dock" id="snipbar" aria-labelledby="snipHead">
+        <div class="hdr">
+          <div>
+            <p class="eyebrow">Snippet tools</p>
+            <h2 class="snip-head" id="snipHead">Restyle highlighted text</h2>
+          </div>
+          <ul class="snip-steps" aria-live="polite">
+            <li id="stepHighlight"><span class="dot" aria-hidden="true">1</span> <span id="snipHighlighted">Highlight text in the Preview</span></li>
+            <li id="stepDesign"><span class="dot" aria-hidden="true">2</span> <span id="snipChosen">Pick a design below</span></li>
+          </ul>
+          <div id="snipActions">
+            <button class="primary" id="applySnippet" type="button" disabled>✦ Apply snippet</button>
+            <button id="undoSnippet" type="button" disabled>↶ Undo</button>
+            <button id="clearSnippets" type="button" disabled>Remove all</button>
+            <button id="unsnip" type="button" disabled title="Highlight any part of the Preview (or click inside a snippet), then select this to remove its formatting" style="grid-column: 1 / -1">Make basic text</button>
+          </div>
+        </div>
+        <div class="dock-scroll">
+          <p class="snip-tip" id="snipTip" aria-live="polite" hidden></p>
+          <p class="section-label">Categories</p>
+          <div class="snip-cats" id="snipCats" role="group" aria-label="Snippet categories"><p class="snip-note">Loading the snippet library…</p></div>
+          <div class="snip-filter" id="snipFilterWrap" hidden>
+            <label for="snipFilter"><strong>Find an emoji</strong></label>
+            <input id="snipFilter" type="search" placeholder="Search names or uses, like reading or deadline" aria-describedby="snipFilterCount" />
+            <span id="snipFilterCount" role="status" aria-live="polite"></span>
+          </div>
+          <div class="snip-variants" id="snipVariants" role="radiogroup" aria-label="Snippet design" hidden></div>
+          <p class="snip-note" id="snipNote">Click into the page to fix wording directly. To take a snippet off, click inside it and select <strong>Make basic text</strong>. <a href="../html-code.html" target="_blank" rel="noopener">See all snippets ↗</a></p>
+        </div>
+      </aside>
+
+      <section class="panel stage" aria-labelledby="out-h">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Step 2</p>
+            <h2 id="out-h">Edit your page</h2>
+          </div>
+          <div class="push">
+            <div class="seg" role="tablist" aria-label="View">
+              <button type="button" role="tab" id="tabText" aria-selected="true" aria-controls="previewWrap">Visual</button>
+              <button type="button" role="tab" id="tabCode" aria-selected="false" aria-controls="codeWrap" tabindex="-1">HTML</button>
+            </div>
+          </div>
+        </div>
+        <div class="manualbar" id="manualBar" role="status" hidden>
+          <p id="manualMsg">You edited the page or HTML directly, so it keeps those edits. Changes to your original content won't show until you rebuild or apply a style.</p>
+          <button id="rebuildBtn" type="button" class="small">Rebuild from original</button>
+        </div>
+        <div id="previewWrap" role="tabpanel" aria-labelledby="tabText" class="canvas-wrap">
+          <div class="sheet">
+            <div class="sheet-bar" aria-hidden="true"><i></i><i></i><i></i><span>Canvas page preview · click to edit wording</span></div>
+            <div id="preview" aria-label="Page preview, editable" spellcheck="true"></div>
+          </div>
+        </div>
+        <div id="codeWrap" role="tabpanel" aria-labelledby="tabCode" hidden>
+          <p class="hint" id="codeHint">You can edit this HTML directly; the page updates as you type. In Canvas, open the page editor, switch to the HTML editor (&lt;/&gt;), and paste.</p>
+          <label class="sr-only" for="code">Generated HTML</label>
+          <textarea id="code" spellcheck="false" aria-describedby="codeHint"></textarea>
+        </div>
+      </section>
+    </div>
+  </section>
+</main>
+</div>
+<div class="toast" id="toast"><span id="status" role="status" aria-live="polite"></span><button type="button" id="toastAction" hidden></button></div>
+
+<script>
+/* Password gate. GitHub Pages serves static files, so this is a soft lock, not real security:
+   it keeps casual visitors out, but anyone who reads the page source can get past it. */
+(function () {
+  'use strict';
+  const HASH = '0f68633c23976581ab29c8e29a61c7c367eb8a5c80470a2eda9445043264ccd1';
+  const KEY = 't2tp-unlocked';
+  const gate = document.getElementById('gate'), app = document.getElementById('app');
+  const form = document.getElementById('gateForm'), pass = document.getElementById('gatePass'), err = document.getElementById('gateErr');
+  function open() { gate.hidden = true; app.hidden = false; window.dispatchEvent(new Event('resize')); }
+  try { if (sessionStorage.getItem(KEY) === HASH) { open(); } } catch (e) {}
+  async function sha256(s) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    let ok = false;
+    try { ok = (await sha256(pass.value.trim())) === HASH; } catch (x) { err.textContent = 'This browser cannot check the password here. Open the page from the GitHub Pages site.'; return; }
+    if (ok) {
+      try { sessionStorage.setItem(KEY, HASH); } catch (x) {}
+      err.textContent = '';
+      open();
+    } else {
+      err.textContent = 'That password is not right. Try again.';
+      gate.classList.remove('shake'); void gate.offsetWidth; gate.classList.add('shake');
+      pass.select();
+    }
+  });
+  document.getElementById('lockBtn').addEventListener('click', () => {
+    try { sessionStorage.removeItem(KEY); } catch (x) {}
+    pass.value = ''; err.textContent = '';
+    app.hidden = true; gate.hidden = false; pass.focus();
+  });
+})();
+</script>
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- Template styles, copied from templates.html ---------- */
+  const BLUE = '#00406e';
+  const BANNER = 'color: #ffffff; background: #00406e; text-align: left; padding: 12px 14px; border-radius: 6px;';
+  const HR = '<hr style="border: 1px solid #00406e;" />';
+  const HR_END = '<hr style="border: 8px solid #00406e;" />';
+  const BOX_OVERVIEW = 'border-radius: 8px; padding: 18px 22px; margin: 22px 0; background-color: #f2f6fa; border-width: 1px 1px 1px 6px; border-style: solid; border-color: #d7e2ec #d7e2ec #d7e2ec #00406e;';
+  const BOX_PRACTICE = 'background-color: #f7f9fb; border-width: 1px 1px 1px 5px; border-style: solid; border-color: #d7e2ec #d7e2ec #d7e2ec #00406e; border-radius: 6px; padding: 20px; margin-bottom: 24px;';
+  const BOX_TIP = 'background: #f7fafc; border-left: 6px solid #f2a900; padding: 18px; border-radius: 10px; margin: 18px 0;';
+  const BOX_REMEMBER = 'background: #e8f0f7; border-left: 6px solid #00406e; padding: 20px; border-radius: 12px; margin-top: 22px;';
+  const BOX_AI = 'background-color: #fff5f5; border-width: 5px 1px 1px; border-style: solid; border-color: #b42332 #edc6c6 #edc6c6; border-radius: 12px; padding: 24px; margin: 20px 0px; font-family: Arial, sans-serif; color: #27343b; line-height: 1.7;';
+  // Table design from the Tables page of html-code.html ("Table with Hover and Dark Border").
+  const TABLE_ATTRS = 'class="ic-Table ic-Table--hover-row" style="border-collapse: collapse; width: 100%; border: 1px solid #000000;"';
+  const CELL_STYLE = 'border: 1px solid #000000;';
+  const VIDEO_WRAP = 'position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;';
+  const VIDEO_FRAME = 'position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; border: 0px none currentcolor;';
+
+  const STYLES = {
+    'module-overview': { family: 'overview', anchor: 'module-overview' },
+    'learning-resources': { family: 'resources', anchor: 'learning-resources', top: 'h2', sub: 'h3' },
+    'learning-resources-2': { family: 'resources', anchor: 'learning-resources-2', top: 'h3', sub: 'h4' },
+    'assignment': { family: 'assignment', anchor: 'assignment' },
+    'assignment-2': { family: 'assignment', anchor: 'assignment-2' }
+  };
+
+  // Section names recognised as headings on their own line (case-insensitive, trailing colon allowed).
+  const SECTION_NAMES = [
+    'module overview', 'overview', 'introduction', 'to do list', 'to-do list', 'todo list', 'to do', 'checklist',
+    'learning objectives', 'module objectives', 'purpose', 'assignment overview',
+    'task', 'materials', 'directions', 'instructions', 'academic integrity', 'ai use', 'submission instructions',
+    'submission', 'how to submit', 'grading criteria', 'grading', 'rubric', 'check your understanding',
+    'learning resources', 'resources', 'summary', 'next steps', 'due date', 'due dates'
+  ];
+  const SUB_NAMES = ['essential questions', 'guiding questions', 'connect to practice', 'reflect', 'key terms', 'key concepts'];
+
+  /* ---------- Examples ---------- */
+  const EXAMPLES = {
+    overview: `Module 3: Plate Tectonics and the Shape of Our Planet
+In 2011, the ground near Tōhoku, Japan slipped almost 50 meters in a few minutes. What could move that much rock so fast, and could it happen where you live?
+
+Module Overview
+This module introduces **plate tectonics**, the theory that explains earthquakes, volcanoes, and mountain ranges. You will connect what you learned about Earth's layers in Module 2 to the forces that reshape the surface, then use maps and data to explain real events.
+
+Essential Questions
+- How does the movement of plates shape the places where people live?
+- What evidence would convince you that continents move?
+
+To Do List
+Use this checklist to organize your work. Complete the activities in the order listed.
+1. Read: [Chapter 4: Plate Tectonics](https://example.edu/chapter-4), sections 4.1 to 4.3. Focus on the three types of plate boundaries. [LO: 1, 2]
+2. Explore: Watch the plate boundary animation and note one feature at each boundary type. [LO: 2]
+3. Participate: Post your answer to the Module 3 discussion and reply to two classmates. [LO: 3]
+4. Practice: Complete the boundary-sorting practice quiz. You can retake it as many times as you like. [LO: 2]
+5. Complete: Submit the Earthquake Map Analysis assignment. [LO: 1, 3]`,
+    resources: `Plate Tectonics: Learning Resources
+Imagine you are on a city planning board deciding where a new hospital should go. You need to know which neighborhoods sit near an active fault.
+These resources prepare you to **explain how plate boundaries create hazards.** Use them in order; they support Learning Objectives 1 and 2.
+
+Resource 1: Plate Tectonics Reading
+Read Chapter 4, sections 4.1 to 4.3 (required). Focus on how each boundary type moves.
+[Read: Chapter 4, Plate Tectonics](https://example.edu/chapter-4)
+Connect to Practice
+- Pick one boundary type and name a place on Earth where it occurs.
+- Predict the main hazard for a town near that boundary.
+- Write a two-sentence note you can use in the discussion.
+
+Resource 2: What Is a Plate Boundary? (Video)
+Watch the full video (4 minutes, required). Captions are available in the player.
+https://www.youtube.com/watch?v=kbBhh0qCl4w
+Connect to Practice
+- Pause at each boundary and sketch the direction the plates move.
+- Compare the video's example with the one you chose from the reading.
+
+Check Your Understanding
+Before moving on, make sure you can:
+- Name the three types of plate boundaries.
+- Explain why earthquakes cluster along boundaries.
+If any of these feel unclear, revisit Resource 1 before the practice quiz.`,
+    assignment: `Earthquake Map Analysis
+You will act as a hazard analyst and use real earthquake data to advise a town council about its risk.
+
+Purpose
+This assignment builds your ability to read scientific maps and support a recommendation with evidence, a skill you will use in later science courses and in everyday decisions.
+Aligned Learning Objectives:
+- LO 1: Describe the three types of plate boundaries.
+- LO 3: Use data to evaluate natural hazard risk.
+
+Assignment Overview
+Use the USGS earthquake map at https://earthquake.usgs.gov/earthquakes/map/ to study one region.
+- Final product: A one-page memo, completed individually.
+- Required content: A map screenshot, a description of the boundary, and a risk rating.
+- Evidence and reasoning: At least three earthquakes from the data that support your rating.
+
+Directions
+Step 1: Choose Your Region
+Select one region from the list on the Module 3 page and open it on the map.
+Step 2: Gather Your Data
+Filter the map to the last 30 days and record the five largest earthquakes.
+Strategy for Success: Sort the list by magnitude first; it saves time.
+Step 3: Write Your Memo
+Include these parts:
+1. Your region and its boundary type.
+2. A table of your five earthquakes.
+3. Your risk rating with your reasoning.
+
+Submission Instructions
+Upload your memo as a PDF or Word file to this assignment by Sunday at 11:59 p.m.
+Remember: Name your file Lastname_Module3_Memo.
+
+Grading Criteria
+This assignment is worth 50 points. Review the rubric attached below before you submit.`
+  };
+
+  /* ---------- Helpers ---------- */
+  const $ = id => document.getElementById(id);
+  const src = $('source'), code = $('code'), preview = $('preview'), styleSel = $('style'), status = $('status');
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  const norm = s => s.toLowerCase().replace(/[:\s]+$/, '').replace(/\s+/g, ' ').trim();
+  const hasEmoji = s => /\p{Extended_Pictographic}/u.test(s);
+
+  // Inline formatting: [text](url), bare URLs, **bold**, *italic* / _italic_.
+  function emphasis(escaped) {
+    return escaped
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/__(.+?)__/g, '<strong>$1</strong>')
+      .replace(/(^|[\s(])\*(?!\s)(.+?)\*(?=[\s).,;:!?]|$)/g, '$1<em>$2</em>')
+      .replace(/(^|[\s(])_(?!\s)(.+?)_(?=[\s).,;:!?]|$)/g, '$1<em>$2</em>');
+  }
+  function link(href, text) {
+    return `<a href="${esc(href)}" target="_blank" rel="noopener">${text}</a>`;
+  }
+  function inline(text) {
+    const re = /\[([^\]]+)\]\((https?:\/\/[^\s)]+|mailto:[^\s)]+)\)|(https?:\/\/[^\s<>"]+[^\s<>".,;:!?)\]'])/g;
+    let out = '', last = 0, m;
+    while ((m = re.exec(text))) {
+      out += emphasis(esc(text.slice(last, m.index)));
+      out += m[1] ? link(m[2], emphasis(esc(m[1]))) : link(m[3], esc(m[3]));
+      last = re.lastIndex;
+    }
+    return out + emphasis(esc(text.slice(last)));
+  }
+  // Bold a short leading label such as "Read:" or "Final product:".
+  function labelled(text) {
+    const m = text.match(/^(?:\*\*)?([A-Z][^:\[\]()*]{0,40}?):(?:\*\*)?(\s+|$)([\s\S]*)$/);
+    // A label alone on its line ("Aligned Learning Objectives:") is bolded only when written in Title Case.
+    if (m && !m[3] && !looksLikeTitle(m[1])) return inline(text);
+    if (m && m[1].trim().split(/\s+/).length <= 5 && !/https?$/i.test(m[1])) {
+      const rest = m[3] ? ' ' + inline(m[3]) : '';
+      return `<strong>${esc(m[1].trim())}:</strong>${rest}`;
+    }
+    return inline(text);
+  }
+  function youtubeId(url) {
+    const m = url.match(/^(?:https?:\/\/)?(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/i);
+    return m ? m[1] : null;
+  }
+
+  /* ---------- Step 1: lines into tokens ---------- */
+  function tableCells(t) {
+    if (/^\|.*\|$/.test(t) && t.length > 2) {
+      const cells = t.slice(1, -1).split('|').map(c => c.trim());
+      if (cells.every(c => /^:?-{2,}:?$/.test(c))) return 'sep';
+      return cells.length >= 2 ? cells : null;
+    }
+    if (t.includes('\t')) {
+      const cells = t.split('\t').map(c => c.trim());
+      // "•<tab>Item" and "1.<tab>Item" are list lines from Word, not table rows.
+      if (/^([-*•·▪◦‣–—o§]|\d{1,3}[.)]|[a-zA-Z][.)])$/.test(cells[0])) return null;
+      return cells.length >= 2 ? cells : null;
+    }
+    // "Apples | Red" without outer bars counts only when two or more such lines run together (checked later).
+    if (/\S\s\|\s\S/.test(t) && !/^([-*•·▪◦‣–—]|\d{1,3}[.)])\s/.test(t)) {
+      const cells = t.split(/\s\|\s/).map(c => c.trim());
+      cells.loose = true;
+      return cells;
+    }
+    return null;
+  }
+  function tokenize(text) {
+    const tokens = [];
+    text.replace(/\r\n?/g, '\n').split('\n').forEach(raw => {
+      const line = raw.replace(/ /g, ' ').replace(/\s+$/, '');
+      const t = line.trim();
+      if (!t) { tokens.push({ type: 'blank' }); return; }
+      // Table rows: "| a | b |" lines, or cells separated by tabs (as pasted from Word, Excel or Sheets).
+      const cells = tableCells(t);
+      if (cells) {
+        const last = tokens[tokens.length - 1];
+        if (cells === 'sep') { if (last && last.type === 'table') last.header = true; return; }
+        if (last && last.type === 'table') { last.rows.push(cells); last.raw.push(t); return; }
+        const tok = { type: 'table', rows: [cells], raw: [t], header: true, caption: '', loose: !!cells.loose };
+        // A "Table 1: ..." or "Caption: ..." line right above becomes the table's caption.
+        if (last && last.type === 'p' && /^(\*\*)?(table\s*\d*|caption)\b\s*[:.\-–]/i.test(last.text)) {
+          tokens.pop();
+          tok.captionLine = last.text;
+          tok.caption = last.text.replace(/^(\*\*)?caption(\*\*)?\s*[:.\-–]\s*(\*\*)?/i, '');
+        }
+        tokens.push(tok);
+        return;
+      }
+      if (/^([-*_])(\s*\1){2,}$/.test(t)) { tokens.push({ type: 'hr' }); return; }
+      let m = t.match(/^(#{1,4})\s+(.*)$/);
+      if (m) { tokens.push({ type: 'heading', level: Math.min(m[1].length, 3), text: m[2].replace(/^\*\*(.*)\*\*$/, '$1'), forced: true }); return; }
+      const indent = (line.match(/^[ \t]*/)[0].replace(/\t/g, '    ').length);
+      m = t.match(/^([-*•·▪◦‣–—o§])\s+(.*)$/);
+      if (m && !(m[1] === '*' && /\*$/.test(m[2]) && !/^\*/.test(m[2]))) { tokens.push({ type: 'li', ordered: false, indent, text: m[2] }); return; }
+      m = t.match(/^(\d{1,3}|[a-zA-Z])[.)]\s+(.*)$/);
+      if (m && (/\d/.test(m[1]) || indent > 0)) { tokens.push({ type: 'li', ordered: true, alpha: /[a-z]/i.test(m[1]), indent, text: m[2] }); return; }
+      if (/^https?:\/\/\S+$/.test(t) && youtubeId(t)) { tokens.push({ type: 'video', url: t, id: youtubeId(t) }); return; }
+      tokens.push({ type: 'p', text: t });
+    });
+    // A lone "a | b" line is just a sentence with a bar in it.
+    return tokens.flatMap(tok => (tok.type === 'table' && tok.loose && tok.rows.length < 2)
+      ? [...(tok.captionLine ? [{ type: 'p', text: tok.captionLine }] : []), ...tok.raw.map(r => ({ type: 'p', text: r }))]
+      : [tok]);
+  }
+
+  /* ---------- Step 2: decide which lines are headings ---------- */
+  function headingKind(text, cfg) {
+    const n = norm(text.replace(/\*\*/g, '').replace(/\p{Extended_Pictographic}|️/gu, ''));
+    if (SUB_NAMES.includes(n)) return 3;
+    if (SECTION_NAMES.includes(n)) return 2;
+    if (/^step\s+\d+\b/i.test(n)) return cfg.family === 'resources' ? 2 : 3;
+    if (/^(resource|part|section|activity|task)\s+\d+\b/i.test(n)) return 2;
+    return 0;
+  }
+  function looksLikeTitle(text) {
+    const t = text.replace(/\*\*/g, '').trim();
+    if (t.length > 70 || /[.,;!?:]$/.test(t) || /https?:\/\//.test(t)) return false;
+    const words = t.split(/\s+/);
+    if (words.length > 9) return false;
+    const big = words.filter(w => w.replace(/[^\p{L}]/gu, '').length > 3);
+    if (!big.length) return /^\p{Lu}/u.test(t);
+    const caps = big.filter(w => /^[\p{Lu}\d"“'(]/u.test(w)).length;
+    return /^[\p{Lu}\d]/u.test(t) && caps / big.length >= 0.75;
+  }
+  function classify(tokens, cfg) {
+    const out = [];
+    let titleTaken = false;
+    tokens.forEach((tok, i) => {
+      if (tok.type === 'heading' && tok.level === 1 && !titleTaken) { titleTaken = true; out.push({ type: 'title', text: tok.text }); return; }
+      if (!titleTaken && tok.type !== 'blank') {
+        titleTaken = true;
+        if (tok.type === 'p' || tok.type === 'heading') { out.push({ type: 'title', text: tok.text }); return; }
+      }
+      if (tok.type === 'heading') { out.push({ type: 'heading', level: Math.max(2, tok.level), text: tok.text }); return; }
+      if (tok.type === 'p') {
+        const k = headingKind(tok.text, cfg);
+        const next = tokens.slice(i + 1).find(t => t.type !== 'blank');
+        if (k && !/[.!?]$/.test(tok.text)) { out.push({ type: 'heading', level: k, text: tok.text.replace(/:\s*$/, '') }); return; }
+        if (next && next.type !== 'heading' && looksLikeTitle(tok.text) && !/^\*\*.*:\*\*$/.test(tok.text)) {
+          out.push({ type: 'heading', level: 2, text: tok.text }); return;
+        }
+        const call = tok.text.match(/^(?:\*\*)?(strategy for success|strategy tip|tip|helpful tip|remember|important|reminder|note)(?:\*\*)?\s*:(?:\*\*)?\s*(.*)$/i);
+        if (call) {
+          const label = call[1].replace(/\b\w/g, c => c.toUpperCase()).replace(/\bFor\b/, 'for');
+          out.push({ type: 'callout', tone: /remember|important|reminder|note/i.test(call[1]) ? 'remember' : 'tip', label, text: call[2] });
+          return;
+        }
+      }
+      out.push(tok);
+    });
+    // A call-out with nothing after its label takes the next paragraph.
+    for (let i = 0; i < out.length; i++) {
+      if (out[i].type === 'callout' && !out[i].text) {
+        let j = i + 1;
+        while (j < out.length && out[j].type === 'blank') j++;
+        if (out[j] && out[j].type === 'p') { out[i].text = out[j].text; out.splice(i + 1, j - i); }
+      }
+    }
+    return out;
+  }
+
+  /* ---------- Step 3: render blocks ---------- */
+  function renderList(items, start, pad, firstOrdered, opts) {
+    // items: li tokens; returns [html, nextIndex]
+    const baseIndent = items[start].indent;
+    const tag = items[start].ordered ? 'ol' : 'ul';
+    const typeAttr = items[start].ordered && items[start].alpha ? ' style="list-style-type: lower-alpha;"' : (opts.olStyle && tag === 'ol' ? ` style="${opts.olStyle}"` : '');
+    const lines = [`${pad}<${tag}${typeAttr}>`];
+    let i = start;
+    const lis = [];
+    while (i < items.length && items[i].indent >= baseIndent) {
+      if (items[i].indent > baseIndent + 1) {
+        const [sub, ni] = renderList(items, i, pad + '        ', false, {});
+        if (lis.length) lis[lis.length - 1].children.push(sub);
+        i = ni; continue;
+      }
+      lis.push({ text: items[i].text, children: [] });
+      i++;
+    }
+    lis.forEach((li, k) => {
+      const spaced = opts.spaced && k < lis.length - 1 ? ' style="margin-bottom: 8px;"' : '';
+      const body = labelled(li.text);
+      if (li.children.length) lines.push(`${pad}    <li${spaced}>${body}\n${li.children.join('\n')}\n${pad}    </li>`);
+      else lines.push(`${pad}    <li${spaced}>${body}</li>`);
+    });
+    lines.push(`${pad}</${tag}>`);
+    return [lines.join('\n'), i];
+  }
+
+  function renderVideo(tok, pad) {
+    return [
+      `${pad}<div style="${VIDEO_WRAP}">`,
+      `${pad}    <iframe style="${VIDEO_FRAME}" title="YouTube video" src="https://www.youtube.com/embed/${tok.id}" loading="lazy" allowfullscreen="allowfullscreen" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"></iframe>`,
+      `${pad}</div>`,
+      `${pad}<p><a href="https://www.youtube.com/watch?v=${tok.id}" target="_blank" rel="noopener">Watch on YouTube (opens in a new tab)</a></p>`
+    ].join('\n');
+  }
+
+  function renderTable(tok, pad) {
+    const cols = Math.max(...tok.rows.map(r => r.length));
+    const fillRow = r => r.concat(Array(cols - r.length).fill(''));
+    const head = tok.header ? fillRow(tok.rows[0]) : null;
+    const body = (tok.header ? tok.rows.slice(1) : tok.rows).map(fillRow);
+    const lines = [`${pad}<table ${TABLE_ATTRS}>`];
+    if (tok.caption) lines.push(`${pad}    <caption>${inline(tok.caption)}</caption>`);
+    if (head) {
+      lines.push(`${pad}    <thead>`, `${pad}        <tr>`);
+      head.forEach(c => lines.push(`${pad}            <th style="${CELL_STYLE}" scope="col">${inline(c.replace(/^\*\*(.*)\*\*$/, '$1'))}</th>`));
+      lines.push(`${pad}        </tr>`, `${pad}    </thead>`);
+    }
+    lines.push(`${pad}    <tbody>`);
+    body.forEach(r => {
+      lines.push(`${pad}        <tr>`);
+      r.forEach(c => lines.push(`${pad}            <td style="${CELL_STYLE}">${inline(c)}</td>`));
+      lines.push(`${pad}        </tr>`);
+    });
+    lines.push(`${pad}    </tbody>`, `${pad}</table>`);
+    return lines.join('\n');
+  }
+
+  function renderCallout(tok, pad) {
+    const style = tok.tone === 'remember' ? BOX_REMEMBER : BOX_TIP;
+    return [
+      `${pad}<div style="${style}">`,
+      `${pad}    <p style="margin-top: 0;"><strong>${esc(tok.label)}:</strong></p>`,
+      `${pad}    <p style="margin-bottom: 0;">${inline(tok.text)}</p>`,
+      `${pad}</div>`
+    ].join('\n');
+  }
+
+  // Render a run of body blocks (paragraphs, lists, videos, call-outs) at an indent.
+  function renderBody(blocks, pad, opts) {
+    const out = [];
+    let i = 0, firstP = true;
+    while (i < blocks.length) {
+      const b = blocks[i];
+      if (b.type === 'blank') { i++; continue; }
+      if (b.type === 'li') {
+        const run = [];
+        while (i < blocks.length && (blocks[i].type === 'li' || (blocks[i].type === 'blank' && blocks[i + 1] && blocks[i + 1].type === 'li' && blocks[i + 1].indent > 0))) {
+          if (blocks[i].type === 'li') run.push(blocks[i]);
+          i++;
+        }
+        const minIndent = Math.min(...run.map(r => r.indent));
+        run.forEach(r => { r.indent = r.indent - minIndent > 1 ? r.indent - minIndent : 0; });
+        let k = 0;
+        while (k < run.length) { const [html, nk] = renderList(run, k, pad, true, opts); out.push(html); k = nk; }
+        continue;
+      }
+      if (b.type === 'p') {
+        const lead = opts.lead && firstP ? ' style="margin-top: 16px; font-size: 18px;"' : '';
+        out.push(`${pad}<p${lead}>${labelled(b.text)}</p>`);
+        firstP = false;
+      } else if (b.type === 'video') out.push(renderVideo(b, pad));
+      else if (b.type === 'callout') out.push(renderCallout(b, pad));
+      else if (b.type === 'hr') out.push(`${pad}${HR}`);
+      else if (b.type === 'table') out.push(renderTable(b, pad));
+      i++;
+    }
+    return out.join('\n');
+  }
+
+  function headingText(text, emoji) {
+    const t = inline(text.replace(/^\*\*(.*)\*\*$/, '$1'));
+    return emoji && !hasEmoji(text) ? `${t} <span aria-hidden="true">${emoji}</span>` : t;
+  }
+  function resourceEmoji(heading, blocks) {
+    const all = (heading + ' ' + blocks.map(b => b.text || '').join(' ')).toLowerCase();
+    if (blocks.some(b => b.type === 'video') || /\b(video|watch|demonstration|lecture|recording|podcast)\b/.test(all)) return '🎥';
+    if (/\b(read|reading|article|chapter|textbook|book|pages?)\b/.test(heading.toLowerCase())) return '📘';
+    if (/check your understanding/i.test(heading)) return '✅';
+    if (/\b(read|reading|article|chapter|textbook)\b/.test(all)) return '📘';
+    return '📊';
+  }
+
+  function sectionize(blocks) {
+    const intro = [], sections = [];
+    let cur = null;
+    blocks.forEach(b => {
+      if (b.type === 'heading' && b.level === 2) { cur = { heading: b.text, blocks: [] }; sections.push(cur); return; }
+      (cur ? cur.blocks : intro).push(b);
+    });
+    return { intro, sections };
+  }
+  // Split a section's blocks at sub-headings: [{heading|null, blocks}]
+  function subsections(blocks) {
+    const parts = [{ heading: null, blocks: [] }];
+    blocks.forEach(b => {
+      if (b.type === 'heading') parts.push({ heading: b.text, blocks: [] });
+      else parts[parts.length - 1].blocks.push(b);
+    });
+    return parts.filter(p => p.heading || p.blocks.some(b => b.type !== 'blank'));
+  }
+
+  // Split assignment section labels before the general heading heuristics run.
+  function assignmentInput(raw) {
+    function label(t) {
+      if (!t || !['p', 'heading'].includes(t.type)) return null;
+      const m = t.text.match(/^((?:\*\*|__)*)(discussion prompt|assignment prompt|purpose|initial post guidelines|reply guidelines|grading criteria(?:\s*\([^()\n]*\))?|assignment overview|materials|directions|submission instructions)\s*(?:\1\s*:\s*|:\1\s*|\1\s*$)(.*)$/i);
+      return m && { name: m[2], body: m[3].trim() };
+    }
+    let first = raw.findIndex(t => t.type !== 'blank');
+    let next = raw.findIndex((t, i) => i > first && t.type !== 'blank');
+    const prompt = i => /^(discussion|assignment) prompt$/i.test(label(raw[i])?.name || '');
+    const banner = prompt(first) ? first :
+      first >= 0 && ['heading', 'p'].includes(raw[first].type) && prompt(next) ? next : -1;
+    const tokens = [];
+    raw.forEach((t, i) => {
+      if (i < banner) return;
+      const part = label(t);
+      if (!part || (i === first && banner < 0)) { tokens.push(t); return; }
+      tokens.push({type: 'heading', level: i === banner ? 1 : 2, text: part.name});
+      if (part.body) tokens.push({type: 'assignmentBody', text: part.body});
+    });
+    return {tokens, hasPromptBanner: banner >= 0};
+  }
+
+  function convert(text, styleKey) {
+    const cfg = STYLES[styleKey];
+    const raw = tokenize(text);
+    const input = styleKey === 'assignment' ? assignmentInput(raw) : {tokens: raw};
+    const tokens = classify(input.tokens, cfg).map(t => t.type === 'assignmentBody' ? {...t, type: 'p'} : t);
+    const titleTok = tokens.find(t => t.type === 'title');
+    const rest = tokens.filter(t => t.type !== 'title');
+    const { intro, sections } = sectionize(rest);
+    const title = titleTok ? titleTok.text.replace(/^\*\*(.*)\*\*$/, '$1') : '[Page Title]';
+    const out = [];
+    const bannerStyle = cfg.family === 'overview' ? BANNER + ' margin-top: 0;' : BANNER;
+    out.push(`<h2 style="${bannerStyle}"><strong>${inline(title)}</strong></h2>`);
+    if (intro.length) out.push(renderBody(intro, '', { lead: cfg.family === 'assignment' }));
+
+    if (cfg.family === 'overview') {
+      // The template's signature is the shaded overview card. Use the section named Overview or
+      // Introduction, otherwise the first section, so any text gets the card.
+      let boxIdx = sections.findIndex(s => /^(module )?overview$|^introduction$/.test(norm(s.heading)));
+      if (boxIdx < 0) boxIdx = 0;
+      sections.forEach((s, idx) => {
+        const n = norm(s.heading);
+        const isOverview = idx === boxIdx;
+        const isTodo = /^(to[- ]?do( list)?|todo list|checklist)$/.test(n);
+        const emoji = isOverview ? '📘' : isTodo ? '✅' : '';
+        const parts = subsections(s.blocks);
+        const inner = (pad, topMargin) => {
+          const lines = [`${pad}<h3 style="color: ${BLUE};${topMargin ? ' margin-top: 0;' : ''}"><strong>${headingText(s.heading, emoji)}</strong></h3>`];
+          parts.forEach(p => {
+            if (p.heading) lines.push(`${pad}<h4 style="color: ${BLUE}; margin-bottom: 6px;"><strong>${headingText(p.heading)}</strong></h4>`);
+            const body = renderBody(p.blocks, pad, { spaced: true, olStyle: isTodo ? 'list-style-type: decimal;' : '' });
+            if (body) lines.push(body);
+          });
+          return lines.join('\n');
+        };
+        if (isOverview) {
+          out.push(`<div style="${BOX_OVERVIEW}">\n${inner('    ', true)}\n</div>`);
+        } else {
+          out.push(idx === 0 && !intro.length ? '' : '<hr />');
+          out.push(inner('', false));
+        }
+      });
+      out.push('<hr style="margin-top: 28px; border: 8px solid #00406e;" />');
+    }
+
+    if (cfg.family === 'resources') {
+      const top = cfg.top, sub = cfg.sub;
+      sections.forEach(s => {
+        out.push(HR);
+        const parts = subsections(s.blocks);
+        // Every section is treated as a resource: an emoji on its heading, and its list in a practice box.
+        const isCheck = /check your understanding/i.test(s.heading);
+        const resourceLike = /^(resource|part|activity|step)\s+\d+/i.test(s.heading) || isCheck;
+        const guess = resourceEmoji(s.heading, s.blocks);
+        // Other sections get an emoji only when they are clearly a video or a reading.
+        const emoji = resourceLike || guess !== '📊' ? guess : '';
+        out.push(`<${top}>${headingText(s.heading, emoji)}</${top}>`);
+        const isPractice = h => h && /^connect to practice$|^reflect$|^practice$/i.test(norm(h));
+        const autoBox = !isCheck && !parts.some(p => isPractice(p.heading));
+        let boxOpen = false;
+        parts.forEach(p => {
+          if (p.heading && /^connect to practice$|^reflect$|^practice$/i.test(norm(p.heading))) {
+            if (boxOpen) out.push('</div>');
+            out.push(`<div style="${BOX_PRACTICE}">`);
+            out.push(`    <${sub} style="color: ${BLUE}; font-size: 1.2em; margin: 0 0 10px;">${headingText(p.heading)}</${sub}>`);
+            const body = renderBody(p.blocks, '    ', {});
+            if (body) out.push(body);
+            boxOpen = true;
+            return;
+          }
+          if (boxOpen) { out.push('</div>'); boxOpen = false; }
+          if (p.heading) out.push(`<${sub} style="color: ${BLUE};">${headingText(p.heading)}</${sub}>`);
+          const firstLi = autoBox ? p.blocks.findIndex(b => b.type === 'li') : -1;
+          const lead = firstLi < 0 ? p.blocks : p.blocks.slice(0, firstLi);
+          const body = renderBody(lead, '', {});
+          if (body) out.push(body);
+          if (firstLi >= 0) {
+            out.push(`<div style="${BOX_PRACTICE}">`);
+            out.push(renderBody(p.blocks.slice(firstLi), '    ', {}).replace(/^(\s*)<(ul|ol)>/, '$1<$2 style="margin: 0;">'));
+            out.push('</div>');
+          }
+        });
+        if (boxOpen) out.push('</div>');
+      });
+      out.push(HR_END);
+    }
+
+    if (cfg.family === 'assignment') {
+      sections.forEach((s, i) => {
+        if (i || !input.hasPromptBanner) out.push(HR);
+        out.push(`<h3 style="color: ${BLUE};"><strong>${headingText(s.heading)}</strong></h3>`);
+        // Assignment 2 puts academic integrity and AI-use expectations in its red policy card.
+        if (styleKey === 'assignment-2' && /academic integrity|\bai\b|artificial intelligence|collaboration|honesty|plagiarism|policy/i.test(s.heading)) {
+          const lines = [`<div style="${BOX_AI}">`];
+          subsections(s.blocks).forEach(p => {
+            if (p.heading) lines.push(`    <h4 style="margin: 0 0 12px; color: #851b28; font-size: 24px;"><strong>${headingText(p.heading)}</strong></h4>`);
+            const body = renderBody(p.blocks, '    ', {});
+            if (body) lines.push(body.replace(/<p>/g, '<p style="margin: 0 0 16px;">').replace(/<strong>/g, '<strong style="color: #851b28;">'));
+          });
+          let card = lines.join('\n');
+          // The card's last paragraph sits flush with its bottom edge, as in the template.
+          const at = card.lastIndexOf('<p style="margin: 0 0 16px;">');
+          if (at >= 0 && !/<(p|ul|ol|div|h4)[\s>]/.test(card.slice(at + 5))) card = card.slice(0, at) + '<p style="margin-bottom: 0;">' + card.slice(at + 29);
+          out.push(card + '\n</div>');
+          return;
+        }
+        subsections(s.blocks).forEach(p => {
+          if (p.heading) out.push(`<h4><strong>${headingText(p.heading)}</strong></h4>`);
+          const body = renderBody(p.blocks, '', {});
+          if (body) out.push(body);
+        });
+      });
+      out.push(HR_END);
+    }
+    return out.filter(Boolean).join('\n') + '\n';
+  }
+
+  /* ---------- Rich paste from Word / Google Docs ---------- */
+  function htmlToMarkup(html) {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    doc.querySelectorAll('style,script,meta,title,head').forEach(n => n.remove());
+    const lines = [];
+    let buf = '';
+    const flush = () => { if (buf.trim()) lines.push(buf.replace(/[ \t]+/g, ' ').trim()); buf = ''; };
+    const isBold = el => {
+      const s = el.getAttribute && (el.getAttribute('style') || '');
+      return /^(B|STRONG)$/.test(el.tagName) || /font-weight:\s*(bold|[6-9]00)/.test(s);
+    };
+    const isItalic = el => /^(I|EM)$/.test(el.tagName) || /font-style:\s*italic/.test((el.getAttribute && el.getAttribute('style')) || '');
+    function inlineText(node) {
+      if (node.nodeType === 3) return node.nodeValue.replace(/\s+/g, ' ');
+      if (node.nodeType !== 1) return '';
+      if (node.tagName === 'BR') return '\n';
+      let inner = Array.from(node.childNodes).map(inlineText).join('');
+      if (node.tagName === 'A' && node.getAttribute('href') && /^(https?:|mailto:)/.test(node.getAttribute('href'))) {
+        const href = node.getAttribute('href');
+        const t = inner.trim();
+        return t && t !== href ? `[${t}](${href})` : href;
+      }
+      // Google Docs wraps everything in <b style="font-weight:normal">.
+      if (node.tagName === 'B' && /font-weight:\s*normal/.test(node.getAttribute('style') || '')) return inner;
+      if (isBold(node) && inner.trim()) return inner.replace(/^(\s*)(.*?)(\s*)$/s, '$1**$2**$3');
+      if (isItalic(node) && inner.trim()) return inner.replace(/^(\s*)(.*?)(\s*)$/s, '$1*$2*$3');
+      return inner;
+    }
+    function walk(node, depth) {
+      if (node.nodeType !== 1) { if (node.nodeType === 3) buf += node.nodeValue.replace(/\s+/g, ' '); return; }
+      const tag = node.tagName;
+      if (/^H[1-6]$/.test(tag)) {
+        flush();
+        const level = Math.min(+tag[1], 3);
+        lines.push('#'.repeat(level) + ' ' + inlineText(node).replace(/\*\*/g, '').replace(/\s+/g, ' ').trim());
+        return;
+      }
+      if (tag === 'UL' || tag === 'OL') {
+        flush();
+        let n = 0;
+        Array.from(node.children).forEach(li => {
+          if (li.tagName === 'UL' || li.tagName === 'OL') { walk(li, depth + 1); return; }
+          if (li.tagName !== 'LI') return;
+          n++;
+          const own = Array.from(li.childNodes).filter(c => !(c.nodeType === 1 && /^(UL|OL)$/.test(c.tagName)));
+          const text = own.map(inlineText).join('').replace(/\s+/g, ' ').trim();
+          lines.push('  '.repeat(depth) + (tag === 'OL' ? `${n}. ` : '- ') + text);
+          Array.from(li.children).filter(c => /^(UL|OL)$/.test(c.tagName)).forEach(c => walk(c, depth + 1));
+        });
+        return;
+      }
+      if (tag === 'HR') { flush(); lines.push('---'); return; }
+      if (tag === 'TABLE') {
+        flush();
+        const cap = node.querySelector('caption');
+        if (cap && cap.textContent.trim()) lines.push('Caption: ' + cap.textContent.replace(/\s+/g, ' ').trim());
+        const rows = Array.from(node.querySelectorAll('tr')).filter(tr => tr.closest('table') === node);
+        const cellText = c => Array.from(c.childNodes).map(inlineText).join(' ').replace(/\s+/g, ' ').replace(/\|/g, '/').trim();
+        const grid = rows.map(tr => Array.from(tr.children).filter(c => /^T[HD]$/.test(c.tagName)).map(cellText)).filter(r => r.length);
+        if (grid.length && Math.max(...grid.map(r => r.length)) >= 2) {
+          grid.forEach((r, i) => { lines.push('| ' + r.join(' | ') + ' |'); if (i === 0) lines.push('|' + r.map(() => ' --- ').join('|') + '|'); });
+        } else grid.forEach(r => r.forEach(c => { if (c) lines.push(c); }));
+        lines.push('');
+        return;
+      }
+      if (/^(P|DIV|LI|TR|BLOCKQUOTE|SECTION|ARTICLE|TABLE|TBODY)$/.test(tag)) {
+        flush();
+        if (Array.from(node.children).some(c => /^(P|DIV|UL|OL|H[1-6]|TABLE|TR|TBODY|BLOCKQUOTE|HR)$/.test(c.tagName))) {
+          Array.from(node.childNodes).forEach(c => walk(c, depth));
+          flush();
+          return;
+        }
+        let text = inlineText(node);
+        // Word list paragraphs keep their bullet as text.
+        if (/MsoListParagraph/.test(node.className || '')) text = text.replace(/^\s*[·•o§▪]\s+/, '- ');
+        text.split('\n').forEach(l => { if (l.trim()) lines.push(l.replace(/\s+/g, ' ').trim()); });
+        return;
+      }
+      if (tag === 'BR') { flush(); return; }
+      // Inline wrappers around block content (Google Docs wraps the whole paste in <b>).
+      if (node.querySelector('p,div,ul,ol,h1,h2,h3,h4,h5,h6,table,hr,li')) {
+        Array.from(node.childNodes).forEach(c => walk(c, depth));
+        return;
+      }
+      buf += inlineText(node);
+    }
+    Array.from(doc.body.childNodes).forEach(n => walk(n, 0));
+    flush();
+    return lines.join('\n');
+  }
+
+  /* ---------- UI ---------- */
+  let timer = null;
+  /* Direct edits in the Preview. Once the Preview is edited, the HTML follows it (manualHtml)
+     until the user rebuilds from their text. history holds snapshots for Undo. */
+  let manualHtml = null;
+  let appliedStyle = 'module-overview';
+  let history = [];
+  let lastEdit = 0;
+  let lastGenerated = null;
+  // Applied snippets carry a data-t2t-snip marker in the Preview only, so "Make basic text" can find them. It never reaches the HTML.
+  const unmark = html => html.replace(/ data-t2t-snip="[^"]*"/g, '');
+  const serialize = el => unmark(el.innerHTML).replace(/<(hr|br|img)([^>]*?)\s*\/?>/g, '<$1$2 />').replace(/\n{3,}/g, '\n\n');
+  function setManual(html) {
+    manualHtml = html;
+    if (code.value !== html) code.value = html;
+    $('manualBar').hidden = false;
+    updateSnipButtons();
+    try { localStorage.setItem('t2tp-manual', html); } catch (e) {}
+  }
+  function leaveManual() {
+    manualHtml = null; history = [];
+    $('manualBar').hidden = true;
+    $('manualBar').classList.remove('stale');
+    try { localStorage.removeItem('t2tp-manual'); } catch (e) {}
+  }
+  function run(sourceChanged) {
+    if (manualHtml !== null) {
+      // Keep the edited Preview. Flag that Your text has changed since.
+      if (sourceChanged) $('manualBar').classList.add('stale');
+      try { localStorage.setItem('t2tp-text', src.value); localStorage.setItem('t2tp-style', appliedStyle); } catch (e) {}
+      updateSnipButtons();
+      return;
+    }
+    let html = src.value.trim() ? convert(src.value, appliedStyle) : '';
+    if (html && ops.length) {
+      // Re-apply the snippets the user chose, matched to their text, on top of the fresh conversion.
+      const box = document.createElement('div');
+      box.innerHTML = html;
+      const kept = ops.filter(op => applyOp(box, op));
+      if (kept.length < ops.length) {
+        say((ops.length - kept.length) + ' snippet(s) no longer matched your text and were removed.');
+        ops = kept;
+      }
+      html = box.innerHTML.replace(/<(hr|br|img)([^>]*?)\s*\/?>/g, '<$1$2 />').replace(/\n{3,}/g, '\n\n');
+    }
+    preview.innerHTML = html || '<p style="color:#5f6f7f">Your formatted page will appear here.</p>';
+    html = unmark(html);
+    code.value = html;
+    lastGenerated = html;
+    preview.contentEditable = html ? 'true' : 'false';
+    updateSnipButtons();
+    try {
+      localStorage.setItem('t2tp-text', src.value); localStorage.setItem('t2tp-style', appliedStyle);
+      localStorage.setItem('t2tp-ops', JSON.stringify(ops));
+    } catch (e) {}
+  }
+
+  /* ---------- Snippets from html-code.html, applied to highlighted text ---------- */
+  let ops = [];
+  let library = [];
+  let savedRange = null;
+  let lastCaret = null; // where the cursor last was in the Preview, for Make basic text
+  let selected = -1;
+  const BLOCK = 'p,h1,h2,h3,h4,h5,h6,ul,ol,table,details,blockquote,hr,pre';
+  const clean = s => (s || '').replace(/ /g, ' ').replace(/\s+/g, ' ').trim();
+  const isHeading = el => /^H[1-6]$/.test(el.tagName) ||
+    (el.tagName === 'P' && el.children.length === 1 && /^(STRONG|B)$/.test(el.children[0].tagName) && clean(el.textContent) === clean(el.children[0].textContent) && clean(el.textContent).length < 120);
+  const parse = html => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content; };
+  const elementsOf = frag => Array.from(frag.childNodes).filter(n => n.nodeType === 1);
+
+  async function loadLibrary() {
+    try {
+      const res = await fetch('../html-code.html', { cache: 'no-store' });
+      if (!res.ok) throw new Error(res.status);
+      const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
+      const seen = {};
+      // Categories in the order of the page's navigation buttons, then any section without one.
+      const order = Array.from(doc.querySelectorAll('.nav-button')).map(b => (b.getAttribute('onclick') || '').match(/showPage\('([^']+)'/)).filter(Boolean).map(m => m[1]);
+      const sections = Array.from(doc.querySelectorAll('section.snippet-page'));
+      sections.sort((a, b) => {
+        const ia = order.indexOf(a.id), ib = order.indexOf(b.id);
+        return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
+      });
+      const tidy = t => clean(t).replace(/\b(preview|code)\b/gi, '').replace(/^[\s:–—-]+|[\s:–—-]+$/g, '').replace(/\s{2,}/g, ' ').trim();
+      sections.forEach(section => {
+        const navBtn = doc.querySelector(`.nav-button[onclick*="'${section.id}'"]`);
+        let title = '', label = '', codeLabel = '', preview = '';
+        // The Emoji page lists cards instead of labelled previews: each has a name, a use, a preview and its code.
+        const cards = section.querySelectorAll('.emoji-card');
+        if (cards.length) {
+          const group = navBtn ? clean(navBtn.textContent) : clean((section.querySelector('h2') || {}).textContent);
+          cards.forEach(card => {
+            const pre = card.querySelector('pre');
+            const html = pre ? pre.textContent.trim() : '';
+            if (!html) return;
+            const name = clean((card.querySelector('h4') || {}).textContent) || 'Emoji';
+            const look = card.querySelector('.emoji-preview');
+            const use = clean((card.querySelector('.emoji-use') || {}).textContent);
+            library.push({ group, name, html, preview: look ? look.innerHTML : html, use, search: (card.getAttribute('data-emoji-search') || name + ' ' + use).toLowerCase() });
+          });
+          return;
+        }
+        section.querySelectorAll('h2.snippet-title, p.preview-label, p.code-label, .preview-box, pre').forEach(el => {
+          if (el.matches('h2.snippet-title')) { title = clean(el.textContent); label = ''; return; }
+          if (el.matches('p.preview-label')) { label = tidy(el.textContent); codeLabel = ''; preview = ''; return; }
+          if (el.matches('p.code-label')) { codeLabel = tidy(el.textContent); return; }
+          if (el.matches('.preview-box')) { if (!el.closest('pre')) preview = el.innerHTML; return; }
+          const html = el.textContent.trim();
+          if (!html) return;
+          const group = navBtn ? clean(navBtn.textContent) : title;
+          let name = label || codeLabel || group.replace(/^\P{L}+/u, '');
+          const key = group + '|' + name;
+          seen[key] = (seen[key] || 0) + 1;
+          if (seen[key] > 1) name += ` (${seen[key]})`;
+          library.push({ group, name, html, preview: preview || html });
+          preview = '';
+        });
+      });
+      if (!library.length) throw new Error('empty');
+      renderCategories();
+      try {
+        const last = JSON.parse(localStorage.getItem('t2tp-snippet') || 'null');
+        const i = last ? library.findIndex(x => x.group === last.group && x.name === last.name) : -1;
+        if (i >= 0) chooseSnippet(i, false);
+      } catch (e) {}
+    } catch (e) {
+      $('snipCats').innerHTML = '<p class="snip-note">The snippet library could not load here. Open this page from the GitHub Pages site.</p>';
+    }
+    updateSnipButtons();
+  }
+
+  // Short directions for snippets whose text format isn't obvious, matched to the category name.
+  const SNIP_TIPS = [
+    [/quick check/i, 'Highlight the question and its answers. End the correct answer with <code>*</code>, like <code>Check reliable sources *</code>.'],
+    [/true\s*\/\s*false/i, 'Put each statement on its own line ending in <code>(True)</code> or <code>(False)</code>. Words after it become the feedback.'],
+    [/flashcard/i, 'Write one card per line as <code>Term: definition</code>, or give each card a heading with its answer below.'],
+    [/clickable steps/i, 'Highlight a heading for each step with its text below. Each heading becomes a step.'],
+    [/info icon/i, 'Highlight a short heading and the text below it. The heading becomes the clickable label.'],
+    [/accordion|dropdown/i, 'Each heading you highlight becomes a dropdown, with the text under it inside.'],
+    [/table/i, 'Separate columns with a tab or <code> | </code>. The first row becomes the header.'],
+    [/button/i, 'Highlight a line with a link. Its words become the button label.'],
+    [/horizontal line/i, 'The line is added just above the text you highlight.'],
+    [/call ?out|chunking|example/i, 'Highlight the text for the box. Start with a heading to give the box that title. In the Purple box, your text becomes the prompt.'],
+    [/emoji/i, 'The emoji goes at the start of the line you highlight, or replaces an emoji already there. Its label is read aloud, so keep your words beside it.'],
+    [/header|heading/i, 'Highlight a line to restyle it as this heading.']
+  ];
+  function showTip(group) {
+    const tip = $('snipTip');
+    const hit = group && SNIP_TIPS.find(([re]) => re.test(group));
+    tip.hidden = !hit;
+    tip.innerHTML = hit ? hit[1] : '';
+  }
+  // The tip follows the open category, or the chosen design when no category is open.
+  function refreshTip() {
+    const open = $('snipVariants').hidden ? '' : $('snipVariants').dataset.group;
+    showTip(open || (selected >= 0 ? library[selected].group : ''));
+  }
+
+  // Category buttons, like the navigation on the HTML Code page.
+  function renderCategories() {
+    const cats = $('snipCats');
+    cats.innerHTML = '';
+    [...new Set(library.map(x => x.group))].forEach(group => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'snip-cat'; b.textContent = group;
+      b.setAttribute('aria-expanded', 'false');
+      b.setAttribute('aria-controls', 'snipVariants');
+      b.addEventListener('click', () => openCategory(group));
+      cats.appendChild(b);
+    });
+  }
+  // Design cards for one category, each with a small live preview from the HTML Code page.
+  function openCategory(group) {
+    const panel = $('snipVariants');
+    const open = panel.dataset.group === group && !panel.hidden;
+    $('snipCats').querySelectorAll('.snip-cat').forEach(b => b.setAttribute('aria-expanded', String(!open && b.textContent === group)));
+    if (open) { panel.hidden = true; panel.dataset.group = ''; showFilter(false); refreshTip(); return; }
+    panel.dataset.group = group;
+    panel.innerHTML = '';
+    const searchable = library.some(x => x.group === group && x.search);
+    panel.classList.toggle('emoji-set', searchable);
+    showFilter(searchable);
+    $('snipFilter').value = '';
+    $('snipFilterCount').textContent = '';
+    library.forEach((item, i) => {
+      if (item.group !== group) return;
+      const card = document.createElement('button');
+      card.type = 'button'; card.className = 'snip-card';
+      card.setAttribute('role', 'radio');
+      card.setAttribute('aria-checked', String(i === selected));
+      card.dataset.index = String(i);
+      if (item.search) { card.dataset.search = item.search; if (item.use) card.title = item.use; }
+      const name = document.createElement('span'); name.textContent = item.name;
+      const mini = document.createElement('div'); mini.className = 'snip-mini'; mini.setAttribute('aria-hidden', 'true');
+      mini.innerHTML = item.preview;
+      mini.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
+      mini.querySelectorAll('a').forEach(a => a.setAttribute('tabindex', '-1'));
+      card.append(name, mini);
+      card.addEventListener('click', () => chooseSnippet(i, true));
+      panel.appendChild(card);
+    });
+    panel.hidden = false;
+    refreshTip();
+    // Bring the designs into view inside the snippet dock.
+    requestAnimationFrame(() => (searchable ? $('snipFilterWrap') : panel).scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
+  }
+  // The Emoji search box, with the Apply, Undo, Remove all and Make basic text buttons moved right under it,
+  // so they stay in reach above the long list of emoji designs. Otherwise the buttons sit below the designs.
+  function showFilter(on) {
+    $('snipFilterWrap').hidden = !on;
+  }
+  // Narrow the Emoji cards to those whose name, use or category matches every typed word.
+  $('snipFilter').addEventListener('input', () => {
+    const words = clean($('snipFilter').value).toLowerCase().split(' ').filter(Boolean);
+    let shown = 0, total = 0;
+    $('snipVariants').querySelectorAll('.snip-card').forEach(c => {
+      total++;
+      const hit = words.every(w => (c.dataset.search || '').includes(w));
+      c.hidden = !hit;
+      if (hit) shown++;
+    });
+    $('snipFilterCount').textContent = words.length ? (shown ? `Showing ${shown} of ${total} emojis.` : 'No emojis match. Try another word.') : '';
+  });
+  function chooseSnippet(i, remember) {
+    selected = i;
+    // When the bar is pinned over a long page, fold the design cards away once one is picked.
+    if (remember && $('snipbar').classList.contains('stuck') && !$('snipbar').classList.contains('side')) { $('snipVariants').hidden = true; showFilter(false); $('snipVariants').dataset.group = ''; $('snipCats').querySelectorAll('.snip-cat').forEach(b => b.setAttribute('aria-expanded', 'false')); }
+    const item = library[i];
+    $('snipChosen').innerHTML = '';
+    $('snipChosen').append('Design: ', Object.assign(document.createElement('strong'), { textContent: item.name }), ` (${item.group.replace(/^\P{L}+/u, '')})`);
+    $('snipVariants').querySelectorAll('.snip-card').forEach(c => c.setAttribute('aria-checked', String(+c.dataset.index === i)));
+    refreshTip();
+    if (remember) { try { localStorage.setItem('t2tp-snippet', JSON.stringify({ group: item.group, name: item.name })); } catch (e) {} }
+    updateSnipButtons();
+  }
+
+  function updateSnipButtons() {
+    // Show which of the two things a snippet needs are ready, and only enable Apply when both are.
+    const range = currentRange();
+    const blocks = range ? blocksFromRange(range) : [];
+    $('stepHighlight').classList.toggle('done', blocks.length > 0);
+    $('snipHighlighted').textContent = blocks.length ? `Highlighted: ${blocks.length} ${blocks.length === 1 ? 'block' : 'blocks'} of text` : 'Highlight text in the Preview';
+    $('stepDesign').classList.toggle('done', selected >= 0);
+    $('applySnippet').disabled = selected < 0 || !code.value || !blocks.length;
+    $('undoSnippet').disabled = manualHtml !== null ? !history.length : !ops.length;
+    $('clearSnippets').disabled = manualHtml !== null || !ops.length;
+    $('unsnip').disabled = !code.value || !basicTargets();
+  }
+
+  // Remember the highlight in the Preview, since using the dropdown can clear it.
+  function currentRange() {
+    const sel = window.getSelection();
+    const live = sel && sel.rangeCount && !sel.isCollapsed && preview.contains(sel.getRangeAt(0).commonAncestorContainer) ? sel.getRangeAt(0) : null;
+    const r = live || savedRange;
+    return r && preview.contains(r.commonAncestorContainer) ? r : null;
+  }
+  document.addEventListener('selectionchange', () => {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount && !sel.isCollapsed && preview.contains(sel.getRangeAt(0).commonAncestorContainer)) {
+      savedRange = sel.getRangeAt(0).cloneRange();
+    }
+    if (sel && sel.rangeCount && preview.contains(sel.anchorNode)) lastCaret = sel.anchorNode;
+    clearTimeout(updateSnipButtons.t);
+    updateSnipButtons.t = setTimeout(updateSnipButtons, 60);
+  });
+  preview.addEventListener('mousedown', () => { savedRange = null; });
+
+  // Turn a highlight into the run of whole blocks (paragraphs, lists, headings, boxes) it touches.
+  function blocksFromRange(range) {
+    const toEl = n => (n.nodeType === 1 ? n : n.parentElement);
+    let common = toEl(range.commonAncestorContainer);
+    const inner = common.closest(BLOCK);
+    if (inner && preview.contains(inner)) return [inner];
+    let s = toEl(range.startContainer), e = toEl(range.endContainer);
+    while (s.parentElement && s.parentElement !== common) s = s.parentElement;
+    while (e.parentElement && e.parentElement !== common) e = e.parentElement;
+    if (s === common || e === common) return [];
+    const out = [];
+    for (let n = s; n; n = n.nextElementSibling) { out.push(n); if (n === e) break; }
+    // A drag that ends at the very start of the next block shouldn't pull that block in.
+    const touched = n => {
+      if (n.tagName === 'HR') return true;
+      const r = document.createRange();
+      r.selectNodeContents(n);
+      if (range.compareBoundaryPoints(Range.START_TO_START, r) > 0) r.setStart(range.startContainer, range.startOffset);
+      if (range.compareBoundaryPoints(Range.END_TO_END, r) < 0) r.setEnd(range.endContainer, range.endOffset);
+      return clean(r.toString()) !== '';
+    };
+    while (out.length > 1 && !touched(out[out.length - 1])) out.pop();
+    while (out.length > 1 && !touched(out[0])) out.shift();
+    return out;
+  }
+  function keyFor(blocks) {
+    return { tag: blocks[0].tagName, text: clean(blocks[0].textContent), count: blocks.length };
+  }
+  function findBlocks(root, key) {
+    const match = Array.from(root.getElementsByTagName(key.tag)).find(el => clean(el.textContent) === key.text);
+    if (!match) return null;
+    const out = [];
+    for (let n = match; n && out.length < key.count; n = n.nextElementSibling) out.push(n);
+    return out.length === key.count ? out : null;
+  }
+
+  // Split blocks into [{title, body[]}] at each heading.
+  function groupByHeading(blocks) {
+    const groups = [];
+    blocks.forEach(b => {
+      if (isHeading(b)) groups.push({ title: clean(b.textContent), body: [] });
+      else {
+        if (!groups.length) groups.push({ title: '', body: [] });
+        groups[groups.length - 1].body.push(b);
+      }
+    });
+    return groups;
+  }
+  function setText(el, text) {
+    // Put text into the deepest element that holds the snippet's sample wording.
+    let target = el;
+    while (target.children.length === 1 && clean(target.textContent) === clean(target.children[0].textContent)) target = target.children[0];
+    const icon = Array.from(target.children).find(c => c.tagName === 'SPAN' && clean(c.textContent).length <= 2);
+    target.textContent = '';
+    if (icon) { target.appendChild(icon); target.appendChild(document.createTextNode(' ')); }
+    target.appendChild(document.createTextNode(text));
+  }
+  function fill(container, nodes) {
+    while (container.firstChild) container.removeChild(container.firstChild);
+    nodes.forEach(n => { container.appendChild(document.createTextNode('\n')); container.appendChild(n); });
+    container.appendChild(document.createTextNode('\n'));
+  }
+  const bodyOrText = (g, fallback) => (g.body.length ? g.body : [Object.assign(document.createElement('p'), { textContent: g.title || fallback })]);
+
+  // A sample line that opens with a bold label, like "<strong>Note:</strong> Sample content here.", keeps that
+  // label in front of the highlighted text. With copyStyle, the text also takes on the sample line's style.
+  function withInlineLabel(tpl, content, copyStyle) {
+    const isP = tpl && tpl.tagName === 'P';
+    const lab = isP && !isHeading(tpl) && tpl.firstElementChild;
+    const opens = lab && /^(STRONG|B)$/.test(lab.tagName) && /:\s*$/.test(lab.textContent) &&
+      clean(tpl.textContent).startsWith(clean(lab.textContent));
+    const style = isP && copyStyle ? tpl.getAttribute('style') : null;
+    const out = content.map(b => b.cloneNode(true));
+    const paras = out.filter(b => b.tagName === 'P' && !isHeading(b));
+    // Paragraphs after the first keep a gap even when the sample line has no bottom margin.
+    if (style) paras.forEach((p, i) => { if (!p.hasAttribute('style')) p.setAttribute('style', i < paras.length - 1 ? (style.replace(/margin:[^;]*;?\s*/, '') + ' margin: 0 0 12px;').trim() : style); });
+    if (!opens) return out;
+    const label = clean(lab.textContent);
+    const first = out[0];
+    if (first && clean(first.textContent).toLowerCase().startsWith(label.toLowerCase())) return out;
+    if (first && first.tagName === 'P' && !isHeading(first)) {
+      first.insertBefore(document.createTextNode(/\s$/.test(lab.textContent) ? '' : ' '), first.firstChild);
+      first.insertBefore(lab.cloneNode(true), first.firstChild);
+      return out;
+    }
+    const p = tpl.cloneNode(false);
+    p.appendChild(lab.cloneNode(true));
+    return [p, ...out];
+  }
+
+  // Build the snippet around the selected blocks. Returns the nodes to insert and whether to keep the originals.
+  function buildSnippet(html, blocks) {
+    const frag = parse(html);
+    const roots = elementsOf(frag);
+    const root = roots[0];
+    if (!root) return null;
+
+    if (root.tagName === 'HR') return { nodes: [root], keep: true };
+
+    // Emoji: a single labelled emoji goes in front of the first highlighted line's words. An emoji already
+    // at the start or end of that line (like the ones template headings carry) is swapped for the new one.
+    if (roots.length === 1 && root.tagName === 'SPAN' && hasEmoji(root.textContent) && clean(root.textContent).length <= 16) {
+      const first = blocks.find(b => clean(b.textContent)) || blocks[0];
+      let target = first.matches('ul, ol') ? (first.querySelector('li') || first) : first;
+      if (target.matches('table')) target = target.querySelector('caption, th, td') || target;
+      if (target.matches('details')) target = target.querySelector('summary') || target;
+      // Step into a wrapper (bold, a link) that holds all of the line's words.
+      while (target.children.length === 1 && clean(target.textContent) === clean(target.children[0].textContent) && !/^(A|SPAN)$/.test(target.children[0].tagName)) target = target.children[0];
+      const emojiOnly = n => n && n.nodeType === 1 && n.tagName === 'SPAN' && hasEmoji(n.textContent) && clean(n.textContent).length <= 16;
+      const textOf = n => n && (n.nodeType === 3 ? clean(n.nodeValue) : 'x');
+      const kids = Array.from(target.childNodes);
+      const lead = kids.find(textOf), tail = kids.slice().reverse().find(textOf);
+      const span = root.cloneNode(true);
+      if (emojiOnly(lead)) target.replaceChild(span, lead);
+      else if (emojiOnly(tail)) target.replaceChild(span, tail);
+      else {
+        // A plain emoji typed at the start of the text is replaced too.
+        const t = lead && lead.nodeType === 3 ? lead : null;
+        if (t) t.nodeValue = t.nodeValue.replace(/^\s*(?:\p{Extended_Pictographic}|\uFE0F|\u200D)+\s*/u, '');
+        target.insertBefore(document.createTextNode(' '), target.firstChild);
+        target.insertBefore(span, target.firstChild);
+      }
+      return { nodes: blocks };
+    }
+
+    // Headings: restyle every heading in the selection, or turn the first paragraph into this heading.
+    if (/^H[1-6]$/.test(root.tagName) && roots.length === 1) {
+      const heads = blocks.filter(isHeading);
+      const targets = heads.length ? heads : [blocks[0]];
+      // A numbered sample label, like "<strong>Step 1: </strong>" in the H4 Bold with Black Font design, numbers
+      // each highlighted heading (Step 1, Step 2, ...) and keeps its words after the label. A heading that
+      // already starts with the label word keeps its own wording.
+      const lab = root.querySelector('strong, b') || root;
+      const m = clean(root.textContent) === clean(lab.textContent) && clean(lab.textContent).match(/^(.*\S)\s+(\d+)\s*:$/);
+      let n = m ? +m[2] : 0;
+      const nodes = blocks.map(bk => {
+        if (!targets.includes(bk)) return bk;
+        const h = root.cloneNode(true);
+        const text = clean(bk.textContent);
+        if (m && !text.toLowerCase().startsWith(m[1].toLowerCase())) {
+          const l = h.querySelector('strong, b') || h;
+          l.textContent = `${m[1]} ${n++}: `;
+          if (l !== h) h.appendChild(document.createTextNode(text)); else l.textContent += text;
+        } else setText(h, text);
+        return h;
+      });
+      return { nodes };
+    }
+
+    // Button: every link in the selection becomes a button that goes to that link's address.
+    if (root.tagName === 'P' && root.querySelector('a')) {
+      const URL_RE = /(https?:\/\/[^\s<>"]+[^\s<>".,;:!?)\]'])/;
+      const makeButton = (href, label) => {
+        const p = root.cloneNode(true);
+        const a = p.querySelector('a');
+        a.setAttribute('href', href);
+        a.textContent = ' ' + label + ' ';
+        if (a.hasAttribute('title')) a.setAttribute('title', label);
+        return p;
+      };
+      // The words around a link, used as the label when the link shows its bare address.
+      const labelFor = (el, link) => {
+        const own = clean(link.textContent);
+        if (own && !/^https?:\/\//i.test(own)) return own.replace(/\s*\(opens in a new tab\)$/i, '');
+        const around = clean(el.textContent.replace(link.textContent, '')).replace(/[:\-–—\s]+$/, '').replace(/^[:\-–—\s]+/, '');
+        return around || own;
+      };
+      // Buttons for one block (a paragraph, heading or list item), or null when it has no link.
+      const buttonsFor = el => {
+        const links = Array.from(el.querySelectorAll('a[href]')).filter(l => !/^#/.test(l.getAttribute('href')));
+        if (links.length) return links.map(l => makeButton(l.getAttribute('href'), labelFor(el, l)));
+        const m = el.textContent.match(URL_RE);
+        if (!m) return null;
+        const label = clean(el.textContent.replace(m[1], '')).replace(/[:\-–—\s]+$/, '').replace(/^[:\-–—\s]+/, '');
+        return [makeButton(m[1], label || m[1])];
+      };
+      const nodes = [];
+      let made = 0;
+      blocks.forEach(bk => {
+        if (/^(UL|OL)$/.test(bk.tagName)) {
+          // Linked items become buttons; the other items stay in a list, in order.
+          let rest = null;
+          Array.from(bk.children).forEach(li => {
+            const btns = buttonsFor(li);
+            if (btns) { rest = null; made += btns.length; nodes.push(...btns); return; }
+            if (!rest) { rest = bk.cloneNode(false); nodes.push(rest); }
+            rest.appendChild(document.createTextNode('\n    '));
+            rest.appendChild(li);
+          });
+          nodes.forEach(n => { if (/^(UL|OL)$/.test(n.tagName) && !/\n$/.test(n.lastChild && n.lastChild.nodeValue || '')) n.appendChild(document.createTextNode('\n')); });
+          return;
+        }
+        const btns = /^(P|H[1-6]|LI)$/.test(bk.tagName) ? buttonsFor(bk) : null;
+        if (btns) { made += btns.length; nodes.push(...btns); } else nodes.push(bk);
+      });
+      if (made) return { nodes };
+      // No link anywhere: the first block becomes a button that still needs its address.
+      const label = clean(blocks[0].textContent);
+      return { nodes: [makeButton(root.querySelector('a').getAttribute('href'), label), ...blocks.slice(1)], note: 'No link was in the highlighted text, so the button still goes to ' + root.querySelector('a').getAttribute('href') + '. Add the address in the HTML tab, or highlight text that has a link.' };
+    }
+
+    // Tables: each highlighted line (or list item, or existing table row) becomes a row in the snippet's table design.
+    if (root.tagName === 'TABLE') {
+      const thTpl = root.querySelector('th'), tdTpl = root.querySelector('td');
+      let caption = '';
+      let labelRowsFirst = false; // "Label: value" lines have no header row of their own
+      const rows = []; // each row: array of cell HTML strings
+      const split = text => {
+        if (text.includes('\t')) return text.split('\t').map(c => esc(c.trim()));
+        if (/\s\|\s/.test(text) || /^\|.*\|$/.test(text)) return text.replace(/^\||\|$/g, '').split('|').map(c => esc(c.trim()));
+        return null;
+      };
+      blocks.forEach((bk, i) => {
+        if (bk.tagName === 'TABLE') {
+          const cap = bk.querySelector('caption');
+          if (cap && !caption) caption = cap.innerHTML.trim();
+          bk.querySelectorAll('tr').forEach(tr => rows.push(Array.from(tr.children).filter(c => /^T[HD]$/.test(c.tagName)).map(c => c.innerHTML.trim())));
+          return;
+        }
+        if (/^(UL|OL)$/.test(bk.tagName)) {
+          Array.from(bk.children).forEach(li => { const t = li.textContent; rows.push(split(t) || [li.innerHTML.trim()]); });
+          return;
+        }
+        if (i === 0 && isHeading(bk) && blocks.length > 1) { caption = esc(clean(bk.textContent)); return; }
+        const explicit = split(bk.textContent);
+        if (!explicit && rows.length === 0) labelRowsFirst = true;
+        rows.push(explicit || splitLabel(bk) || [bk.innerHTML.trim()]);
+      });
+      if (!rows.length) return null;
+      const cols = Math.max(...rows.map(r => r.length));
+      // One-column rows ending in "Label: value" become two columns.
+      function splitLabel(bk) {
+        const m = clean(bk.textContent).match(/^([^:]{1,40}):\s+(.+)$/);
+        return m ? [esc(m[1]), esc(m[2])] : null;
+      }
+      const cell = (tpl, tag, htmlText) => {
+        const c = tpl ? tpl.cloneNode(false) : document.createElement(tag);
+        c.innerHTML = htmlText;
+        return c;
+      };
+      const table = root.cloneNode(false);
+      const nl = d => document.createTextNode('\n' + '    '.repeat(d));
+      if (caption) { const cap = root.querySelector('caption') ? root.querySelector('caption').cloneNode(false) : document.createElement('caption'); cap.innerHTML = caption; table.append(nl(1), cap); }
+      const makeSection = (tag, list, cellTag, tpl) => {
+        const sec = document.createElement(tag);
+        list.forEach(r => {
+          const tr = document.createElement('tr');
+          r.concat(Array(cols - r.length).fill('')).forEach(h => tr.append(nl(3), cell(tpl, cellTag, h)));
+          tr.append(nl(2));
+          sec.append(nl(2), tr);
+        });
+        sec.append(nl(1));
+        return sec;
+      };
+      const hasHead = !!root.querySelector('thead') && rows.length > 1 && !labelRowsFirst;
+      if (hasHead) table.append(nl(1), makeSection('thead', rows.slice(0, 1), 'th', thTpl));
+      table.append(nl(1), makeSection('tbody', hasHead ? rows.slice(1) : rows, 'td', tdTpl), nl(0));
+      return { nodes: [table], note: cols < 2 ? 'Tip: separate columns with a tab or " | " in your text to get more than one column.' : '' };
+    }
+
+    // Clickable Steps: one tab per heading in the selection.
+    if (root.classList.contains('tabs')) {
+      const groups = groupByHeading(blocks);
+      if (groups.length === 1 && !groups[0].title) groups.splice(0, 1, ...blocks.map((b, i) => ({ title: 'Step ' + (i + 1), body: [b] })));
+      const tabList = root.querySelector('ul');
+      const linkTpl = Array.from(tabList.querySelectorAll('li'));
+      const panelTpl = Array.from(root.children).filter(c => c.tagName === 'DIV');
+      const uid = 'tab-' + Math.random().toString(36).slice(2, 6) + '-';
+      const lis = [], panels = [];
+      groups.forEach((g, i) => {
+        const li = linkTpl[i % linkTpl.length].cloneNode(true);
+        const a = li.querySelector('a');
+        a.setAttribute('href', '#' + uid + (i + 1));
+        a.textContent = ` ${i + 1}. ${g.title || 'Step ' + (i + 1)} `;
+        lis.push(li);
+        const panel = (panelTpl[i % panelTpl.length] || document.createElement('div')).cloneNode(false);
+        panel.id = uid + (i + 1);
+        const h = document.createElement('h3'); h.textContent = g.title || 'Step ' + (i + 1);
+        fill(panel, [h, ...g.body]);
+        panels.push(panel);
+      });
+      fill(tabList, lis);
+      fill(root, [tabList, ...panels]);
+      return { nodes: [root] };
+    }
+
+    // Lines of the selection as text: list items one by one, other blocks whole. Headings are skipped.
+    const textLines = list => list.flatMap(b => /^(UL|OL)$/.test(b.tagName)
+      ? Array.from(b.children).filter(li => li.tagName === 'LI').map(li => clean(li.textContent))
+      : isHeading(b) ? [] : [clean(b.textContent)]).filter(Boolean);
+    const summaries = Array.from(root.querySelectorAll('summary')).map(s => clean(s.textContent));
+    const deckTitle = root.querySelector('h2, h3');
+    const plain = el => clean(el.textContent.replace(/\p{Extended_Pictographic}|\uFE0F/gu, '')); // heading text without the template's emoji
+
+    // True / False Challenge: one statement per line, each ending in (True) or (False).
+    if (summaries.includes('True') && summaries.includes('False')) {
+      const cardsTpl = Array.from(root.children).filter(c => c.tagName === 'DIV' && c.querySelector('details'));
+      const firstCard = cardsTpl[0];
+      if (firstCard) {
+        const head = blocks[0] && isHeading(blocks[0]) && blocks.length > 1 ? plain(blocks[0]) : '';
+        const statements = textLines(head ? blocks.slice(1) : blocks);
+        if (statements.length) {
+          const feedback = Array.from(root.querySelectorAll('details > div'));
+          const rightFb = feedback.find(d => /correct!/i.test(d.textContent));
+          const wrongFb = feedback.find(d => /not quite/i.test(d.textContent));
+          const [trueTpl, falseTpl] = Array.from(firstCard.querySelectorAll('details'));
+          let unmarked = 0;
+          const cards = statements.map((line, i) => {
+            const m = line.match(/^(.*?)\s*[([]\s*(true|false|t|f)\s*[)\]]\s*[.:\-–—]?\s*(.*)$/i) ||
+              line.match(/^(.*?\S)\s*[:\-–—]\s*(true|false)\s*$/i);
+            const isTrue = m ? /^t/i.test(m[2]) : (unmarked++, true);
+            const statement = m ? m[1] : line;
+            const why = m && m[3] ? esc(m[3]) : '';
+            const card = (i === statements.length - 1 ? cardsTpl[cardsTpl.length - 1] : firstCard).cloneNode(false);
+            const h = firstCard.querySelector('h3, h4').cloneNode(false);
+            h.textContent = 'Statement ' + (i + 1);
+            const p = document.createElement('p');
+            p.appendChild(document.createElement('strong')).textContent = statement;
+            const choice = (tpl, right) => {
+              const d = tpl.cloneNode(true);
+              const fb = (right ? rightFb : wrongFb).cloneNode(false);
+              fb.innerHTML = right ? `<strong>Correct!</strong> ${why || '[Explain why.]'}` : `<strong>Not quite.</strong> ${why || '[Explain why.]'}`;
+              d.querySelector('div').replaceWith(fb);
+              return d;
+            };
+            fill(card, [h, p, choice(trueTpl, isTrue), choice(falseTpl, !isTrue)]);
+            return card;
+          });
+          if (deckTitle) setText(deckTitle, head ? 'True / False Challenge: ' + head : 'True / False Challenge');
+          const parent = firstCard.parentNode;
+          cards.forEach(c => { parent.insertBefore(c, firstCard); parent.insertBefore(document.createTextNode('\n'), firstCard); });
+          cardsTpl.forEach(c => c.remove());
+          return { nodes: [root], note: unmarked ? `${unmarked} statement(s) had no answer, so they were set to True. End each statement with (True) or (False).` : '' };
+        }
+      }
+    }
+
+    // Flashcards: "Term: definition" lines (or a heading per card with its answer below) become cards.
+    if (summaries.some(s => /^Card\s+\d+\b/i.test(s))) {
+      const tpls = Array.from(root.querySelectorAll('details'));
+      // Classic cards read "Card 1: Question"; designs like Field Notes put "Card 1" and the question in separate parts.
+      const rich = !!tpls[0].querySelector('summary strong');
+      const heads = blocks.filter(isHeading);
+      const pair = line => {
+        const m = line.match(/^(.{1,160}?)\s*(?:\t|\s\|\s|:\s|\s[-–—]\s)\s*(.+)$/) || line.match(/^(.{1,160}?\?)\s+(.+)$/);
+        return m ? [m[1].replace(/\s*\|\s*$/, ''), m[2]] : [line, ''];
+      };
+      let title = '', cards = []; // cards: {term, body: nodes | null, def}
+      const allLines = blocks.flatMap(b => isHeading(b) ? [plain(b)] : textLines([b]));
+      if (allLines.length >= 2 && allLines.length % 2 === 0 && allLines.every(l => !pair(l)[1])) {
+        // No "Term: definition" lines: read them as question, answer, question, answer.
+        for (let k = 0; k < allLines.length; k += 2) cards.push({ term: allLines[k], def: allLines[k + 1] });
+      } else if (heads.length >= 2 || (heads.length === 1 && heads[0] !== blocks[0])) {
+        groupByHeading(blocks).forEach(g => {
+          if (g.title) cards.push({ term: clean(g.title.replace(/\p{Extended_Pictographic}|\uFE0F/gu, '')), body: g.body });
+          else textLines(g.body).forEach(l => { const [term, def] = pair(l); cards.push({ term, def }); });
+        });
+      } else {
+        if (heads.length === 1 && blocks.length > 1) {
+          const rest = textLines(blocks.slice(1));
+          // One heading over one plain line is a single card; over "Term: definition" lines it's the deck title.
+          if (rest.length === 1 && !pair(rest[0])[1]) cards.push({ term: plain(blocks[0]), body: blocks.slice(1) });
+          else { title = plain(blocks[0]); rest.forEach(l => { const [term, def] = pair(l); cards.push({ term, def }); }); }
+        } else textLines(blocks).forEach(l => { const [term, def] = pair(l); cards.push({ term, def }); });
+      }
+      if (cards.length) {
+        let missing = 0;
+        const made = cards.map((c, i) => {
+          // Classic: the last card has no bottom margin. Rich designs: the first card has no top margin.
+          const tpl = rich ? tpls[Math.min(i, 1, tpls.length - 1)] : (i === cards.length - 1 ? tpls[tpls.length - 1] : tpls[0]);
+          const d = tpl.cloneNode(true);
+          const summary = d.querySelector('summary');
+          if (rich) {
+            const tag = summary.querySelector('span'), q = summary.querySelector('strong');
+            if (tag) tag.textContent = `Card ${i + 1}`;
+            q.textContent = c.term;
+          } else summary.textContent = `Card ${i + 1}: ${c.term}`;
+          const body = d.querySelector('div');
+          // Keep a short "Answer" label line if the design has one; the answer goes after it in the design's style.
+          const ps = Array.from(body.children).filter(n => n.tagName === 'P');
+          const label = ps.length > 1 && isHeading(ps[0]) && clean(ps[0].textContent).length < 20 ? ps[0] : null;
+          const ansTpl = label ? ps[1] : null;
+          let answer;
+          if (c.body && c.body.length) answer = c.body;
+          else {
+            if (!c.def) missing++;
+            const p = ansTpl ? ansTpl.cloneNode(false) : document.createElement('p');
+            p.textContent = c.def || '[Add the answer.]';
+            answer = [p];
+          }
+          fill(body, label ? [label, ...answer] : answer);
+          return d;
+        });
+        if (deckTitle) setText(deckTitle, rich ? (title || 'Flashcards') : title ? (/flashcard/i.test(title) ? title : 'Flashcards: ' + title) : 'Flashcards');
+        const parent = tpls[0].parentNode;
+        made.forEach(d => { parent.insertBefore(d, tpls[0]); parent.insertBefore(document.createTextNode('\n'), tpls[0]); });
+        tpls.forEach(d => d.remove());
+        return { nodes: [root], note: missing ? `${missing} card(s) need an answer. Write each card as Term: definition.` : '' };
+      }
+    }
+
+    // Quick Check: first block is the question; list items become the answer choices.
+    const firstDetails = root.querySelector('details');
+    if (firstDetails && root.tagName !== 'DETAILS' && /Correct!|Not quite/.test(root.textContent)) {
+      const list = blocks.find(b => /^(UL|OL)$/.test(b.tagName));
+      // Answer choices come from a list, or from the lines after the question when there is no list.
+      const choices = list ? Array.from(list.children).filter(li => li.tagName === 'LI') : blocks.slice(1);
+      if (choices.length) {
+        const tplRight = Array.from(root.querySelectorAll('details')).find(d => /correct/i.test(d.textContent)) || firstDetails;
+        const tplWrong = Array.from(root.querySelectorAll('details')).find(d => /not quite/i.test(d.textContent)) || firstDetails;
+        const question = root.querySelector('details').previousElementSibling;
+        const qText = list ? clean(blocks.filter(b => b !== list).map(b => b.textContent).join(' ')) : clean(blocks[0].textContent);
+        if (question && qText) { setText(question, qText); }
+        const allDetails = Array.from(root.querySelectorAll('details'));
+        const anchor = allDetails[0];
+        // The right answer is the one ending in * in your text. Without one, follow the chosen design
+        // ("Answer B Correct" marks the second answer), so one answer always gets the green feedback.
+        const marked = choices.some(li => /\*$|\(correct\)$/i.test(clean(li.textContent)));
+        const tplIndex = Math.max(0, allDetails.findIndex(d => /correct!/i.test(d.textContent)));
+        const fallback = Math.min(tplIndex, choices.length - 1);
+        choices.forEach((li, i) => {
+          let t = clean(li.textContent);
+          const right = marked ? /\*$|\(correct\)$/i.test(t) : i === fallback;
+          t = t.replace(/\s*(\*|\(correct\))$/i, '');
+          const d = (right ? tplRight : tplWrong).cloneNode(true);
+          d.querySelector('summary').textContent = `${String.fromCharCode(65 + i)}. ${t}`;
+          const fb = d.querySelector('div');
+          if (fb) fb.innerHTML = right ? '<strong>Correct!</strong> [Explain why this answer is right.]' : '<strong>Not quite.</strong> [Explain why this answer is not the best choice.]';
+          d.setAttribute('style', i < choices.length - 1 ? 'margin-bottom: 12px;' : '');
+          if (!d.getAttribute('style')) d.removeAttribute('style');
+          anchor.parentNode.insertBefore(d, anchor);
+          anchor.parentNode.insertBefore(document.createTextNode('\n'), anchor);
+        });
+        allDetails.forEach(d => d.remove());
+        return { nodes: [root], note: marked ? '' : `Answer ${String.fromCharCode(65 + fallback)} is marked correct, as in this design. To pick another, end the right answer with * in your text.` };
+      }
+    }
+
+    // Dropdowns and accordions: one per heading in the selection.
+    if (root.tagName === 'DETAILS' || (root.querySelector('details') && !root.querySelector('details details'))) {
+      const tpl = root.tagName === 'DETAILS' ? root : root.querySelector('details');
+      const groups = groupByHeading(blocks);
+      const made = groups.map(g => {
+        const d = tpl.cloneNode(true);
+        const summary = d.querySelector('summary');
+        if (g.title) setText(summary, g.title);
+        const body = Array.from(d.children).find(c => c !== summary) || d;
+        if (body === d) { g.body.forEach(n => d.appendChild(n)); } else fill(body, bodyOrText(g, ''));
+        return d;
+      });
+      if (root.tagName === 'DETAILS') return { nodes: made };
+      const all = Array.from(root.querySelectorAll('details'));
+      const parent = all[0].parentNode;
+      made.forEach(d => { parent.insertBefore(d, all[0]); parent.insertBefore(document.createTextNode('\n'), all[0]); });
+      all.forEach(d => d.remove());
+      return { nodes: [root] };
+    }
+
+    // Call-out boxes and other containers: keep the box's badge, heading, and label lines; put the selection inside.
+    let content = blocks;
+    const boxHeading = Array.from(root.children).find(c => /^H[1-6]$/.test(c.tagName));
+    if (boxHeading && isHeading(blocks[0]) && blocks.length > 1) {
+      setText(boxHeading, clean(blocks[0].textContent));
+      content = blocks.slice(1);
+    }
+    const kids = Array.from(root.children);
+    const keep = [];
+    for (const c of kids) {
+      const t = clean(c.textContent);
+      const isLabel = /^H[1-6]$/.test(c.tagName) ||
+        (c.tagName === 'P' && c.querySelector('span') && t.length < 40 && !c.querySelector('br')) ||
+        (c.tagName === 'P' && isHeading(c) && /:$/.test(t)) ||
+        (c.tagName === 'P' && isHeading(c) && keep.length === 0 && t.length < 60);
+      if (isLabel && keep.length === kids.indexOf(c)) keep.push(c); else break;
+    }
+    // A long sample heading (like "Answer: What is a Large Language Model?") is example wording, not a
+    // box label, so leave it out when the highlight didn't bring its own heading.
+    const usedOwnHeading = content !== blocks;
+    const labels = keep.filter(c => usedOwnHeading || !/^H[1-6]$/.test(c.tagName) || clean(c.textContent).split(' ').length <= 4);
+    labels.forEach(c => { if (c.lastChild && c.lastChild.nodeType === 3) c.lastChild.nodeValue = c.lastChild.nodeValue.replace(/[\s ]+$/, ''); });
+    // A box inside the box (the white prompt area of the Purple AI Prompt design) gets the highlighted text;
+    // the outer box keeps its heading and the directions above the inner box.
+    const inner = kids.find(c => c.tagName === 'DIV' && c.hasAttribute('style'));
+    const directions = inner ? kids.slice(keep.length, kids.indexOf(inner)) : [];
+    // Only for a short design: one line of directions, no [placeholders] left to fill (unlike the AI Policy boxes).
+    if (inner && !inner.querySelector('div, details') && directions.length <= 1 && directions.every(c => c.tagName === 'P' && !/\[/.test(c.textContent))) {
+      fill(inner, withInlineLabel(Array.from(inner.children).find(c => c.tagName === 'P'), content, true));
+      Array.from(inner.childNodes).forEach(n => { if (n.nodeType === 3) n.nodeValue = '\n        '; });
+      if (inner.lastChild && inner.lastChild.nodeType === 3) inner.lastChild.nodeValue = '\n    ';
+      fill(root, [...labels, ...directions, inner]);
+    } else fill(root, [...labels, ...withInlineLabel(kids[keep.length], content)]);
+    // Re-indent lightly so the HTML stays readable.
+    Array.from(root.childNodes).forEach(n => { if (n.nodeType === 3) n.nodeValue = '\n    '; });
+    if (root.lastChild && root.lastChild.nodeType === 3) root.lastChild.nodeValue = '\n';
+    return { nodes: [root] };
+  }
+
+  /* ---------- Make basic text: strip snippets and template styling from the highlighted area ---------- */
+  // The template's own overview card; a bare cursor inside it means the line, not the whole card.
+  const isTemplateCard = n => n.parentElement === preview && /border-width: 1px 1px 1px 6px/.test(n.getAttribute('style') || '');
+  // A quiz, dropdown set, step tabs, or applied snippet is changed as a whole, never half.
+  function widgetOf(n) {
+    const marked = n.closest('[data-t2t-snip]');
+    if (marked && preview.contains(marked)) return marked;
+    const tabs = n.closest('.tabs');
+    if (tabs && preview.contains(tabs)) return tabs;
+    const d = n.closest('details');
+    if (!d || !preview.contains(d)) return null;
+    let w = d;
+    for (let p = d.parentElement; p && p !== preview; p = p.parentElement) if (p.matches('details') || (p.matches('div[style]') && !isTemplateCard(p))) w = p;
+    return w;
+  }
+  // What Make basic text would change: { op } to drop a snippet built from Your text, or { els } to flatten.
+  function basicTargets() {
+    const sel = window.getSelection();
+    const live = sel && sel.rangeCount && !sel.isCollapsed && preview.contains(sel.getRangeAt(0).commonAncestorContainer) ? sel.getRangeAt(0) : null;
+    const range = live || (savedRange && preview.contains(savedRange.commonAncestorContainer) ? savedRange : null);
+    let els;
+    if (range) {
+      els = blocksFromRange(range).filter(b => preview.contains(b) && b !== preview);
+      // A highlight inside one styled box (a call-out, for example) means the whole box.
+      const boxOf = n => { for (let p = n.parentElement; p && p !== preview; p = p.parentElement) if (p.matches('div[style], blockquote') && !isTemplateCard(p)) return p; return null; };
+      const boxes = [...new Set(els.map(boxOf))];
+      if (els.length && boxes.length === 1 && boxes[0]) els = [boxes[0]];
+    } else {
+      const node = sel && sel.rangeCount && preview.contains(sel.anchorNode) ? sel.anchorNode : lastCaret;
+      if (!node || !preview.contains(node) || node === preview) return null;
+      const el = node.nodeType === 1 ? node : node.parentElement;
+      // A bare cursor means the snippet or styled box it sits in, else its line.
+      let box = null;
+      for (let n = el; n && n !== preview; n = n.parentElement) if (n.matches('div[style], blockquote') && !isTemplateCard(n)) { box = n; break; }
+      els = [widgetOf(el) || box || el.closest(BLOCK) || el].filter(n => n && n !== preview);
+    }
+    if (!els.length) return null;
+    // Whole widgets instead of their parts, then whole boxes when every part of a box is included.
+    els = [...new Set(els.map(e => widgetOf(e) || e))];
+    let grew = true;
+    while (grew) {
+      grew = false;
+      const parents = [...new Set(els.map(e => e.parentElement))];
+      for (const p of parents) {
+        if (!p || p === preview || !preview.contains(p)) continue;
+        const kids = Array.from(p.children);
+        if (kids.every(k => els.includes(k) || !clean(k.textContent))) { els = els.filter(e => e.parentElement !== p); els.push(p); grew = true; }
+      }
+    }
+    // Keep page order and drop anything already inside another target.
+    els = els.filter(e => !els.some(o => o !== e && o.contains(e)));
+    els.sort((x, y) => (x.compareDocumentPosition(y) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
+    if (manualHtml === null && els.length === 1 && els[0].hasAttribute('data-t2t-snip')) {
+      const at = ops.findIndex(o => o.id === els[0].getAttribute('data-t2t-snip'));
+      if (at >= 0) return { op: at };
+    }
+    return { els };
+  }
+  // Plain blocks from a snippet: headings and paragraphs as <p>, lists as plain lists, table rows as "a | b" lines.
+  function basicBlocks(el) {
+    const out = [];
+    const strip = n => { n.querySelectorAll('[style],[class],[id],[title]').forEach(x => { x.removeAttribute('style'); x.removeAttribute('class'); x.removeAttribute('id'); x.removeAttribute('title'); }); return n; };
+    const para = html => { const p = document.createElement('p'); p.innerHTML = html; strip(p); return p; };
+    const walk = n => {
+      if (n.nodeType !== 1) { if (n.nodeType === 3 && clean(n.nodeValue)) out.push(para(esc(clean(n.nodeValue)))); return; }
+      const tag = n.tagName;
+      if (tag === 'HR' || tag === 'IFRAME' || tag === 'SCRIPT') return;
+      if (tag === 'UL' || tag === 'OL') {
+        // The tab list of Clickable Steps only repeats the step names.
+        if (n.parentElement && n.parentElement.classList.contains('tabs')) return;
+        const l = document.createElement(tag);
+        Array.from(n.children).forEach(li => { if (li.tagName === 'LI' && clean(li.textContent)) { const c = strip(li.cloneNode(true)); c.removeAttribute('style'); l.appendChild(document.createTextNode('\n    ')); l.appendChild(c); } });
+        l.appendChild(document.createTextNode('\n'));
+        if (l.children.length) out.push(l);
+        return;
+      }
+      if (tag === 'TABLE') {
+        const cap = n.querySelector('caption');
+        if (cap && clean(cap.textContent)) out.push(para(cap.innerHTML.trim()));
+        n.querySelectorAll('tr').forEach(tr => { const cells = Array.from(tr.children).filter(c => /^T[HD]$/.test(c.tagName)).map(c => c.innerHTML.trim()); if (cells.some(c => clean(c))) out.push(para(cells.join(' | '))); });
+        return;
+      }
+      if (tag === 'P' && n.querySelector('a.btn')) { const a = n.querySelector('a'); out.push(para(`<a href="${esc(a.getAttribute('href') || '')}" target="_blank" rel="noopener">${esc(clean(a.textContent))}</a>`)); return; }
+      const hasBlocks = Array.from(n.children).some(c => /^(P|DIV|UL|OL|H[1-6]|TABLE|DETAILS|SUMMARY|SECTION|BLOCKQUOTE)$/.test(c.tagName));
+      if (hasBlocks || tag === 'DETAILS') { Array.from(n.childNodes).forEach(walk); return; }
+      // Headings and dropdown titles lose their bold too, so they read as ordinary lines.
+      if (/^(H[1-6]|SUMMARY)$/.test(tag)) { const t = clean(n.textContent.replace(/\p{Extended_Pictographic}|\uFE0F/gu, '')); if (t) out.push(para(esc(t))); return; }
+      if (clean(n.textContent)) out.push(para(n.innerHTML.replace(/<span[^>]*aria-hidden="true"[^>]*>[\s\S]*?<\/span>/g, '').trim()));
+    };
+    walk(el);
+    return out;
+  }
+  $('unsnip').addEventListener('click', () => {
+    const t = basicTargets();
+    if (!t) { say('Click or highlight text in the Preview first.'); return; }
+    savedRange = null; lastCaret = null;
+    if (t.op !== undefined) {
+      // A snippet built from Your text: dropping it rebuilds that part exactly as it was before.
+      const at = t.op;
+      const [op] = ops.splice(at, 1);
+      run();
+      say(`Removed “${op.name}”. That text is back to plain formatting.`, { label: 'Undo', run: () => { ops.splice(at, 0, op); run(); say(`Put “${op.name}” back.`); } });
+      return;
+    }
+    // Anything else (template headings, boxes, call-outs, edited snippets): its words become plain paragraphs and lists.
+    history.push(manualHtml !== null ? manualHtml : code.value);
+    t.els.forEach(el => {
+      const parent = el.parentNode;
+      basicBlocks(el).forEach(b => { parent.insertBefore(b, el); parent.insertBefore(document.createTextNode('\n'), el); });
+      parent.removeChild(el);
+    });
+    const sel = window.getSelection(); if (sel) sel.removeAllRanges();
+    setManual(serialize(preview));
+    say('Turned the highlighted area into plain text. Undo brings the formatting back.');
+  });
+
+  function applyOp(root, op) {
+    const blocks = findBlocks(root, op.key);
+    if (!blocks) return false;
+    const before = blocks[0];
+    const parent = before.parentNode;
+    const marker = document.createComment('t2t');
+    parent.insertBefore(marker, before);
+    const built = buildSnippet(op.html, blocks.slice());
+    if (!built) { parent.removeChild(marker); return false; }
+    if (!built.keep) blocks.forEach(b => { if (b.parentNode === parent) parent.removeChild(b); });
+    if (!op.id) op.id = Math.random().toString(36).slice(2, 8);
+    built.nodes.forEach(n => { if (n.nodeType === 1) n.setAttribute('data-t2t-snip', op.id); parent.insertBefore(n, marker); parent.insertBefore(document.createTextNode('\n'), marker); });
+    parent.removeChild(marker);
+    op.note = built.note || '';
+    return true;
+  }
+
+  $('applySnippet').addEventListener('click', () => {
+    const sel = window.getSelection();
+    let range = sel && sel.rangeCount && !sel.isCollapsed && preview.contains(sel.getRangeAt(0).commonAncestorContainer) ? sel.getRangeAt(0) : savedRange;
+    if (!range) { say('Highlight some text in the Preview first.'); return; }
+    const blocks = blocksFromRange(range);
+    if (!blocks.length) { say('Highlight text inside the page preview.'); return; }
+    if (blocks[0].tagName === 'H2' && blocks[0] === preview.firstElementChild && blocks.length > 1) {
+      say('The page title banner was left out of the selection.');
+      blocks.shift();
+    }
+    const snip = library[selected];
+    const op = { key: keyFor(blocks), html: snip.html, name: snip.name };
+    if (manualHtml !== null) {
+      history.push(manualHtml);
+      if (!applyOp(preview, op)) { history.pop(); say('That text could not be matched. Try highlighting it again.'); return; }
+      setManual(serialize(preview));
+    } else {
+      ops.push(op);
+      run();
+      if (!ops.includes(op)) return;
+    }
+    savedRange = null;
+    if (sel) sel.removeAllRanges();
+    say(`Applied “${snip.name}”. ${op.note || 'Undo removes it.'}`);
+  });
+  $('undoSnippet').addEventListener('click', () => {
+    if (manualHtml !== null) {
+      const prev = history.pop();
+      if (prev === undefined) return;
+      if (!history.length) { leaveManual(); run(); say('Undid your Preview edits.'); return; }
+      preview.innerHTML = prev;
+      setManual(prev);
+      say('Undid the last change.');
+      return;
+    }
+    const op = ops.pop(); run(); if (op) say(`Removed “${op.name}”.`);
+  });
+  $('clearSnippets').addEventListener('click', () => { ops = []; run(); say('Removed all snippets.'); });
+  try { document.execCommand('defaultParagraphSeparator', false, 'p'); } catch (e) {}
+  preview.addEventListener('input', () => {
+    if (manualHtml === null) { history = [code.value]; }
+    else if (Date.now() - lastEdit > 1500) history.push(manualHtml);
+    lastEdit = Date.now();
+    setManual(serialize(preview));
+  });
+  // Editing the HTML view updates the Preview and keeps the edits, like editing the Preview does.
+  code.addEventListener('input', () => {
+    if (manualHtml === null) { history = [lastGenerated !== null ? lastGenerated : code.value]; }
+    else if (Date.now() - lastEdit > 1500) history.push(manualHtml);
+    lastEdit = Date.now();
+    preview.innerHTML = code.value;
+    preview.contentEditable = 'true';
+    setManual(code.value);
+  });
+  // Paste into the Preview as plain text so outside formatting doesn't sneak into the Canvas HTML.
+  preview.addEventListener('paste', e => {
+    const text = e.clipboardData && e.clipboardData.getData('text/plain');
+    if (text == null) return;
+    e.preventDefault();
+    document.execCommand('insertText', false, text);
+  });
+  // Keep links in the editable Preview from navigating away on click.
+  preview.addEventListener('click', e => { if (e.target.closest('a')) e.preventDefault(); });
+  $('rebuildBtn').addEventListener('click', () => { leaveManual(); run(); say('Rebuilt from your original content. Direct edits were discarded; applied snippets were kept.'); });
+  function schedule() { clearTimeout(timer); timer = setTimeout(() => run(true), 150); }
+  // Show a message in the toast. An optional action (such as Undo) adds a button and keeps it up longer.
+  function say(msg, action) {
+    const toast = $('toast'), btn = $('toastAction');
+    status.textContent = msg;
+    btn.hidden = !action;
+    btn.onclick = null;
+    if (action) {
+      btn.textContent = action.label;
+      btn.onclick = () => { hideToast(); action.run(); };
+    }
+    toast.classList.add('show');
+    clearTimeout(say.t);
+    say.t = setTimeout(hideToast, action ? 8000 : 4000);
+  }
+  function hideToast() { $('toast').classList.remove('show'); $('toastAction').hidden = true; setTimeout(() => { if (!$('toast').classList.contains('show')) status.textContent = ''; }, 250); }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('toast').classList.contains('show')) hideToast(); });
+
+  src.addEventListener('input', schedule);
+  src.addEventListener('paste', e => {
+    const html = e.clipboardData && e.clipboardData.getData('text/html');
+    if (!html) return;
+    const markup = htmlToMarkup(html);
+    if (!markup.trim()) return;
+    e.preventDefault();
+    const s = src.selectionStart, en = src.selectionEnd;
+    src.setRangeText(markup, s, en, 'end');
+    run(true);
+    updateStat();
+    say('Pasted formatted text. Headings, bold, lists, and links were kept.', { label: 'Go to Edit →', run: () => selectTab('edit') });
+  });
+  // The style menu only takes effect when Apply is selected.
+  function markStylePending() {
+    const pending = styleSel.value !== appliedStyle;
+    $('applyStyle').classList.toggle('pending', pending);
+  }
+  styleSel.addEventListener('change', () => {
+    $('viewTemplate').href = '../templates.html#' + STYLES[styleSel.value].anchor;
+    markStylePending();
+    if (styleSel.value !== appliedStyle) say('Select Apply to use the ' + styleSel.options[styleSel.selectedIndex].text + ' style.');
+  });
+  $('applyStyle').addEventListener('click', () => {
+    const hadEdits = manualHtml !== null;
+    appliedStyle = styleSel.value;
+    leaveManual();
+    run();
+    markStylePending();
+    say('Applied the ' + styleSel.options[styleSel.selectedIndex].text + ' style' + (hadEdits ? '. Direct edits in the Preview or HTML were replaced; snippets were kept.' : '.'));
+  });
+  $('exampleBtn').addEventListener('click', () => {
+    src.value = EXAMPLES[STYLES[styleSel.value].family];
+    appliedStyle = styleSel.value;
+    markStylePending();
+    ops = [];
+    leaveManual();
+    run();
+    updateStat();
+    say('Example loaded. Edit it or replace it with your own text.', { label: 'Go to Edit →', run: () => selectTab('edit') });
+  });
+  // Clear can be undone from the toast, so a slip doesn't lose a draft.
+  $('clearBtn').addEventListener('click', () => {
+    if (!src.value && manualHtml === null) { src.focus(); return; }
+    const before = { text: src.value, ops: ops.slice(), manual: manualHtml, history: history.slice() };
+    src.value = ''; ops = []; leaveManual(); run(); updateStat(); selectTab('source'); src.focus();
+    say('Cleared your text.', { label: 'Undo', run: () => {
+      src.value = before.text; ops = before.ops; run(); updateStat();
+      if (before.manual !== null) { preview.innerHTML = before.manual; preview.contentEditable = 'true'; history = before.history; setManual(before.manual); }
+      say('Restored your text.');
+    } });
+  });
+
+  // Two main tabs (Original content, Edit) and, inside Edit, a Visual / HTML switch.
+  function selectTab(which) {
+    const edit = which !== 'source';
+    const codeView = which === 'code' || (which === 'edit' && $('tabCode').getAttribute('aria-selected') === 'true');
+    [['tabSource', !edit], ['tabEdit', edit], ['tabText', !codeView], ['tabCode', codeView]].forEach(([id, on]) => {
+      $(id).setAttribute('aria-selected', String(on));
+      $(id).tabIndex = on ? 0 : -1;
+    });
+    $('viewSource').hidden = edit;
+    $('viewEdit').hidden = !edit;
+    $('previewWrap').hidden = codeView;
+    $('codeWrap').hidden = !codeView;
+    try { localStorage.setItem('t2tp-tab', edit ? 'edit' : 'source'); } catch (e) {}
+    window.scrollTo({ top: 0 });
+  }
+  $('tabSource').addEventListener('click', () => { selectTab('source'); src.focus(); });
+  $('tabEdit').addEventListener('click', () => selectTab('edit'));
+  $('toEdit').addEventListener('click', () => selectTab('edit'));
+  $('tabText').addEventListener('click', () => { $('tabCode').setAttribute('aria-selected', 'false'); selectTab('edit'); });
+  $('tabCode').addEventListener('click', () => selectTab('code'));
+  // Arrow keys move between tabs in each tab list.
+  [['tabSource', 'tabEdit'], ['tabText', 'tabCode']].forEach(pair => pair.forEach((id, k) => {
+    $(id).addEventListener('keydown', e => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
+      e.preventDefault();
+      const other = $(pair[1 - k]);
+      other.click(); other.focus();
+    });
+  }));
+  // Ctrl/Cmd + Enter in the original content jumps to the Edit tab.
+  src.addEventListener('keydown', e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); selectTab('edit'); } });
+  function updateStat() {
+    const t = src.value.trim();
+    const words = t ? t.split(/\s+/).length : 0;
+    const lines = t ? t.split(/\n/).filter(l => l.trim()).length : 0;
+    $('sourceStat').textContent = words ? `${words} words · ${lines} lines · Ctrl + Enter to continue` : 'Paste or type your content to begin';
+    $('toEdit').disabled = !words;
+  }
+  src.addEventListener('input', updateStat);
+
+  $('copyBtn').addEventListener('click', async () => {
+    if (!code.value) { say('Add some text first.'); return; }
+    try {
+      await navigator.clipboard.writeText(code.value);
+    } catch (e) {
+      selectTab('code'); code.focus(); code.select();
+      document.execCommand && document.execCommand('copy');
+    }
+    say('HTML copied. Paste it into the Canvas HTML editor.');
+  });
+  $('downloadBtn').addEventListener('click', () => {
+    if (!code.value) { say('Add some text first.'); return; }
+    const titleMatch = code.value.match(/<h2[^>]*><strong>([\s\S]*?)<\/strong><\/h2>/);
+    const name = (titleMatch ? titleMatch[1].replace(/<[^>]+>/g, '') : 'canvas-page')
+      .replace(/&[a-z]+;/g, '').replace(/[^\w\s-]/g, '').trim().replace(/\s+/g, '-').toLowerCase().slice(0, 60) || 'canvas-page';
+    const blob = new Blob([code.value], { type: 'text/html' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name + '.html';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    say('Downloaded ' + name + '.html');
+  });
+
+  // Restore the last draft and style, or open with an example.
+  let saved = null, savedStyle = null;
+  try {
+    saved = localStorage.getItem('t2tp-text'); savedStyle = localStorage.getItem('t2tp-style');
+    if (saved) ops = JSON.parse(localStorage.getItem('t2tp-ops') || '[]') || [];
+  } catch (e) { ops = []; }
+  const hashStyle = location.hash.slice(1);
+  if (STYLES[hashStyle]) styleSel.value = hashStyle;
+  else if (savedStyle && STYLES[savedStyle]) styleSel.value = savedStyle;
+  appliedStyle = styleSel.value;
+  $('viewTemplate').href = '../templates.html#' + STYLES[styleSel.value].anchor;
+  src.value = saved || EXAMPLES[STYLES[styleSel.value].family];
+  try { localStorage.setItem('t2tp-probe', '1'); localStorage.removeItem('t2tp-probe'); } catch (e) { $('savedNote').textContent = 'Drafts are not saved in this browser'; }
+  run();
+  try {
+    const m = saved && localStorage.getItem('t2tp-manual');
+    if (m) { preview.innerHTML = m; preview.contentEditable = 'true'; history = [code.value]; setManual(m); }
+  } catch (e) {}
+  updateStat();
+  try { if (localStorage.getItem('t2tp-tab') === 'edit' && src.value.trim()) selectTab('edit'); } catch (e) {}
+  loadLibrary();
+
+  window.__textToTemplatePrototype = { convert, htmlToMarkup };
+})();
+</script>
+</body>
+</html>
